@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal Data Perusahaan</title>
+  <title>Portal Perusahaan</title>
   <style>
     :root {
       --bg: #f4f7fb;
@@ -100,14 +100,13 @@
       padding: 11px 16px;
       border-radius: 999px;
       transition: 0.2s ease;
-      border: 1px solid transparent;
     }
 
     .nav a:hover,
     .nav a.active {
       color: var(--primary);
       background: #edf4ff;
-      border-color: #d7e4ff;
+      border: 1px solid #d7e4ff;
     }
 
     .container {
@@ -312,7 +311,8 @@
       flex-wrap: wrap;
     }
 
-    .fake-input {
+    .fake-input,
+    .real-input {
       min-width: 220px;
       border: 1px solid var(--border);
       border-radius: 14px;
@@ -433,8 +433,9 @@
         <div class="eyebrow">Enterprise Company Portal</div>
         <h1>Tampilan website perusahaan yang bersih dan profesional</h1>
         <p>
-          Portal ini menampilkan struktur perusahaan, data karyawan, dan hasil kerja dalam format modern,
-          rapi, dan siap dipakai. Bagian Data Karyawan akan terhubung otomatis ke Google Sheets melalui script internal.
+          Ini adalah versi fokus tampilan saja. Belum ada koneksi data, belum ada form input,
+          dan belum ada fungsi tambahan lain. Halaman ini dibuat khusus untuk menyusun struktur,
+          gaya visual, navigasi, dan layout perusahaan terlebih dahulu.
         </p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#employees">Preview Data Karyawan</a>
@@ -447,7 +448,7 @@
         <div class="card-stack">
           <div class="mini-card">
             <div class="mini-label">Mode</div>
-            <div class="mini-value">Google Sheets Connected</div>
+            <div class="mini-value">UI Preview Only</div>
           </div>
           <div class="mini-card">
             <div class="mini-label">Style</div>
@@ -455,11 +456,11 @@
           </div>
           <div class="mini-card">
             <div class="mini-label">Status</div>
-            <div class="mini-value">Production Ready UI</div>
+            <div class="mini-value">Ready for Next Build</div>
           </div>
         </div>
         <div class="placeholder-copy">
-          Halaman ini dibuat agar link sumber data tidak terlihat di tampilan. Semua sumber data nanti diletakkan langsung di dalam script.
+          Fokus halaman ini hanya pada tampilan: top menu, section, kartu statistik, tabel, dan susunan portal perusahaan.
         </div>
       </div>
     </section>
@@ -467,7 +468,7 @@
     <section class="stats">
       <div class="stat-card">
         <div class="stat-label">Total Karyawan</div>
-        <div class="stat-value" id="totalEmployees">0</div>
+        <div class="stat-value">128</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Total Group</div>
@@ -479,7 +480,7 @@
       </div>
       <div class="stat-card">
         <div class="stat-label">Data Status</div>
-        <div class="stat-value">Live</div>
+        <div class="stat-value">Preview</div>
       </div>
     </section>
 
@@ -488,7 +489,7 @@
         <div class="section-head">
           <div class="section-copy">
             <h2 class="section-title">Data Karyawan</h2>
-            <p>Bagian ini membaca data otomatis dari Google Sheets melalui script internal.</p>
+            <p>Bagian ini nanti digunakan untuk menampilkan informasi utama seluruh staff perusahaan.</p>
           </div>
           <div class="toolbar">
             <div class="fake-input">Google Sheets connected internally</div>
@@ -520,9 +521,17 @@
           </table>
         </div>
 
-        <div class="footer-note">
-          Bagian ini sudah disiapkan untuk membaca data karyawan langsung dari Google Sheets melalui script internal tanpa menampilkan link sumber di halaman web.
+        <div class="section-head" style="margin-top:14px; margin-bottom:0;">
+          <div class="section-copy">
+            <p id="employeePageInfo">Menampilkan 0 data</p>
+          </div>
+          <div class="toolbar">
+            <button class="btn btn-secondary" id="employeePrevBtn">Sebelumnya</button>
+            <button class="btn btn-primary" id="employeeNextBtn">Selanjutnya</button>
+          </div>
         </div>
+
+        <div class="footer-note">Bagian ini sudah disiapkan untuk membaca data karyawan langsung dari Google Sheets melalui script internal tanpa menampilkan link sumber di halaman web.</div>
       </div>
     </section>
 
@@ -531,7 +540,7 @@
         <div class="section-head">
           <div class="section-copy">
             <h2 class="section-title">Shift & Total Hasil Kerja</h2>
-            <p>Bagian ini masih preview tampilan. Nanti bisa disambungkan ke Google Sheets juga dengan cara yang sama.</p>
+            <p>Bagian ini nanti digunakan untuk menampilkan hasil kerja, shift, dan keterangan operasional.</p>
           </div>
           <div class="toolbar">
             <div class="fake-input">Search shift / result...</div>
@@ -597,15 +606,13 @@
         </div>
 
         <div class="footer-note">
-          Tahap berikutnya, bagian ini bisa dibuat otomatis juga dari Google Sheets jika kamu mau.
+          Tahap ini hanya tampilan. Setelah layout final disetujui, baru kita lanjut sambungkan ke data Google Sheets.
         </div>
       </div>
     </section>
   </main>
 
   <script>
-    const EMPLOYEE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
-
     const navLinks = document.querySelectorAll('.nav a');
     const sections = [...navLinks].map(link => document.querySelector(link.getAttribute('href')));
 
@@ -639,8 +646,12 @@
         } else if (char === ',' && !insideQuotes) {
           row.push(cell);
           cell = '';
-        } else if ((char === '\n' || char === '\r') && !insideQuotes) {
-          if (char === '\r' && next === '\n') i++;
+        } else if ((char === '
+' || char === '
+') && !insideQuotes) {
+          if (char === '
+' && next === '
+') i++;
           row.push(cell);
           if (row.some(v => String(v).trim() !== '')) rows.push(row);
           row = [];
@@ -659,23 +670,38 @@
 
     function renderEmployeeRows(rows) {
       const tbody = document.getElementById('employeeTableBody');
-      const totalEmployeesEl = document.getElementById('totalEmployees');
       if (!tbody) return;
 
-      tbody.innerHTML = '';
-
       if (!rows.length || rows.length === 1) {
+        employeeHeaders = [];
+        employeeDataRows = [];
+        employeeCurrentPage = 1;
         tbody.innerHTML = '<tr><td colspan="10">Belum ada data.</td></tr>';
-        totalEmployeesEl.textContent = '0';
+        updateEmployeePagination();
         return;
       }
 
-      const headers = rows[0].map(h => String(h).trim());
-      const bodyRows = rows.slice(1).filter(r => r.some(cell => String(cell || '').trim() !== ''));
+      employeeHeaders = rows[0].map(h => String(h).trim());
+      employeeDataRows = rows.slice(1).filter(r => r.some(cell => String(cell || '').trim() !== ''));
+      employeeCurrentPage = 1;
+      drawEmployeePage();
+    }
 
-      totalEmployeesEl.textContent = bodyRows.length.toLocaleString('en-US');
+    function drawEmployeePage() {
+      const tbody = document.getElementById('employeeTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
 
-      const getIdx = (...names) => headers.findIndex(h => names.map(n => n.toLowerCase()).includes(h.toLowerCase()));
+      if (!employeeDataRows.length) {
+        tbody.innerHTML = '<tr><td colspan="10">Belum ada data.</td></tr>';
+        updateEmployeePagination();
+        return;
+      }
+
+      const start = (employeeCurrentPage - 1) * EMPLOYEE_PAGE_SIZE;
+      const pageRows = employeeDataRows.slice(start, start + EMPLOYEE_PAGE_SIZE);
+
+      const getIdx = (...names) => employeeHeaders.findIndex(h => names.map(n => n.toLowerCase()).includes(String(h).toLowerCase()));
 
       const idxPan = getIdx('盘口');
       const idxPos = getIdx('岗位');
@@ -688,7 +714,7 @@
       const idxCountry = getIdx('国家', 'country', '国家 / Country');
       const idxStatus = getIdx('状态', 'status');
 
-      bodyRows.forEach(r => {
+      pageRows.forEach(r => {
         const tr = document.createElement('tr');
         const values = [
           idxPan >= 0 ? r[idxPan] || '' : '',
@@ -715,29 +741,69 @@
           }
           tr.appendChild(td);
         });
-
         tbody.appendChild(tr);
       });
+
+      updateEmployeePagination();
     }
+
+    function updateEmployeePagination() {
+      const total = employeeDataRows.length;
+      const totalPages = Math.max(1, Math.ceil(total / EMPLOYEE_PAGE_SIZE));
+      const start = total === 0 ? 0 : ((employeeCurrentPage - 1) * EMPLOYEE_PAGE_SIZE) + 1;
+      const end = Math.min(employeeCurrentPage * EMPLOYEE_PAGE_SIZE, total);
+
+      const info = document.getElementById('employeePageInfo');
+      const prevBtn = document.getElementById('employeePrevBtn');
+      const nextBtn = document.getElementById('employeeNextBtn');
+
+      if (info) {
+        info.textContent = total === 0
+          ? 'Menampilkan 0 data'
+          : `Menampilkan ${start}-${end} dari ${total} data`;
+      }
+
+      if (prevBtn) prevBtn.disabled = employeeCurrentPage <= 1;
+      if (nextBtn) nextBtn.disabled = employeeCurrentPage >= totalPages;
+    }
+
+    const EMPLOYEE_CSV_URL = "PASTE_GOOGLE_SHEETS_CSV_URL_HERE";
+    const EMPLOYEE_PAGE_SIZE = 10;
+    let employeeDataRows = [];
+    let employeeCurrentPage = 1;
+    let employeeHeaders = [];
 
     async function loadEmployeeData() {
       const url = EMPLOYEE_CSV_URL.trim();
-      if (!url) return;
+      if (!url || url === 'PASTE_GOOGLE_SHEETS_CSV_URL_HERE') {
+        return;
+      }
 
       try {
-        const res = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' });
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Gagal ambil data');
         const text = await res.text();
         const rows = parseCSV(text);
         renderEmployeeRows(rows);
       } catch (err) {
         console.error(err);
-        const tbody = document.getElementById('employeeTableBody');
-        if (tbody) {
-          tbody.innerHTML = '<tr><td colspan="10">Data karyawan gagal dimuat. Periksa link CSV Google Sheets.</td></tr>';
-        }
       }
     }
+
+    document.getElementById('employeePrevBtn')?.addEventListener('click', () => {
+      if (employeeCurrentPage > 1) {
+        employeeCurrentPage -= 1;
+        drawEmployeePage();
+      }
+    });
+
+    document.getElementById('employeeNextBtn')?.addEventListener('click', () => {
+      const totalPages = Math.max(1, Math.ceil(employeeDataRows.length / EMPLOYEE_PAGE_SIZE));
+      if (employeeCurrentPage < totalPages) {
+        employeeCurrentPage += 1;
+        drawEmployeePage();
+      }
+    });
 
     loadEmployeeData();
   </script>
