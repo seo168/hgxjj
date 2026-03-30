@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus OS v2.2 | Data Analytics</title>
+  <title>Nexus OS v2.3 | Integrated Dashboard</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -49,19 +49,19 @@
 
     .glass-card {
       background: var(--card-bg); border-radius: var(--radius-xl);
-      border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden;
+      border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 2rem;
     }
-    .toolbar { padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
     
     .table-wrapper { overflow-x: auto; width: 100%; }
     table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 1100px; }
     th { background: #f8fafc; padding: 1.2rem 1rem; text-align: left; font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800; border-bottom: 2px solid var(--border); }
-    td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+    tr:hover td { background: #f1f5f9; }
 
-    /* Chart Container */
-    .chart-box {
-      max-width: 450px; margin: 0 auto; padding: 20px;
-    }
+    /* Pagination Styling */
+    .pagination { padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); }
+    .page-btn { padding: 8px 16px; border: 1px solid var(--border); background: white; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.8rem; }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .badge { padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; }
     .bg-blue { background: var(--accent-soft); color: var(--accent); }
@@ -71,22 +71,37 @@
 <body>
 
   <nav>
-    <div class="brand"><i class="fas fa-chart-pie"></i> NEXUS<span>ANALYTICS</span></div>
-    <div id="status" style="font-size: 0.8rem; font-weight: 700; color: var(--success);">SYNCING...</div>
+    <div class="brand"><i class="fas fa-layer-group"></i> NEXUS<span>CORE</span></div>
+    <div id="status" style="font-size: 0.8rem; font-weight: 700; color: var(--success);"><i class="fas fa-sync fa-spin"></i> LOAD DATA...</div>
   </nav>
 
   <div class="container">
     <div class="sub-nav">
-      <button class="nav-btn active" onclick="switchTab('overview', this)"><i class="fas fa-list"></i> Overview</button>
-      <button class="nav-btn" onclick="switchTab('stats', this)"><i class="fas fa-globe"></i> Geo-Stats</button>
-      <button class="nav-btn" onclick="switchTab('shifting', this)"><i class="fas fa-clock"></i> Shifting</button>
+      <button class="nav-btn active" onclick="switchTab('overview', this)"><i class="fas fa-chart-line"></i> Dashboard Overview</button>
+      <button class="nav-btn" onclick="switchTab('shifting', this)"><i class="fas fa-clock"></i> Shifting Schedule</button>
     </div>
 
     <div id="overview" class="section-content active">
+      
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-bottom: 2rem;">
+        <div class="glass-card" style="padding: 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+          <h4 style="margin-bottom: 1rem; font-weight: 800; font-size: 0.9rem;">GEO-DISTRIBUTION</h4>
+          <div style="width: 220px; height: 220px;">
+            <canvas id="countryChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="glass-card" style="padding: 1.5rem;">
+          <h4 style="margin-bottom: 1.5rem; font-weight: 800; font-size: 0.9rem;">QUICK SUMMARY</h4>
+          <div id="geoList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            </div>
+        </div>
+      </div>
+
       <div class="glass-card">
-        <div class="toolbar">
-          <h3 style="font-weight: 800;">Master Database</h3>
-          <input type="text" id="searchInput" style="padding:10px 15px; border-radius:10px; border:1px solid var(--border);" placeholder="Cari data...">
+        <div style="padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);">
+          <h3 style="font-weight: 800;">Staff Master List</h3>
+          <input type="text" id="searchInput" style="padding:10px 15px; border-radius:10px; border:1px solid var(--border); width: 300px;" placeholder="Search staff...">
         </div>
         <div class="table-wrapper">
           <table>
@@ -95,37 +110,34 @@
                 <th style="width: 100px;">Platform</th>
                 <th style="width: 150px;">Jabatan</th>
                 <th style="width: 80px;">ID</th>
-                <th style="width: 220px;">Nama</th>
-                <th style="width: 120px;">Negara</th>
+                <th style="width: 250px;">Nama Lengkap</th>
+                <th style="width: 150px;">Negara</th>
                 <th style="width: 100px;">Status</th>
               </tr>
             </thead>
             <tbody id="tableBody"></tbody>
           </table>
         </div>
-      </div>
-    </div>
-
-    <div id="stats" class="section-content">
-      <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem;">
-        <div class="glass-card" style="padding: 2rem; text-align: center;">
-          <h3 style="margin-bottom: 2rem; font-weight: 800;">Distribusi Negara Staff</h3>
-          <div class="chart-box">
-            <canvas id="countryChart"></canvas>
+        <div class="pagination">
+          <span id="pageInfo" style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Page 1 of 1</span>
+          <div style="display: flex; gap: 10px;">
+            <button class="page-btn" id="prevBtn" onclick="changePage(-1)">Previous</button>
+            <button class="page-btn" id="nextBtn" onclick="changePage(1)">Next</button>
           </div>
-        </div>
-        <div class="glass-card" style="padding: 2rem;">
-          <h3 style="margin-bottom: 1.5rem; font-weight: 800;">Rincian Total</h3>
-          <div id="countryList" style="display: flex; flex-direction: column; gap: 15px;">
-            </div>
         </div>
       </div>
     </div>
 
     <div id="shifting" class="section-content">
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-        <div class="glass-card" style="padding: 1.5rem;"><h3><i class="fas fa-sun"></i> Day Shift</h3><div id="dayList"></div></div>
-        <div class="glass-card" style="padding: 1.5rem;"><h3><i class="fas fa-moon"></i> Night Shift</h3><div id="nightList"></div></div>
+        <div class="glass-card" style="padding: 1.5rem;">
+          <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-sun" style="color:var(--warning)"></i> Day Shift Team</h3>
+          <div id="dayList"></div>
+        </div>
+        <div class="glass-card" style="padding: 1.5rem;">
+          <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-moon" style="color:var(--accent)"></i> Night Shift Team</h3>
+          <div id="nightList"></div>
+        </div>
       </div>
     </div>
 
@@ -133,56 +145,67 @@
 
   <script>
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
-    let masterData = [];
+    
+    let db = [];
+    let filteredDb = [];
+    let currentPage = 1;
+    const rowsPerPage = 10;
     let myChart = null;
 
     async function init() {
-      const res = await fetch(`${CSV_URL}&t=${Date.now()}`);
-      const text = await res.text();
-      const rows = text.split('\n').map(r => r.split(',')).filter(r => r.length > 5);
-      masterData = rows.slice(1);
-      
-      document.getElementById('status').innerText = `TOTAL: ${masterData.length} STAFF`;
-      
-      renderOverview(masterData);
-      updateChart();
+      try {
+        const res = await fetch(`${CSV_URL}&t=${Date.now()}`);
+        const text = await res.text();
+        const rows = text.split(/\r?\n/).map(r => r.split(',')).filter(r => r.length > 5);
+        db = rows.slice(1).filter(r => r[3] && r[3].trim() !== "");
+        filteredDb = [...db];
+
+        document.getElementById('status').innerText = `CONNECTED: ${db.length} RECORDS`;
+        
+        renderAll();
+      } catch (e) {
+        document.getElementById('status').innerText = "ERROR LOADING DATA";
+      }
+    }
+
+    function renderAll() {
+      renderTable();
+      renderChart();
       renderShifting();
     }
 
-    function switchTab(tabId, btn) {
-      document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
-    }
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const pageData = filteredDb.slice(start, end);
 
-    function renderOverview(data) {
-      document.getElementById('tableBody').innerHTML = data.map(r => `
+      tbody.innerHTML = pageData.map(r => `
         <tr>
-          <td><span class="badge bg-blue">${r[0]}</span></td>
-          <td style="font-weight:700;">${r[1]}</td>
-          <td>#${r[2]}</td>
-          <td style="font-weight:700;">${r[3]}</td>
-          <td><b>${r[8] || 'Unknown'}</b></td>
-          <td><span class="badge ${r[9].toLowerCase().includes('aktif')?'bg-green':''}">${r[9]}</span></td>
+          <td><span class="badge bg-blue">${r[0] || '-'}</span></td>
+          <td style="font-weight:700;">${r[1] || '-'}</td>
+          <td>#${r[2] || '-'}</td>
+          <td style="font-weight:700; color:var(--primary);">${r[3] || '-'}</td>
+          <td style="font-weight:600;"><i class="fas fa-location-dot" style="color:var(--accent); font-size:0.7rem;"></i> ${r[8] || '-'}</td>
+          <td><span class="badge ${(r[9]||'').toLowerCase().includes('aktif')?'bg-green':''}">${r[9] || '-'}</span></td>
         </tr>
       `).join('');
+
+      const totalPages = Math.ceil(filteredDb.length / rowsPerPage);
+      document.getElementById('pageInfo').innerText = `SHOWING ${filteredDb.length ? start + 1 : 0} - ${Math.min(end, filteredDb.length)} OF ${filteredDb.length}`;
+      document.getElementById('prevBtn').disabled = currentPage === 1;
+      document.getElementById('nextBtn').disabled = currentPage >= totalPages;
     }
 
-    function updateChart() {
+    function renderChart() {
       const counts = {};
-      masterData.forEach(r => {
-        const country = (r[8] || 'Unknown').trim();
-        counts[country] = (counts[country] || 0) + 1;
-      });
-
+      db.forEach(r => { const c = (r[8] || 'Unknown').trim(); counts[c] = (counts[c] || 0) + 1; });
+      
       const labels = Object.keys(counts);
       const values = Object.values(counts);
 
-      // Render Chart
+      if(myChart) myChart.destroy();
       const ctx = document.getElementById('countryChart').getContext('2d');
-      if (myChart) myChart.destroy();
-      
       myChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -190,32 +213,46 @@
           datasets: [{
             data: values,
             backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'],
-            borderWidth: 5,
-            hoverOffset: 20
+            borderWidth: 2
           }]
         },
-        options: {
-          plugins: { legend: { position: 'bottom', labels: { font: { family: 'Plus Jakarta Sans', weight: 'bold' } } } },
-          cutout: '70%'
-        }
+        options: { plugins: { legend: { display: false } }, cutout: '75%' }
       });
 
-      // Render Side List
-      document.getElementById('countryList').innerHTML = labels.map((l, i) => `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border);">
-          <span style="font-weight:700;"><i class="fas fa-flag" style="color:#2563eb; margin-right:8px;"></i> ${l}</span>
-          <span class="badge bg-blue">${values[i]} Staff</span>
+      document.getElementById('geoList').innerHTML = labels.map((l, i) => `
+        <div style="background:var(--bg); padding:10px; border-radius:10px; display:flex; justify-content:space-between; border:1px solid var(--border);">
+          <span style="font-weight:700; font-size:0.75rem;">${l}</span>
+          <span style="font-weight:800; color:var(--accent); font-size:0.75rem;">${values[i]}</span>
         </div>
       `).join('');
     }
 
     function renderShifting() {
-      const day = masterData.filter(r => r[5].toLowerCase().includes('day'));
-      const night = masterData.filter(r => r[5].toLowerCase().includes('night'));
-      const card = (r) => `<div style="padding:10px; margin-top:5px; background:var(--bg); border-radius:8px;"><b>${r[3]}</b> - ${r[1]}</div>`;
+      const day = db.filter(r => (r[5]||'').toLowerCase().includes('day'));
+      const night = db.filter(r => (r[5]||'').toLowerCase().includes('night'));
+      const card = (r) => `<div style="padding:10px; margin-top:8px; background:var(--bg); border-radius:10px; border-left:4px solid var(--accent); font-size:0.8rem;"><b>${r[3]}</b><br><span style="font-size:0.7rem; color:var(--text-muted)">${r[1]}</span></div>`;
       document.getElementById('dayList').innerHTML = day.map(card).join('');
       document.getElementById('nightList').innerHTML = night.map(card).join('');
     }
+
+    function changePage(dir) {
+      currentPage += dir;
+      renderTable();
+    }
+
+    function switchTab(id, btn) {
+      document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      filteredDb = db.filter(r => r.some(c => c.toLowerCase().includes(q)));
+      currentPage = 1;
+      renderTable();
+    });
 
     init();
   </script>
