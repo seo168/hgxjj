@@ -1,250 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Karyawan Perusahaan</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --text-light: #ecf0f1;
+            --bg-color: #f4f7f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            color: #333;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 2rem auto;
+        }
+
+        .search-container {
+            margin-bottom: 2rem;
+            text-align: right;
+        }
+
+        #searchInput {
+            padding: 10px;
+            width: 250px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+            text-align: left;
+            padding: 15px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 1.2rem;
+            padding: 50px;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            background: #e1f5fe;
+            color: #0288d1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Database Karyawan Perusahaan</h1>
+    <p>Sistem Informasi Internal Terintegrasi</p>
+</header>
+
+<div class="container">
+    <div class="search-container">
+        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari nama atau departemen...">
+    </div>
+
+    <div id="loader" class="loading">Memuat data karyawan...</div>
+
+    <table id="employeeTable" style="display: none;">
+        <thead>
+            <tr id="tableHeader">
+                </tr>
+        </thead>
+        <tbody id="tableBody">
+            </tbody>
+    </table>
+</div>
+
+<footer>
+    &copy; 2024 Sistem Manajemen Perusahaan. Data diperbarui secara otomatis dari Google Drive.
+</footer>
+
 <script>
-  const navLinks = document.querySelectorAll('.nav a');
-  const sections = [...navLinks].map(link => document.querySelector(link.getAttribute('href')));
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv';
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        navLinks.forEach(link =>
-          link.classList.toggle('active', link.getAttribute('href') === `#${entry.target.id}`)
-        );
-      }
-    });
-  }, { threshold: 0.5 });
-
-  sections.forEach(section => section && observer.observe(section));
-
-  const EMPLOYEE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
-  const EMPLOYEE_PAGE_SIZE = 10;
-
-  let employeeDataRows = [];
-  let employeeCurrentPage = 1;
-  let employeeHeaders = [];
-
-  function parseCSV(text) {
-    const rows = [];
-    let row = [];
-    let cell = '';
-    let insideQuotes = false;
-
-    for (let i = 0; i < text.length; i++) {
-      const char = text[i];
-      const next = text[i + 1];
-
-      if (char === '"') {
-        if (insideQuotes && next === '"') {
-          cell += '"';
-          i++;
-        } else {
-          insideQuotes = !insideQuotes;
+    async function fetchData() {
+        try {
+            const response = await fetch(csvUrl);
+            const data = await response.text();
+            processData(data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            document.getElementById('loader').innerHTML = 'Gagal memuat data. Pastikan publikasi Google Sheets aktif.';
         }
-      } else if (char === ',' && !insideQuotes) {
-        row.push(cell);
-        cell = '';
-      } else if ((char === '\n' || char === '\r') && !insideQuotes) {
-        if (char === '\r' && next === '\n') i++;
-        row.push(cell);
-        if (row.some(v => String(v).trim() !== '')) rows.push(row);
-        row = [];
-        cell = '';
-      } else {
-        cell += char;
-      }
     }
 
-    if (cell.length || row.length) {
-      row.push(cell);
-      if (row.some(v => String(v).trim() !== '')) rows.push(row);
-    }
+    function processData(csvData) {
+        const rows = csvData.split('\n').filter(row => row.trim() !== '');
+        const tableHeader = document.getElementById('tableHeader');
+        const tableBody = document.getElementById('tableBody');
+        
+        // Bersihkan konten sebelumnya
+        tableHeader.innerHTML = '';
+        tableBody.innerHTML = '';
 
-    return rows;
-  }
+        if (rows.length > 0) {
+            // Buat Header
+            const headers = rows[0].split(',');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header.replace(/"/g, '');
+                tableHeader.appendChild(th);
+            });
 
-  function renderEmployeeRows(rows) {
-    const tbody = document.getElementById('employeeTableBody');
-    const totalEmployees = document.getElementById('totalEmployees');
-    if (!tbody) return;
+            // Buat Baris Data
+            for (let i = 1; i < rows.length; i++) {
+                const columns = rows[i].split(',');
+                const tr = document.createElement('tr');
+                
+                columns.forEach(col => {
+                    const td = document.createElement('td');
+                    td.textContent = col.replace(/"/g, '');
+                    tr.appendChild(td);
+                });
+                tableBody.appendChild(tr);
+            }
 
-    if (!rows.length || rows.length === 1) {
-      employeeHeaders = [];
-      employeeDataRows = [];
-      employeeCurrentPage = 1;
-      tbody.innerHTML = '<tr><td colspan="10">Belum ada data.</td></tr>';
-      if (totalEmployees) totalEmployees.textContent = '0';
-      updateEmployeePagination();
-      return;
-    }
-
-    employeeHeaders = rows[0].map(h => String(h).trim());
-    employeeDataRows = rows.slice(1).filter(r => r.some(cell => String(cell || '').trim() !== ''));
-    employeeCurrentPage = 1;
-
-    if (totalEmployees) {
-      totalEmployees.textContent = employeeDataRows.length.toLocaleString('en-US');
-    }
-
-    drawEmployeePage();
-  }
-
-  function drawEmployeePage() {
-    const tbody = document.getElementById('employeeTableBody');
-    if (!tbody) return;
-
-    tbody.innerHTML = '';
-
-    if (!employeeDataRows.length) {
-      tbody.innerHTML = '<tr><td colspan="10">Belum ada data.</td></tr>';
-      updateEmployeePagination();
-      return;
-    }
-
-    const start = (employeeCurrentPage - 1) * EMPLOYEE_PAGE_SIZE;
-    const pageRows = employeeDataRows.slice(start, start + EMPLOYEE_PAGE_SIZE);
-
-    const getIdx = (...names) =>
-      employeeHeaders.findIndex(h =>
-        names.map(n => n.toLowerCase()).includes(String(h).toLowerCase())
-      );
-
-    const idxPan = getIdx('盘口');
-    const idxPos = getIdx('岗位');
-    const idxId = getIdx('ID', 'id');
-    const idxName = getIdx('姓名', 'name');
-    const idxBack = getIdx('后台账号');
-    const idxShift = getIdx('班次', 'shift');
-    const idxJoin = getIdx('入职日期');
-    const idxTime = getIdx('工作时间');
-    const idxCountry = getIdx('国家', 'country', '国家 / Country');
-    const idxStatus = getIdx('状态', 'status');
-
-    pageRows.forEach(r => {
-      const tr = document.createElement('tr');
-      const values = [
-        idxPan >= 0 ? r[idxPan] || '' : '',
-        idxPos >= 0 ? r[idxPos] || '' : '',
-        idxId >= 0 ? r[idxId] || '' : '',
-        idxName >= 0 ? r[idxName] || '' : '',
-        idxBack >= 0 ? r[idxBack] || '' : '',
-        idxShift >= 0 ? r[idxShift] || '' : '',
-        idxJoin >= 0 ? r[idxJoin] || '' : '',
-        idxTime >= 0 ? r[idxTime] || '' : '',
-        idxCountry >= 0 ? r[idxCountry] || '' : '',
-        idxStatus >= 0 ? r[idxStatus] || '' : ''
-      ];
-
-      values.forEach((val, i) => {
-        const td = document.createElement('td');
-
-        if (i === 0 && val) {
-          td.innerHTML = `<span class="tag tag-blue">${val}</span>`;
-        } else if (i === 9 && val) {
-          const cls = String(val).toLowerCase().includes('active') ? 'tag-green' : 'tag-gray';
-          td.innerHTML = `<span class="tag ${cls}">${val}</span>`;
-        } else {
-          td.textContent = val;
+            // Tampilkan tabel, sembunyikan loader
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('employeeTable').style.display = 'table';
         }
-
-        tr.appendChild(td);
-      });
-
-      tbody.appendChild(tr);
-    });
-
-    updateEmployeePagination();
-  }
-
-  function updateEmployeePagination() {
-    const total = employeeDataRows.length;
-    const totalPages = Math.max(1, Math.ceil(total / EMPLOYEE_PAGE_SIZE));
-    const start = total === 0 ? 0 : ((employeeCurrentPage - 1) * EMPLOYEE_PAGE_SIZE) + 1;
-    const end = Math.min(employeeCurrentPage * EMPLOYEE_PAGE_SIZE, total);
-
-    const info = document.getElementById('employeePageInfo');
-    const pagination = document.getElementById('employeePagination');
-
-    if (info) {
-      info.textContent = total === 0
-        ? 'Menampilkan 0 data'
-        : `Menampilkan ${start}-${end} dari ${total} data`;
     }
 
-    if (!pagination) return;
-    pagination.innerHTML = '';
+    function filterTable() {
+        const input = document.getElementById("searchInput");
+        const filter = input.value.toUpperCase();
+        const table = document.getElementById("employeeTable");
+        const tr = table.getElementsByTagName("tr");
 
-    if (total === 0) return;
-
-    const maxButtons = Math.min(totalPages, 1000);
-    let pageStart = Math.max(1, employeeCurrentPage - 4);
-    let pageEnd = Math.min(maxButtons, pageStart + 9);
-    pageStart = Math.max(1, pageEnd - 9);
-
-    const makeBtn = (label, page, active = false) => {
-      const btn = document.createElement('button');
-      btn.className = active ? 'btn btn-primary' : 'btn btn-secondary';
-      btn.textContent = label;
-      btn.style.padding = '10px 14px';
-      btn.style.minWidth = '44px';
-      btn.disabled = active;
-      btn.addEventListener('click', () => {
-        employeeCurrentPage = page;
-        drawEmployeePage();
-      });
-      return btn;
-    };
-
-    if (employeeCurrentPage > 1) {
-      pagination.appendChild(makeBtn('‹', employeeCurrentPage - 1));
+        for (let i = 1; i < tr.length; i++) {
+            let visible = false;
+            const td = tr[i].getElementsByTagName("td");
+            for (let j = 0; j < td.length; j++) {
+                if (td[j] && td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                    visible = true;
+                }
+            }
+            tr[i].style.display = visible ? "" : "none";
+        }
     }
 
-    if (pageStart > 1) {
-      pagination.appendChild(makeBtn('1', 1, employeeCurrentPage === 1));
-      if (pageStart > 2) {
-        const dots = document.createElement('div');
-        dots.className = 'fake-input';
-        dots.style.minWidth = 'auto';
-        dots.style.padding = '10px 12px';
-        dots.textContent = '...';
-        pagination.appendChild(dots);
-      }
-    }
-
-    for (let i = pageStart; i <= pageEnd; i++) {
-      pagination.appendChild(makeBtn(String(i), i, i === employeeCurrentPage));
-    }
-
-    if (pageEnd < maxButtons) {
-      if (pageEnd < maxButtons - 1) {
-        const dots = document.createElement('div');
-        dots.className = 'fake-input';
-        dots.style.minWidth = 'auto';
-        dots.style.padding = '10px 12px';
-        dots.textContent = '...';
-        pagination.appendChild(dots);
-      }
-      pagination.appendChild(makeBtn(String(maxButtons), maxButtons, employeeCurrentPage === maxButtons));
-    }
-
-    if (employeeCurrentPage < totalPages && employeeCurrentPage < 1000) {
-      pagination.appendChild(makeBtn('›', employeeCurrentPage + 1));
-    }
-  }
-
-  async function loadEmployeeData() {
-    try {
-      const url = EMPLOYEE_CSV_URL + '&t=' + Date.now();
-      const res = await fetch(url, { cache: 'no-store' });
-      if (!res.ok) throw new Error('Gagal ambil data');
-      const text = await res.text();
-      const rows = parseCSV(text);
-      renderEmployeeRows(rows);
-    } catch (err) {
-      console.error(err);
-      const tbody = document.getElementById('employeeTableBody');
-      if (tbody) {
-        tbody.innerHTML = '<tr><td colspan="10">Data karyawan gagal dimuat. Periksa link CSV Google Sheets.</td></tr>';
-      }
-    }
-  }
-
-  loadEmployeeData();
+    // Jalankan fungsi saat halaman dimuat
+    fetchData();
 </script>
+
+</body>
+</html>
