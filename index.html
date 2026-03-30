@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus OS v2 | Enterprise Intelligence</title>
+  <title>Nexus OS v2.2 | Data Analytics</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
     :root {
@@ -18,9 +19,8 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); min-height: 100vh; }
 
-    /* --- Navigation --- */
     nav {
       position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.8);
       backdrop-filter: blur(15px); border-bottom: 1px solid var(--border);
@@ -29,126 +29,104 @@
     .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.3rem; }
     .brand i { color: var(--accent); }
 
-    /* --- Sub-Navigation (Buttons) --- */
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem 5rem; }
+
     .sub-nav {
-      display: flex; gap: 10px; margin: 2rem 0; padding: 5px;
-      background: #e2e8f0; border-radius: 16px; width: fit-content;
+      display: flex; gap: 8px; margin: 2rem 0; padding: 6px;
+      background: #e2e8f0; border-radius: 18px; width: fit-content;
     }
     .nav-btn {
-      padding: 10px 20px; border: none; background: transparent;
-      border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 0.85rem;
-      color: var(--text-muted); transition: all 0.3s; display: flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border: none; background: transparent;
+      border-radius: 14px; cursor: pointer; font-weight: 700; font-size: 0.85rem;
+      color: var(--text-muted); transition: all 0.3s;
+      display: flex; align-items: center; gap: 10px;
     }
-    .nav-btn.active { background: white; color: var(--accent); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .nav-btn.active { background: white; color: var(--accent); box-shadow: var(--shadow); }
 
-    /* --- Layout --- */
-    .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem 5rem; }
     .section-content { display: none; animation: fadeIn 0.4s ease-out; }
     .section-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* --- Cards & Tables --- */
     .glass-card {
       background: var(--card-bg); border-radius: var(--radius-xl);
       border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden;
     }
-    .toolbar { padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid var(--border); }
+    .toolbar { padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
     
-    /* Custom table styles similar to previous version */
-    .table-wrapper { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 1000px; }
-    th { background: #f8fafc; padding: 1rem; text-align: left; font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    .table-wrapper { overflow-x: auto; width: 100%; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 1100px; }
+    th { background: #f8fafc; padding: 1.2rem 1rem; text-align: left; font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800; border-bottom: 2px solid var(--border); }
     td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* Performance Bars */
-    .perf-bar { height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; width: 100px; }
-    .perf-fill { height: 100%; background: var(--accent); }
-
-    .search-input {
-      padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border); outline: none; width: 300px;
+    /* Chart Container */
+    .chart-box {
+      max-width: 450px; margin: 0 auto; padding: 20px;
     }
+
+    .badge { padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; }
+    .bg-blue { background: var(--accent-soft); color: var(--accent); }
+    .bg-green { background: #dcfce7; color: #15803d; }
   </style>
 </head>
 <body>
 
   <nav>
-    <div class="brand"><i class="fas fa-microchip"></i> NEXUS<span>OS</span></div>
-    <div style="font-size: 0.8rem; font-weight: 700; color: var(--success);"><i class="fas fa-circle"></i> SYSTEM ONLINE</div>
+    <div class="brand"><i class="fas fa-chart-pie"></i> NEXUS<span>ANALYTICS</span></div>
+    <div id="status" style="font-size: 0.8rem; font-weight: 700; color: var(--success);">SYNCING...</div>
   </nav>
 
   <div class="container">
     <div class="sub-nav">
-      <button class="nav-btn active" onclick="switchTab('overview', this)"><i class="fas fa-th-large"></i> Overview</button>
+      <button class="nav-btn active" onclick="switchTab('overview', this)"><i class="fas fa-list"></i> Overview</button>
+      <button class="nav-btn" onclick="switchTab('stats', this)"><i class="fas fa-globe"></i> Geo-Stats</button>
       <button class="nav-btn" onclick="switchTab('shifting', this)"><i class="fas fa-clock"></i> Shifting</button>
-      <button class="nav-btn" onclick="switchTab('performance', this)"><i class="fas fa-chart-line"></i> Performance</button>
-      <button class="nav-btn" onclick="switchTab('docs', this)"><i class="fas fa-file-medical"></i> Documents</button>
     </div>
 
     <div id="overview" class="section-content active">
       <div class="glass-card">
         <div class="toolbar">
-          <h3 style="font-weight: 800;">Database Master</h3>
-          <input type="text" class="search-input" placeholder="Cari data...">
+          <h3 style="font-weight: 800;">Master Database</h3>
+          <input type="text" id="searchInput" style="padding:10px 15px; border-radius:10px; border:1px solid var(--border);" placeholder="Cari data...">
         </div>
         <div class="table-wrapper">
           <table>
             <thead>
               <tr>
-                <th style="width: 150px;">Nama</th>
                 <th style="width: 100px;">Platform</th>
                 <th style="width: 150px;">Jabatan</th>
-                <th style="width: 120px;">Username</th>
+                <th style="width: 80px;">ID</th>
+                <th style="width: 220px;">Nama</th>
+                <th style="width: 120px;">Negara</th>
                 <th style="width: 100px;">Status</th>
               </tr>
             </thead>
-            <tbody id="tableBody">
-              </tbody>
+            <tbody id="tableBody"></tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="stats" class="section-content">
+      <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem;">
+        <div class="glass-card" style="padding: 2rem; text-align: center;">
+          <h3 style="margin-bottom: 2rem; font-weight: 800;">Distribusi Negara Staff</h3>
+          <div class="chart-box">
+            <canvas id="countryChart"></canvas>
+          </div>
+        </div>
+        <div class="glass-card" style="padding: 2rem;">
+          <h3 style="margin-bottom: 1.5rem; font-weight: 800;">Rincian Total</h3>
+          <div id="countryList" style="display: flex; flex-direction: column; gap: 15px;">
+            </div>
         </div>
       </div>
     </div>
 
     <div id="shifting" class="section-content">
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-        <div class="glass-card" style="padding: 2rem;">
-          <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-sun text-warning"></i> Day Shift (08:00 - 20:00)</h3>
-          <div id="dayList" style="display: flex; flex-direction: column; gap: 10px;">
-            </div>
-        </div>
-        <div class="glass-card" style="padding: 2rem;">
-          <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-moon text-primary"></i> Night Shift (20:00 - 08:00)</h3>
-          <div id="nightList" style="display: flex; flex-direction: column; gap: 10px;">
-            </div>
-        </div>
+        <div class="glass-card" style="padding: 1.5rem;"><h3><i class="fas fa-sun"></i> Day Shift</h3><div id="dayList"></div></div>
+        <div class="glass-card" style="padding: 1.5rem;"><h3><i class="fas fa-moon"></i> Night Shift</h3><div id="nightList"></div></div>
       </div>
-    </div>
-
-    <div id="performance" class="section-content">
-      <div class="glass-card" style="padding: 2rem;">
-        <h3 style="margin-bottom: 2rem;">Analisis Kinerja Tim</h3>
-        <div id="perfTable" class="table-wrapper">
-          </div>
-      </div>
-    </div>
-
-    <div id="docs" class="section-content">
-        <div class="stats-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
-            <div class="glass-card" style="padding: 1.5rem; text-align:center;">
-                <i class="fas fa-file-pdf" style="font-size: 2rem; color: var(--danger);"></i>
-                <h4 style="margin-top:1rem;">SOP Perusahaan</h4>
-                <button class="nav-btn" style="margin: 1rem auto; background: var(--bg);">Buka</button>
-            </div>
-            <div class="glass-card" style="padding: 1.5rem; text-align:center;">
-                <i class="fas fa-file-excel" style="font-size: 2rem; color: var(--success);"></i>
-                <h4 style="margin-top:1rem;">Laporan Gaji</h4>
-                <button class="nav-btn" style="margin: 1rem auto; background: var(--bg);">Buka</button>
-            </div>
-            <div class="glass-card" style="padding: 1.5rem; text-align:center;">
-                <i class="fas fa-shield-halved" style="font-size: 2rem; color: var(--accent);"></i>
-                <h4 style="margin-top:1rem;">Kebijakan Keamanan</h4>
-                <button class="nav-btn" style="margin: 1rem auto; background: var(--bg);">Buka</button>
-            </div>
-        </div>
     </div>
 
   </div>
@@ -156,14 +134,19 @@
   <script>
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
     let masterData = [];
+    let myChart = null;
 
     async function init() {
-      const res = await fetch(CSV_URL);
-      const csv = await res.text();
-      masterData = csv.split('\n').slice(1).map(row => row.split(',')).filter(r => r.length > 2);
-      renderOverview();
+      const res = await fetch(`${CSV_URL}&t=${Date.now()}`);
+      const text = await res.text();
+      const rows = text.split('\n').map(r => r.split(',')).filter(r => r.length > 5);
+      masterData = rows.slice(1);
+      
+      document.getElementById('status').innerText = `TOTAL: ${masterData.length} STAFF`;
+      
+      renderOverview(masterData);
+      updateChart();
       renderShifting();
-      renderPerformance();
     }
 
     function switchTab(tabId, btn) {
@@ -173,57 +156,65 @@
       btn.classList.add('active');
     }
 
-    function renderOverview() {
-      const tbody = document.getElementById('tableBody');
-      tbody.innerHTML = masterData.map(r => `
+    function renderOverview(data) {
+      document.getElementById('tableBody').innerHTML = data.map(r => `
         <tr>
+          <td><span class="badge bg-blue">${r[0]}</span></td>
+          <td style="font-weight:700;">${r[1]}</td>
+          <td>#${r[2]}</td>
           <td style="font-weight:700;">${r[3]}</td>
-          <td><span style="padding:4px 8px; background:var(--accent-soft); border-radius:6px; font-size:0.7rem; color:var(--accent); font-weight:800;">${r[0]}</span></td>
-          <td>${r[1]}</td>
-          <td style="color:var(--accent); font-family:monospace;">${r[4]}</td>
-          <td><span style="color:${r[9].toLowerCase().includes('aktif') ? 'var(--success)' : 'var(--text-muted)'}; font-weight:800;">● ${r[9]}</span></td>
+          <td><b>${r[8] || 'Unknown'}</b></td>
+          <td><span class="badge ${r[9].toLowerCase().includes('aktif')?'bg-green':''}">${r[9]}</span></td>
         </tr>
       `).join('');
     }
 
-    function renderShifting() {
-      const dayList = document.getElementById('dayList');
-      const nightList = document.getElementById('nightList');
+    function updateChart() {
+      const counts = {};
+      masterData.forEach(r => {
+        const country = (r[8] || 'Unknown').trim();
+        counts[country] = (counts[country] || 0) + 1;
+      });
+
+      const labels = Object.keys(counts);
+      const values = Object.values(counts);
+
+      // Render Chart
+      const ctx = document.getElementById('countryChart').getContext('2d');
+      if (myChart) myChart.destroy();
       
-      const dayData = masterData.filter(r => r[5].toLowerCase().includes('day'));
-      const nightData = masterData.filter(r => r[5].toLowerCase().includes('night'));
+      myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'],
+            borderWidth: 5,
+            hoverOffset: 20
+          }]
+        },
+        options: {
+          plugins: { legend: { position: 'bottom', labels: { font: { family: 'Plus Jakarta Sans', weight: 'bold' } } } },
+          cutout: '70%'
+        }
+      });
 
-      const itemHTML = (r) => `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--bg); border-radius:10px; border-left:4px solid var(--accent);">
-          <span style="font-weight:600;">${r[3]}</span>
-          <span style="font-size:0.75rem; color:var(--text-muted);">${r[1]}</span>
+      // Render Side List
+      document.getElementById('countryList').innerHTML = labels.map((l, i) => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border);">
+          <span style="font-weight:700;"><i class="fas fa-flag" style="color:#2563eb; margin-right:8px;"></i> ${l}</span>
+          <span class="badge bg-blue">${values[i]} Staff</span>
         </div>
-      `;
-
-      dayList.innerHTML = dayData.map(itemHTML).join('');
-      nightList.innerHTML = nightData.map(itemHTML).join('');
+      `).join('');
     }
 
-    function renderPerformance() {
-      const container = document.getElementById('perfTable');
-      // Simulasi Skor Performa Random (Karena di sheet mungkin belum ada kolom skor)
-      container.innerHTML = `
-        <table>
-          <thead><tr><th>Karyawan</th><th>Kapasitas Kerja</th><th>Skor</th></tr></thead>
-          <tbody>
-            ${masterData.slice(0, 10).map(r => {
-              const score = Math.floor(Math.random() * (95 - 70 + 1) + 70);
-              return `
-                <tr>
-                  <td><b>${r[3]}</b></td>
-                  <td><div class="perf-bar"><div class="perf-fill" style="width:${score}%"></div></div></td>
-                  <td><b style="color:var(--accent)">${score}%</b></td>
-                </tr>
-              `;
-            }).join('')}
-          </tbody>
-        </table>
-      `;
+    function renderShifting() {
+      const day = masterData.filter(r => r[5].toLowerCase().includes('day'));
+      const night = masterData.filter(r => r[5].toLowerCase().includes('night'));
+      const card = (r) => `<div style="padding:10px; margin-top:5px; background:var(--bg); border-radius:8px;"><b>${r[3]}</b> - ${r[1]}</div>`;
+      document.getElementById('dayList').innerHTML = day.map(card).join('');
+      document.getElementById('nightList').innerHTML = night.map(card).join('');
     }
 
     init();
