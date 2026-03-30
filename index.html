@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus Executive v2.8 | Stats Fixed</title>
+  <title>Nexus Executive v2.9 | Unified Intelligence</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
     :root {
       --primary: #0f172a; --accent: #2563eb; --accent-soft: rgba(37, 99, 235, 0.1);
       --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
-      --bg: #f8fafc; --card-bg: #ffffff; --border: #e2e8f0;
+      --bg: #f1f5f9; --card-bg: #ffffff; --border: #e2e8f0;
       --text-main: #1e293b; --text-muted: #64748b;
-      --radius-xl: 20px;
+      --radius-xl: 24px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,28 +30,32 @@
 
     .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem 4rem; }
 
-    /* Top Analytics Grid */
-    .top-stats { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 1.5rem; margin-top: 2rem; }
-    .card { background: white; padding: 1.5rem; border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02); min-height: 180px; }
+    /* Analytics Header */
+    .analytics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem; }
+    .stat-card { background: white; padding: 1.5rem; border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
     
-    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border); }
-    .stat-row:last-child { border: none; }
-    .label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
-    .value { font-weight: 800; color: var(--primary); }
+    .chart-container { width: 100px; height: 100px; margin: 0 auto 1rem; position: relative; }
+    .chart-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.8rem; }
 
-    .online-tag { background: #ecfdf5; color: #065f46; padding: 6px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; justify-content: space-between; border: 1px solid #d1fae5; }
-    .online-tag i { font-size: 0.5rem; color: var(--success); animation: pulse 1.5s infinite; }
+    .stat-list { max-height: 120px; overflow-y: auto; margin-top: 10px; padding-right: 5px; }
+    .stat-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.75rem; font-weight: 700; }
+    .stat-item:last-child { border: none; }
+    .val-pill { background: var(--primary); color: white; padding: 1px 8px; border-radius: 10px; font-size: 0.7rem; }
 
-    /* Table System */
-    .table-container { margin-top: 1.5rem; background: white; border-radius: var(--radius-xl); border: 1px solid var(--border); overflow: hidden; min-height: 600px; }
-    .toolbar { padding: 1.2rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-    .search-input { padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border); width: 320px; font-weight: 600; outline: none; }
+    /* Online Badge */
+    .online-indicator { background: #ecfdf5; color: #065f46; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; }
+    .online-indicator i { font-size: 0.5rem; animation: pulse 1.5s infinite; }
 
-    table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 1100px; }
+    /* Table Styling */
+    .table-section { margin-top: 2rem; background: white; border-radius: var(--radius-xl); border: 1px solid var(--border); overflow: hidden; }
+    .toolbar { padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+    .search-input { padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); width: 350px; outline: none; font-weight: 600; }
+
+    table { width: 100%; border-collapse: collapse; min-width: 1000px; }
     th { background: #f8fafc; padding: 1rem; text-align: left; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); }
-    td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
-    
-    .amt-clock { background: var(--primary); color: white; padding: 5px 15px; border-radius: 30px; font-size: 0.8rem; font-weight: 800; }
+    td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; }
+
+    .amt-time { background: var(--accent); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
 
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
   </style>
@@ -58,65 +63,57 @@
 <body>
 
 <nav>
-  <div class="brand"><i class="fas fa-chart-line"></i> NEXUS<span>CORE</span></div>
-  <div class="amt-clock" id="clock">00:00:00 AMT</div>
+  <div class="brand"><i class="fas fa-microchip"></i> NEXUS<span>CORE</span></div>
+  <div class="amt-time" id="amtClock">00:00:00 AMT</div>
 </nav>
 
 <div class="container">
-  <div class="top-stats">
-    <div class="card">
-      <h4 style="font-size:0.7rem; margin-bottom:1rem; color:var(--accent); text-transform: uppercase;">Staff Distribution</h4>
-      <div id="shiftStatsContainer">
-        <div class="stat-row"><span class="label">Total Staff</span><span class="value" id="totalStaff">0</span></div>
-        <div class="stat-row"><span class="label">Day Shift</span><span class="value" id="totalDay">0</span></div>
-        <div class="stat-row"><span class="label">Night Shift</span><span class="value" id="totalNight">0</span></div>
-        <div class="stat-row"><span class="label">Mid Shift</span><span class="value" id="totalMid">0</span></div>
-      </div>
+  <div class="analytics-grid">
+    <div class="stat-card">
+      <div class="chart-container"><canvas id="shiftChart"></canvas><div class="chart-label" id="totalStaff">0</div></div>
+      <h4 style="font-size:0.75rem; text-align:center; margin-bottom:10px;">SHIFT DISTRIBUTION</h4>
+      <div class="stat-list" id="shiftList"></div>
     </div>
 
-    <div class="card">
-      <h4 style="font-size:0.7rem; margin-bottom:1rem; color:var(--success); text-transform: uppercase;">Online by Role (AMT)</h4>
-      <div id="onlineCategories" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div style="font-size:0.75rem; color:var(--text-muted)">Loading stats...</div>
-      </div>
+    <div class="stat-card">
+      <div class="chart-container"><canvas id="jobChart"></canvas><div class="chart-label" id="totalOnline">0</div></div>
+      <h4 style="font-size:0.75rem; text-align:center; margin-bottom:10px;">ONLINE BY JOB (AMT)</h4>
+      <div class="stat-list" id="jobList"></div>
     </div>
 
-    <div class="card">
-      <h4 style="font-size:0.7rem; margin-bottom:1rem; color:var(--warning); text-transform: uppercase;">Country Distribution</h4>
-      <div id="geoStats" style="max-height: 120px; overflow-y: auto; padding-right: 5px;">
-        <div style="font-size:0.75rem; color:var(--text-muted)">Loading stats...</div>
-      </div>
+    <div class="stat-card">
+      <div class="chart-container"><canvas id="geoChart"></canvas></div>
+      <h4 style="font-size:0.75rem; text-align:center; margin-bottom:10px;">COUNTRY DISTRIBUTION</h4>
+      <div class="stat-list" id="geoList"></div>
     </div>
   </div>
 
-  <div class="table-container">
+  <div class="table-section">
     <div class="toolbar">
-      <h3 style="font-weight: 800; font-size: 1rem;">Employee Master List</h3>
-      <input type="text" id="searchInput" class="search-input" placeholder="Search name, ID, or account...">
+      <h3 style="font-weight: 800;">Staff Identity List</h3>
+      <input type="text" id="masterSearch" class="search-input" placeholder="Quick search staff database...">
     </div>
     <div style="overflow-x: auto;">
       <table>
         <thead>
           <tr>
-            <th style="width: 120px;">盘口</th>
-            <th style="width: 150px;">岗位</th>
-            <th style="width: 100px;">ID</th>
-            <th style="width: 250px;">姓名</th>
-            <th style="width: 200px;">后台账号</th>
-            <th style="width: 150px;">入职日期</th>
-            <th style="width: 150px;">国家</th>
+            <th>Platform (盘口)</th>
+            <th>Role (岗位)</th>
+            <th style="width: 80px;">ID</th>
+            <th style="width: 250px;">Name (姓名)</th>
+            <th>Account (后台账号)</th>
+            <th>Join Date (入职)</th>
+            <th>Country (国家)</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
       </table>
     </div>
-    <div id="noData" style="display:none; text-align:center; padding: 50px; font-weight:700; color:var(--text-muted);">No records found.</div>
-    
     <div style="padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); background: #f8fafc;">
       <span id="pageInfo" style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted);">PAGE 1</span>
-      <div style="display:flex; gap:8px;">
-        <button onclick="changePage(-1)" id="prevBtn" style="padding:6px 12px; border:1px solid var(--border); background:white; border-radius:6px; cursor:pointer; font-weight:800;">PREV</button>
-        <button onclick="changePage(1)" id="nextBtn" style="padding:6px 12px; border:1px solid var(--border); background:white; border-radius:6px; cursor:pointer; font-weight:800;">NEXT</button>
+      <div style="display:flex; gap:10px;">
+        <button onclick="changePage(-1)" id="prevBtn" style="padding:8px 16px; border:1px solid var(--border); border-radius:10px; cursor:pointer; font-weight:800;">PREV</button>
+        <button onclick="changePage(1)" id="nextBtn" style="padding:8px 16px; border:1px solid var(--border); border-radius:10px; cursor:pointer; font-weight:800;">NEXT</button>
       </div>
     </div>
   </div>
@@ -125,115 +122,132 @@
 <script>
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
   
-  let db = [];
+  let raw = [];
   let filtered = [];
   let page = 1;
-  const rows = 10;
+  const limit = 10;
+  let charts = {};
 
   async function init() {
     try {
       const r = await fetch(`${CSV_URL}&t=${Date.now()}`);
       const t = await r.text();
-      // Perbaikan pemisahan baris CSV
       const lines = t.split(/\r?\n/).map(l => l.split(','));
-      db = lines.slice(1).filter(d => d.length > 5 && d[3] && d[3].trim() !== "");
-      filtered = [...db];
+      raw = lines.slice(1).filter(d => d.length > 5 && d[3] && d[3].trim() !== "");
+      filtered = [...raw];
       
-      setInterval(updateDashboard, 1000);
-      updateDashboard();
+      setInterval(updateRealtime, 1000);
+      updateRealtime();
       renderTable();
-    } catch (e) { console.error("Fetch Error:", e); }
+    } catch (e) { console.error(e); }
   }
 
   function getAMT() {
     return new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"}));
   }
 
-  function updateDashboard() {
+  function updateRealtime() {
     const amt = getAMT();
     const h = amt.getHours();
-    const m = amt.getMinutes();
-    const totalMins = h * 60 + m;
-    
-    document.getElementById('clock').innerText = `${amt.toLocaleTimeString('en-GB')} AMT`;
+    const totalM = h * 60 + amt.getMinutes();
+    document.getElementById('amtClock').innerText = amt.toLocaleTimeString('en-GB') + " AMT";
 
-    let day = 0, night = 0, mid = 0;
-    let onlineRoles = {};
-    let geoMap = {};
+    let shifts = { day: 0, night: 0, mid: 0 };
+    let onlineJobs = {};
+    let countries = {};
+    let totalOnline = 0;
 
-    db.forEach(r => {
-      const shift = (r[5] || '').toLowerCase();
-      const role = (r[1] || 'Unknown').trim();
-      const country = (r[8] || 'Unknown').trim();
+    raw.forEach(r => {
+      const s = (r[5] || '').toLowerCase().trim();
+      const job = (r[1] || 'Unknown').trim();
+      const geo = (r[8] || 'Unknown').trim();
 
-      // 1. Shift Stats
-      if(shift.includes('day')) day++;
-      else if(shift.includes('night')) night++;
-      else if(shift.includes('mid')) mid++;
+      // Robust Shift Counting
+      if (s.includes('day')) shifts.day++;
+      else if (s.includes('night')) shifts.night++;
+      else if (s.includes('mid')) shifts.mid++;
 
-      // 2. Online Logic (AMT)
-      let isOnline = false;
-      if(shift.includes('day') && (h >= 4 && h < 16)) isOnline = true;
-      else if(shift.includes('night') && (h >= 16 || h < 4)) isOnline = true;
-      else if(shift.includes('mid') && (totalMins >= 570 && totalMins < 1290)) isOnline = true;
+      // Online Logic
+      let on = false;
+      if(s.includes('day') && (h>=4 && h<16)) on = true;
+      else if(s.includes('night') && (h>=16 || h<4)) on = true;
+      else if(s.includes('mid') && (totalM >= 570 && totalM < 1290)) on = true;
 
-      if(isOnline) {
-        onlineRoles[role] = (onlineRoles[role] || 0) + 1;
+      if(on) {
+        totalOnline++;
+        onlineJobs[job] = (onlineJobs[job] || 0) + 1;
       }
 
-      // 3. Country Stats
-      geoMap[country] = (geoMap[country] || 0) + 1;
+      countries[geo] = (countries[geo] || 0) + 1;
     });
 
-    // Update Card 1
-    document.getElementById('totalStaff').innerText = db.length;
-    document.getElementById('totalDay').innerText = day;
-    document.getElementById('totalNight').innerText = night;
-    document.getElementById('totalMid').innerText = mid;
+    document.getElementById('totalStaff').innerText = raw.length;
+    document.getElementById('totalOnline').innerText = totalOnline;
 
-    // Update Card 2 (Online Roles)
-    const onlineHtml = Object.entries(onlineRoles).length > 0 
-      ? Object.entries(onlineRoles).map(([n, c]) => `<div class="online-tag"><span>${n}</span><span><i class="fas fa-circle"></i> ${c}</span></div>`).join('')
-      : '<div style="font-size:0.75rem; color:var(--text-muted)">No active shift now.</div>';
-    document.getElementById('onlineCategories').innerHTML = onlineHtml;
+    // Update Visual Lists
+    const listHtml = (obj, color) => Object.entries(obj).sort((a,b)=>b[1]-a[1]).map(([n,c]) => `
+      <div class="stat-item"><span>${n}</span><span class="val-pill" style="background:${color}">${c}</span></div>
+    `).join('');
 
-    // Update Card 3 (Geo Stats)
-    const geoHtml = Object.entries(geoMap).length > 0
-      ? Object.entries(geoMap).sort((a,b)=>b[1]-a[1]).map(([n, c]) => `<div class="stat-row"><span class="label">${n}</span><span class="value">${c}</span></div>`).join('')
-      : '<div style="font-size:0.75rem; color:var(--text-muted)">No country data.</div>';
-    document.getElementById('geoStats').innerHTML = geoHtml;
+    document.getElementById('shiftList').innerHTML = listHtml(shifts, 'var(--accent)');
+    document.getElementById('jobList').innerHTML = listHtml(onlineJobs, 'var(--success)');
+    document.getElementById('geoList').innerHTML = listHtml(countries, 'var(--warning)');
+
+    // Sync Charts
+    updateChart('shiftChart', shifts, ['#2563eb', '#0f172a', '#64748b']);
+    updateChart('jobChart', onlineJobs, ['#10b981', '#34d399', '#059669']);
+    updateChart('geoChart', countries, ['#f59e0b', '#fbbf24', '#d97706']);
+  }
+
+  function updateChart(id, dataObj, colors) {
+    const ctx = document.getElementById(id).getContext('2d');
+    const labels = Object.keys(dataObj);
+    const values = Object.values(dataObj);
+
+    if (charts[id]) {
+      charts[id].data.labels = labels;
+      charts[id].data.datasets[0].data = values;
+      charts[id].update('none');
+    } else {
+      charts[id] = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }]
+        },
+        options: { plugins: { legend: { display: false } }, cutout: '80%', responsive: true }
+      });
+    }
   }
 
   function renderTable() {
     const tbody = document.getElementById('tableBody');
-    const start = (page - 1) * rows;
-    const slice = filtered.slice(start, start + rows);
-
-    document.getElementById('noData').style.display = filtered.length === 0 ? 'block' : 'none';
+    const start = (page - 1) * limit;
+    const slice = filtered.slice(start, start + limit);
 
     tbody.innerHTML = slice.map(r => `
       <tr>
-        <td><span style="color:var(--accent); font-weight:800;">${r[0] || '-'}</span></td>
-        <td style="font-weight:700;">${r[1] || '-'}</td>
-        <td style="font-family:monospace; opacity:0.6;">#${r[2] || '-'}</td>
-        <td style="font-weight:800;">${r[3] || '-'}</td>
-        <td style="font-size:0.8rem; color:var(--text-muted);">${r[4] || '-'}</td>
-        <td style="font-size:0.8rem;">${r[6] || '-'}</td>
-        <td><i class="fas fa-map-marker-alt" style="font-size:0.7rem; color:var(--danger)"></i> ${r[8] || '-'}</td>
+        <td><b style="color:var(--accent)">${r[0]}</b></td>
+        <td>${r[1]}</td>
+        <td style="opacity:0.5">#${r[2]}</td>
+        <td style="font-weight:800; color:var(--primary)">${r[3]}</td>
+        <td style="font-size:0.8rem; color:var(--text-muted)">${r[4]}</td>
+        <td style="font-size:0.8rem">${r[6]}</td>
+        <td><i class="fas fa-globe" style="font-size:0.7rem; color:var(--warning)"></i> ${r[8]}</td>
       </tr>
     `).join('');
 
-    const totalPages = Math.ceil(filtered.length / rows);
+    const totalPages = Math.ceil(filtered.length / limit);
     document.getElementById('pageInfo').innerText = `PAGE ${page} OF ${totalPages || 1} (${filtered.length} Staff)`;
     document.getElementById('prevBtn').disabled = page === 1;
     document.getElementById('nextBtn').disabled = page >= totalPages;
   }
 
-  function changePage(dir) { page += dir; renderTable(); }
+  function changePage(d) { page += d; renderTable(); }
 
-  document.getElementById('searchInput').addEventListener('input', (e) => {
+  document.getElementById('masterSearch').addEventListener('input', (e) => {
     const q = e.target.value.toLowerCase();
-    filtered = db.filter(r => r.some(c => c.toString().toLowerCase().includes(q)));
+    filtered = raw.filter(r => r.some(c => c.toLowerCase().includes(q)));
     page = 1;
     renderTable();
   });
