@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal Perusahaan</title>
+  <title>Portal Data Perusahaan</title>
   <style>
     :root {
       --bg: #f4f7fb;
-      --surface: rgba(255,255,255,0.92);
+      --surface: rgba(255,255,255,0.95);
       --surface-solid: #ffffff;
       --text: #172033;
       --muted: #60708f;
@@ -15,13 +15,12 @@
       --primary-2: #2563eb;
       --accent: #0f172a;
       --border: #d9e3f0;
-      --shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      --shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
       --shadow-soft: 0 10px 24px rgba(15, 23, 42, 0.05);
       --success: #0f9d58;
       --chip: #eef4ff;
       --header-height: 78px;
       --radius: 24px;
-      --radius-sm: 16px;
       --max: 1280px;
     }
 
@@ -39,18 +38,14 @@
 
     a { color: inherit; }
 
-    .shell {
-      min-height: 100vh;
-    }
-
     .topbar {
       position: sticky;
       top: 0;
       z-index: 100;
       height: var(--header-height);
       backdrop-filter: blur(16px);
-      background: rgba(255,255,255,0.72);
-      border-bottom: 1px solid rgba(217, 227, 240, 0.85);
+      background: rgba(255,255,255,0.78);
+      border-bottom: 1px solid rgba(217,227,240,0.9);
     }
 
     .topbar-inner {
@@ -83,10 +78,6 @@
       background: linear-gradient(135deg, var(--primary), var(--primary-2));
       box-shadow: 0 12px 24px rgba(37, 99, 235, 0.22);
       flex: 0 0 auto;
-    }
-
-    .brand-copy {
-      min-width: 0;
     }
 
     .brand-title {
@@ -416,18 +407,6 @@
       line-height: 1.7;
     }
 
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 10px;
-      background: var(--chip);
-      color: var(--primary);
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 800;
-    }
-
     @media (max-width: 960px) {
       .hero { grid-template-columns: 1fr; }
       .stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
@@ -446,137 +425,128 @@
   </style>
 </head>
 <body>
-  <div class="shell">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="brand">
-          <div class="brand-badge">CP</div>
-          <div class="brand-copy">
-            <div class="brand-title">Portal Data Perusahaan</div>
-            <div class="brand-subtitle">Terhubung ke Google Sheets dan siap dipasang di GitHub Pages</div>
-          </div>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-badge">CP</div>
+        <div>
+          <div class="brand-title">Portal Data Perusahaan</div>
+          <div class="brand-subtitle">Sinkronisasi langsung dari Google Sheets</div>
         </div>
-        <nav class="nav">
-          <a class="nav-link active" href="#overview">Overview</a>
-          <a class="nav-link" href="#employees">Data Karyawan</a>
-          <a class="nav-link" href="#performance">Shift & Hasil Kerja</a>
-        </nav>
       </div>
-    </header>
+      <nav class="nav">
+        <a class="nav-link active" href="#overview">Overview</a>
+        <a class="nav-link" href="#employees">Data Karyawan</a>
+        <a class="nav-link" href="#performance">Shift & Hasil Kerja</a>
+      </nav>
+    </div>
+  </header>
 
-    <main class="container">
-      <section class="hero" id="overview">
-        <div class="panel hero-main">
-          <div class="eyebrow">Sistem Informasi Internal</div>
-          <h1>Website perusahaan yang rapi, profesional, dan mudah diperbarui</h1>
-          <p>
-            Portal ini dirancang untuk kebutuhan operasional perusahaan dengan sumber data dari Google Sheets.
-            Semua informasi penting dapat dikelola dari sheet, lalu otomatis ditampilkan ke website tanpa perlu edit ulang setiap saat.
-            Cocok untuk data karyawan, shift, total hasil kerja, dan keterangan operasional harian.
-          </p>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#employees">Lihat Data Karyawan</a>
-            <a class="btn btn-secondary" href="#performance">Lihat Shift & Hasil Kerja</a>
-          </div>
+  <main class="container">
+    <section class="hero" id="overview">
+      <div class="panel hero-main">
+        <div class="eyebrow">Enterprise Internal Portal</div>
+        <h1>Website perusahaan siap pakai dan mudah di-update</h1>
+        <p>
+          Portal ini terhubung langsung ke Google Sheets. Data karyawan, shift, total hasil kerja,
+          dan keterangan operasional dapat diperbarui dari sheet dan langsung tampil otomatis di website.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#employees">Lihat Data Karyawan</a>
+          <a class="btn btn-secondary" href="#performance">Lihat Shift & Hasil Kerja</a>
+        </div>
+      </div>
+
+      <div class="panel hero-side">
+        <h3>Konfigurasi Data</h3>
+        <p>Masukkan URL CSV hasil publish Google Sheets. Setelah itu website akan membaca data secara otomatis.</p>
+
+        <div class="field">
+          <label for="employeeCsv">CSV Data Karyawan</label>
+          <input id="employeeCsv" type="text" placeholder="Tempel URL CSV untuk data karyawan" />
         </div>
 
-        <div class="panel hero-side">
-          <h3>Konfigurasi Sumber Data</h3>
-          <p>Tempel link CSV hasil publish Google Sheets. Setelah itu website akan membaca data dan menampilkan semuanya secara otomatis.</p>
+        <div class="field">
+          <label for="performanceCsv">CSV Shift & Hasil Kerja</label>
+          <input id="performanceCsv" type="text" placeholder="Tempel URL CSV untuk data shift & hasil kerja" />
+        </div>
 
-          <div class="field">
-            <label for="employeeCsv">Google Sheets CSV — Informasi Karyawan</label>
-            <input id="employeeCsv" type="text" placeholder="Tempel URL CSV Google Sheets untuk data karyawan" />
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="loadBtn">Load Data</button>
+          <button class="btn btn-secondary" id="saveBtn">Simpan URL</button>
+        </div>
+
+        <div class="mini-note">
+          Contoh kolom Google Sheets untuk sheet performa:<br>
+          <strong>盘口、岗位、ID、姓名、后台账号、班次、入职日期、工作时间、国家 / Country、Total Hasil Kerja</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat-card">
+        <div class="stat-label">Total Karyawan</div>
+        <div class="stat-value" id="totalEmployees">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Data Shift</div>
+        <div class="stat-value" id="totalPerformance">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Hasil Kerja</div>
+        <div class="stat-value" id="totalWork">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rata-rata Hasil Kerja</div>
+        <div class="stat-value" id="avgWork">0</div>
+      </div>
+    </section>
+
+    <section id="employees">
+      <div class="panel section-card">
+        <div class="section-head">
+          <div class="section-copy">
+            <h2 class="section-title">Data Karyawan</h2>
+            <p>Informasi karyawan yang terhubung langsung ke Google Sheets.</p>
           </div>
-
-          <div class="field">
-            <label for="performanceCsv">Google Sheets CSV — Shift & Total Hasil Kerja</label>
-            <input id="performanceCsv" type="text" placeholder="Tempel URL CSV Google Sheets untuk data performa" />
-          </div>
-
-          <div class="hero-actions">
-            <button class="btn btn-primary" id="loadBtn">Load Data</button>
-            <button class="btn btn-secondary" id="saveBtn">Simpan URL</button>
-          </div>
-
-          <div class="mini-note">
-            Struktur kolom yang disarankan untuk data performa:<br>
-            <strong>盘口、岗位、ID、姓名、后台账号、班次、入职日期、工作时间、国家 / Country、Total Hasil Kerja</strong>
+          <div class="toolbar">
+            <input type="text" id="employeeSearch" placeholder="Cari nama, ID, akun backend, negara..." />
           </div>
         </div>
-      </section>
+        <div class="table-wrap">
+          <table id="employeeTable">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="empty" id="employeeEmpty">Belum ada data. Tempel URL CSV lalu klik Load Data.</div>
+      </div>
+    </section>
 
-      <section class="stats">
-        <div class="stat-card">
-          <div class="stat-label">Total Karyawan</div>
-          <div class="stat-value" id="totalEmployees">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Data Shift</div>
-          <div class="stat-value" id="totalPerformance">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Hasil Kerja</div>
-          <div class="stat-value" id="totalWork">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Rata-rata Hasil Kerja</div>
-          <div class="stat-value" id="avgWork">0</div>
-        </div>
-      </section>
-
-      <section id="employees">
-        <div class="panel section-card">
-          <div class="section-head">
-            <div class="section-copy">
-              <h2 class="section-title">Data Karyawan</h2>
-              <p>Menampilkan informasi karyawan yang bisa diperbarui langsung dari Google Sheets.</p>
-            </div>
-            <div class="toolbar">
-              <input type="text" id="employeeSearch" placeholder="Cari nama, ID, backend account, country..." />
-            </div>
+    <section id="performance">
+      <div class="panel section-card">
+        <div class="section-head">
+          <div class="section-copy">
+            <h2 class="section-title">Shift, Total Hasil Kerja & Keterangan</h2>
+            <p>Menampilkan data shift, posisi, negara, dan total hasil kerja.</p>
           </div>
-
-          <div class="table-wrap">
-            <table id="employeeTable">
-              <thead></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-          <div class="empty" id="employeeEmpty">Belum ada data. Tempel URL CSV lalu klik Load Data.</div>
-        </div>
-      </section>
-
-      <section id="performance">
-        <div class="panel section-card">
-          <div class="section-head">
-            <div class="section-copy">
-              <h2 class="section-title">Shift, Total Hasil Kerja & Keterangan</h2>
-              <p>Menampilkan ringkasan data operasional berdasarkan shift, jabatan, negara, dan total hasil kerja.</p>
-            </div>
-            <div class="toolbar">
-              <input type="text" id="performanceSearch" placeholder="Cari nama, shift, jabatan, negara..." />
-              <select id="shiftFilter">
-                <option value="">Semua Shift</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="table-wrap">
-            <table id="performanceTable">
-              <thead></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-          <div class="empty" id="performanceEmpty">Belum ada data performa. Tempel URL CSV lalu klik Load Data.</div>
-
-          <div class="footer-note">
-            Website ini cocok untuk GitHub Pages dan paling stabil jika sumber data menggunakan Google Sheets yang dipublish sebagai CSV.
+          <div class="toolbar">
+            <input type="text" id="performanceSearch" placeholder="Cari nama, shift, posisi, negara..." />
+            <select id="shiftFilter">
+              <option value="">Semua Shift</option>
+            </select>
           </div>
         </div>
-      </section>
-    </main>
-  </div>
+        <div class="table-wrap">
+          <table id="performanceTable">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="empty" id="performanceEmpty">Belum ada data performa. Tempel URL CSV lalu klik Load Data.</div>
+      </div>
+    </section>
+  </main>
 
   <script>
     const storageKeys = {
@@ -601,12 +571,10 @@
     const employeeSearch = document.getElementById('employeeSearch');
     const performanceSearch = document.getElementById('performanceSearch');
     const shiftFilter = document.getElementById('shiftFilter');
-
     const totalEmployeesEl = document.getElementById('totalEmployees');
     const totalPerformanceEl = document.getElementById('totalPerformance');
     const totalWorkEl = document.getElementById('totalWork');
     const avgWorkEl = document.getElementById('avgWork');
-
     const navLinks = document.querySelectorAll('.nav-link');
     const sections = [...navLinks].map(link => document.querySelector(link.getAttribute('href')));
 
