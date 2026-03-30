@@ -525,10 +525,7 @@
           <div class="section-copy">
             <p id="employeePageInfo">Menampilkan 0 data</p>
           </div>
-          <div class="toolbar">
-            <button class="btn btn-secondary" id="employeePrevBtn">Sebelumnya</button>
-            <button class="btn btn-primary" id="employeeNextBtn">Selanjutnya</button>
-          </div>
+          <div class="toolbar" id="employeePagination"></div>
         </div>
 
         <div class="footer-note">Bagian ini sudah disiapkan untuk membaca data karyawan langsung dari Google Sheets melalui script internal tanpa menampilkan link sumber di halaman web.</div>
@@ -763,11 +760,69 @@
           : `Menampilkan ${start}-${end} dari ${total} data`;
       }
 
-      if (prevBtn) prevBtn.disabled = employeeCurrentPage <= 1;
-      if (nextBtn) nextBtn.disabled = employeeCurrentPage >= totalPages;
+      const pagination = document.getElementById('employeePagination');
+      if (pagination) {
+        pagination.innerHTML = '';
+        if (total > 0) {
+          const maxButtons = Math.min(totalPages, 1000);
+          let pageStart = Math.max(1, employeeCurrentPage - 4);
+          let pageEnd = Math.min(maxButtons, pageStart + 9);
+          pageStart = Math.max(1, pageEnd - 9);
+
+          const makeBtn = (label, page, active = false) => {
+            const btn = document.createElement('button');
+            btn.className = active ? 'btn btn-primary' : 'btn btn-secondary';
+            btn.textContent = label;
+            btn.style.padding = '10px 14px';
+            btn.style.minWidth = '44px';
+            btn.disabled = active;
+            btn.addEventListener('click', () => {
+              employeeCurrentPage = page;
+              drawEmployeePage();
+            });
+            return btn;
+          };
+
+          if (employeeCurrentPage > 1) {
+            pagination.appendChild(makeBtn('‹', employeeCurrentPage - 1));
+          }
+
+          if (pageStart > 1) {
+            pagination.appendChild(makeBtn('1', 1, employeeCurrentPage === 1));
+            if (pageStart > 2) {
+              const dots = document.createElement('div');
+              dots.className = 'fake-input';
+              dots.style.minWidth = 'auto';
+              dots.style.padding = '10px 12px';
+              dots.textContent = '...';
+              pagination.appendChild(dots);
+            }
+          }
+
+          for (let i = pageStart; i <= pageEnd; i++) {
+            pagination.appendChild(makeBtn(String(i), i, i === employeeCurrentPage));
+          }
+
+          if (pageEnd < maxButtons) {
+            if (pageEnd < maxButtons - 1) {
+              const dots = document.createElement('div');
+              dots.className = 'fake-input';
+              dots.style.minWidth = 'auto';
+              dots.style.padding = '10px 12px';
+              dots.textContent = '...';
+              pagination.appendChild(dots);
+            }
+            pagination.appendChild(makeBtn(String(maxButtons), maxButtons, employeeCurrentPage === maxButtons));
+          }
+
+          if (employeeCurrentPage < totalPages && employeeCurrentPage < 1000) {
+            pagination.appendChild(makeBtn('›', employeeCurrentPage + 1));
+          }
+        }
+      }
     }
 
-    const EMPLOYEE_CSV_URL = "PASTE_GOOGLE_SHEETS_CSV_URL_HERE";
+    const EMPLOYEE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
     const EMPLOYEE_PAGE_SIZE = 10;
     let employeeDataRows = [];
     let employeeCurrentPage = 1;
@@ -789,21 +844,6 @@
         console.error(err);
       }
     }
-
-    document.getElementById('employeePrevBtn')?.addEventListener('click', () => {
-      if (employeeCurrentPage > 1) {
-        employeeCurrentPage -= 1;
-        drawEmployeePage();
-      }
-    });
-
-    document.getElementById('employeeNextBtn')?.addEventListener('click', () => {
-      const totalPages = Math.max(1, Math.ceil(employeeDataRows.length / EMPLOYEE_PAGE_SIZE));
-      if (employeeCurrentPage < totalPages) {
-        employeeCurrentPage += 1;
-        drawEmployeePage();
-      }
-    });
 
     loadEmployeeData();
   </script>
