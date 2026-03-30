@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Perusahaan</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: rgba(255,255,255,0.92);
+      --surface-solid: #ffffff;
+      --text: #172033;
+      --muted: #60708f;
+      --primary: #1d4ed8;
+      --primary-2: #2563eb;
+      --accent: #0f172a;
+      --border: #d9e3f0;
+      --shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      --shadow-soft: 0 10px 24px rgba(15, 23, 42, 0.05);
+      --success: #0f9d58;
+      --chip: #eef4ff;
+      --header-height: 78px;
+      --radius: 24px;
+      --radius-sm: 16px;
+      --max: 1280px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(37,99,235,0.12), transparent 30%),
+        radial-gradient(circle at top right, rgba(15,23,42,0.08), transparent 20%),
+        linear-gradient(180deg, #eef4ff 0%, var(--bg) 200px);
+    }
+
+    a { color: inherit; }
+
+    .shell {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--header-height);
+      backdrop-filter: blur(16px);
+      background: rgba(255,255,255,0.72);
+      border-bottom: 1px solid rgba(217, 227, 240, 0.85);
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.22);
+      flex: 0 0 auto;
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.04rem;
+      line-height: 1.1;
+    }
+
+    .brand-subtitle {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.94rem;
+      color: var(--text);
+      padding: 11px 16px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      transition: 0.2s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--primary);
+      background: #edf4ff;
+      border-color: #d7e4ff;
+    }
+
+    .container {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px 24px 72px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.35fr 0.95fr;
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 24px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid rgba(217,227,240,0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      padding: 34px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      inset: auto -50px -50px auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37,99,235,0.14), transparent 60%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #edf4ff;
+      color: var(--primary);
+      font-size: 0.84rem;
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 8px 12px;
+      margin-bottom: 18px;
+    }
+
+    .hero-main h1 {
+      margin: 0;
+      font-size: clamp(2rem, 3vw, 3.1rem);
+      line-height: 1.04;
+      letter-spacing: -0.03em;
+      max-width: 12ch;
+    }
+
+    .hero-main p {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.8;
+      max-width: 64ch;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .btn {
+      border: 0;
+      outline: 0;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 18px;
+      border-radius: 16px;
+      font-weight: 800;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 14px 28px rgba(37,99,235,0.2);
+    }
+
+    .btn-secondary {
+      color: var(--accent);
+      background: #eef3fb;
+    }
+
+    .hero-side {
+      padding: 24px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .hero-side h3,
+    .section-title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .hero-side p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.93rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 15px;
+      border: 1px solid var(--border);
+      font-size: 0.95rem;
+      outline: none;
+      background: #fff;
+      transition: 0.2s ease;
+    }
+
+    .field input:focus,
+    .toolbar input:focus,
+    .toolbar select:focus {
+      border-color: #8db1ff;
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
+    }
+
+    .mini-note {
+      background: #f7faff;
+      border: 1px solid #e1ebf8;
+      border-radius: 16px;
+      padding: 14px 15px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .stat-card {
+      padding: 20px;
+      background: var(--surface-solid);
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.87rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    section {
+      margin-top: 22px;
+      scroll-margin-top: calc(var(--header-height) + 18px);
+    }
+
+    .section-card {
+      padding: 18px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .section-copy p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar input,
+    .toolbar select {
+      min-width: 200px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 11px 13px;
+      font-size: 0.93rem;
+      background: #fff;
+      outline: none;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1120px;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th, td {
+      padding: 14px 15px;
+      text-align: left;
+      border-bottom: 1px solid #edf2f8;
+      white-space: nowrap;
+      font-size: 0.94rem;
+      vertical-align: middle;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #f8fbff;
+      color: var(--muted);
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    tbody tr:hover {
+      background: #f9fbff;
+    }
+
+    .empty {
+      display: block;
+      text-align: center;
+      padding: 28px 14px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      background: var(--chip);
+      color: var(--primary);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    @media (max-width: 960px) {
+      .hero { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+
+    @media (max-width: 680px) {
+      .topbar-inner,
+      .container { padding-left: 16px; padding-right: 16px; }
+      .stats { grid-template-columns: 1fr; }
+      .nav { width: 100%; justify-content: flex-start; }
+      .toolbar input,
+      .toolbar select { min-width: 100%; }
+      .hero-main,
+      .hero-side { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="brand-badge">CP</div>
+          <div class="brand-copy">
+            <div class="brand-title">Portal Data Perusahaan</div>
+            <div class="brand-subtitle">Terhubung ke Google Sheets dan siap dipasang di GitHub Pages</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <a class="nav-link active" href="#overview">Overview</a>
+          <a class="nav-link" href="#employees">Data Karyawan</a>
+          <a class="nav-link" href="#performance">Shift & Hasil Kerja</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="hero" id="overview">
+        <div class="panel hero-main">
+          <div class="eyebrow">Sistem Informasi Internal</div>
+          <h1>Website perusahaan yang rapi, profesional, dan mudah diperbarui</h1>
+          <p>
+            Portal ini dirancang untuk kebutuhan operasional perusahaan dengan sumber data dari Google Sheets.
+            Semua informasi penting dapat dikelola dari sheet, lalu otomatis ditampilkan ke website tanpa perlu edit ulang setiap saat.
+            Cocok untuk data karyawan, shift, total hasil kerja, dan keterangan operasional harian.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#employees">Lihat Data Karyawan</a>
+            <a class="btn btn-secondary" href="#performance">Lihat Shift & Hasil Kerja</a>
+          </div>
+        </div>
+
+        <div class="panel hero-side">
+          <h3>Konfigurasi Sumber Data</h3>
+          <p>Tempel link CSV hasil publish Google Sheets. Setelah itu website akan membaca data dan menampilkan semuanya secara otomatis.</p>
+
+          <div class="field">
+            <label for="employeeCsv">Google Sheets CSV — Informasi Karyawan</label>
+            <input id="employeeCsv" type="text" placeholder="Tempel URL CSV Google Sheets untuk data karyawan" />
+          </div>
+
+          <div class="field">
+            <label for="performanceCsv">Google Sheets CSV — Shift & Total Hasil Kerja</label>
+            <input id="performanceCsv" type="text" placeholder="Tempel URL CSV Google Sheets untuk data performa" />
+          </div>
+
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="loadBtn">Load Data</button>
+            <button class="btn btn-secondary" id="saveBtn">Simpan URL</button>
+          </div>
+
+          <div class="mini-note">
+            Struktur kolom yang disarankan untuk data performa:<br>
+            <strong>盘口、岗位、ID、姓名、后台账号、班次、入职日期、工作时间、国家 / Country、Total Hasil Kerja</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats">
+        <div class="stat-card">
+          <div class="stat-label">Total Karyawan</div>
+          <div class="stat-value" id="totalEmployees">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Data Shift</div>
+          <div class="stat-value" id="totalPerformance">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Hasil Kerja</div>
+          <div class="stat-value" id="totalWork">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Rata-rata Hasil Kerja</div>
+          <div class="stat-value" id="avgWork">0</div>
+        </div>
+      </section>
+
+      <section id="employees">
+        <div class="panel section-card">
+          <div class="section-head">
+            <div class="section-copy">
+              <h2 class="section-title">Data Karyawan</h2>
+              <p>Menampilkan informasi karyawan yang bisa diperbarui langsung dari Google Sheets.</p>
+            </div>
+            <div class="toolbar">
+              <input type="text" id="employeeSearch" placeholder="Cari nama, ID, backend account, country..." />
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table id="employeeTable">
+              <thead></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="empty" id="employeeEmpty">Belum ada data. Tempel URL CSV lalu klik Load Data.</div>
+        </div>
+      </section>
+
+      <section id="performance">
+        <div class="panel section-card">
+          <div class="section-head">
+            <div class="section-copy">
+              <h2 class="section-title">Shift, Total Hasil Kerja & Keterangan</h2>
+              <p>Menampilkan ringkasan data operasional berdasarkan shift, jabatan, negara, dan total hasil kerja.</p>
+            </div>
+            <div class="toolbar">
+              <input type="text" id="performanceSearch" placeholder="Cari nama, shift, jabatan, negara..." />
+              <select id="shiftFilter">
+                <option value="">Semua Shift</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table id="performanceTable">
+              <thead></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="empty" id="performanceEmpty">Belum ada data performa. Tempel URL CSV lalu klik Load Data.</div>
+
+          <div class="footer-note">
+            Website ini cocok untuk GitHub Pages dan paling stabil jika sumber data menggunakan Google Sheets yang dipublish sebagai CSV.
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const storageKeys = {
+      employeeCsv: 'company_dashboard_employee_csv',
+      performanceCsv: 'company_dashboard_performance_csv',
+    };
+
+    const state = {
+      employees: [],
+      performance: [],
+    };
+
+    const fields = {
+      workAliases: ['total hasil kerja', 'hasil kerja', 'total_work', 'total order', 'completed orders', '完成订单数'],
+      shiftAliases: ['班次', 'shift'],
+    };
+
+    const employeeCsvInput = document.getElementById('employeeCsv');
+    const performanceCsvInput = document.getElementById('performanceCsv');
+    const loadBtn = document.getElementById('loadBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const employeeSearch = document.getElementById('employeeSearch');
+    const performanceSearch = document.getElementById('performanceSearch');
+    const shiftFilter = document.getElementById('shiftFilter');
+
+    const totalEmployeesEl = document.getElementById('totalEmployees');
+    const totalPerformanceEl = document.getElementById('totalPerformance');
+    const totalWorkEl = document.getElementById('totalWork');
+    const avgWorkEl = document.getElementById('avgWork');
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = [...navLinks].map(link => document.querySelector(link.getAttribute('href')));
+
+    function loadSavedUrls() {
+      employeeCsvInput.value = localStorage.getItem(storageKeys.employeeCsv) || '';
+      performanceCsvInput.value = localStorage.getItem(storageKeys.performanceCsv) || '';
+    }
+
+    function saveUrls() {
+      localStorage.setItem(storageKeys.employeeCsv, employeeCsvInput.value.trim());
+      localStorage.setItem(storageKeys.performanceCsv, performanceCsvInput.value.trim());
+      alert('URL berhasil disimpan di browser ini.');
+    }
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cell = '';
+      let insideQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"') {
+          if (insideQuotes && next === '"') {
+            cell += '"';
+            i++;
+          } else {
+            insideQuotes = !insideQuotes;
+          }
+        } else if (char === ',' && !insideQuotes) {
+          row.push(cell);
+          cell = '';
+        } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+          if (char === '\r' && next === '\n') i++;
+          row.push(cell);
+          if (row.some(v => String(v).trim() !== '')) rows.push(row);
+          row = [];
+          cell = '';
+        } else {
+          cell += char;
+        }
+      }
+
+      if (cell.length || row.length) {
+        row.push(cell);
+        if (row.some(v => String(v).trim() !== '')) rows.push(row);
+      }
+
+      if (!rows.length) return [];
+      const headers = rows[0].map(h => String(h).trim());
+      return rows.slice(1).map(r => {
+        const obj = {};
+        headers.forEach((h, idx) => {
+          obj[h] = (r[idx] ?? '').trim();
+        });
+        return obj;
+      });
+    }
+
+    async function fetchCSV(url) {
+      if (!url) return [];
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Gagal mengambil data: ${res.status}`);
+      const text = await res.text();
+      return parseCSV(text);
+    }
+
+    function normalizeKey(key) {
+      return String(key || '').trim().toLowerCase();
+    }
+
+    function findColumn(row, aliases) {
+      const keys = Object.keys(row || {});
+      for (const alias of aliases) {
+        const found = keys.find(k => normalizeKey(k) === normalizeKey(alias));
+        if (found) return found;
+      }
+      return '';
+    }
+
+    function toNumber(val) {
+      if (val == null || val === '') return 0;
+      const cleaned = String(val).replace(/,/g, '').trim();
+      const num = Number(cleaned);
+      return Number.isFinite(num) ? num : 0;
+    }
+
+    function formatNumber(n) {
+      return new Intl.NumberFormat('en-US').format(n || 0);
+    }
+
+    function renderTable(tableId, emptyId, rows, query = '', shift = '') {
+      const table = document.getElementById(tableId);
+      const thead = table.querySelector('thead');
+      const tbody = table.querySelector('tbody');
+      const empty = document.getElementById(emptyId);
+
+      tbody.innerHTML = '';
+      thead.innerHTML = '';
+
+      if (!rows.length) {
+        empty.style.display = 'block';
+        return;
+      }
+
+      const headers = Object.keys(rows[0]);
+      empty.style.display = 'none';
+
+      const headerRow = document.createElement('tr');
+      headers.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+
+      const q = query.trim().toLowerCase();
+      const filtered = rows.filter(row => {
+        const textMatch = !q || Object.values(row).some(v => String(v).toLowerCase().includes(q));
+        if (!shift) return textMatch;
+        const shiftKey = findColumn(row, fields.shiftAliases);
+        const shiftMatch = !shiftKey || String(row[shiftKey] || '') === shift;
+        return textMatch && shiftMatch;
+      });
+
+      if (!filtered.length) {
+        empty.textContent = 'Tidak ada data yang cocok.';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.textContent = '';
+
+      filtered.forEach(row => {
+        const tr = document.createElement('tr');
+        headers.forEach(h => {
+          const td = document.createElement('td');
+          td.textContent = row[h] ?? '';
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateStats() {
+      totalEmployeesEl.textContent = formatNumber(state.employees.length);
+      totalPerformanceEl.textContent = formatNumber(state.performance.length);
+
+      const workKey = state.performance.length ? findColumn(state.performance[0], fields.workAliases) : '';
+      const totalWork = state.performance.reduce((sum, row) => sum + toNumber(workKey ? row[workKey] : 0), 0);
+      const avgWork = state.performance.length ? totalWork / state.performance.length : 0;
+
+      totalWorkEl.textContent = formatNumber(totalWork);
+      avgWorkEl.textContent = formatNumber(Math.round(avgWork));
+    }
+
+    function updateShiftFilter() {
+      shiftFilter.innerHTML = '<option value="">Semua Shift</option>';
+      if (!state.performance.length) return;
+      const shiftKey = findColumn(state.performance[0], fields.shiftAliases);
+      if (!shiftKey) return;
+
+      const values = [...new Set(state.performance.map(r => String(r[shiftKey] || '').trim()).filter(Boolean))].sort();
+      values.forEach(val => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = val;
+        shiftFilter.appendChild(opt);
+      });
+    }
+
+    function renderAll() {
+      updateStats();
+      updateShiftFilter();
+      renderTable('employeeTable', 'employeeEmpty', state.employees, employeeSearch.value);
+      renderTable('performanceTable', 'performanceEmpty', state.performance, performanceSearch.value, shiftFilter.value);
+    }
+
+    async function loadData() {
+      loadBtn.disabled = true;
+      loadBtn.textContent = 'Loading...';
+      try {
+        const [employees, performance] = await Promise.all([
+          fetchCSV(employeeCsvInput.value.trim()),
+          fetchCSV(performanceCsvInput.value.trim()),
+        ]);
+        state.employees = employees;
+        state.performance = performance;
+        renderAll();
+      } catch (err) {
+        console.error(err);
+        alert('Gagal load data. Pastikan link CSV Google Sheets benar dan sheet sudah di-publish.');
+      } finally {
+        loadBtn.disabled = false;
+        loadBtn.textContent = 'Load Data';
+      }
+    }
+
+    employeeSearch.addEventListener('input', renderAll);
+    performanceSearch.addEventListener('input', renderAll);
+    shiftFilter.addEventListener('change', renderAll);
+    saveBtn.addEventListener('click', saveUrls);
+    loadBtn.addEventListener('click', loadData);
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === `#${entry.target.id}`));
+        }
+      });
+    }, { threshold: 0.5 });
+
+    sections.forEach(section => section && observer.observe(section));
+
+    loadSavedUrls();
+    if (employeeCsvInput.value || performanceCsvInput.value) loadData();
+  </script>
+</body>
+</html>
