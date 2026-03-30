@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus Intelligence v2.5 | Live Stats</title>
+  <title>Nexus Intelligence v2.6 | Data Focused</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,9 +12,9 @@
     :root {
       --primary: #0f172a; --accent: #2563eb; --accent-soft: rgba(37, 99, 235, 0.1);
       --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
-      --bg: #f1f5f9; --card-bg: #ffffff; --border: #e2e8f0;
+      --bg: #f8fafc; --card-bg: #ffffff; --border: #e2e8f0;
       --text-main: #1e293b; --text-muted: #64748b;
-      --radius-xl: 24px;
+      --radius-xl: 20px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,102 +30,118 @@
 
     .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem 4rem; }
 
-    /* Live Status Cards */
+    /* Top Live Cards */
     .live-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem; }
-    .status-card { background: white; padding: 1.5rem; border-radius: var(--radius-xl); border: 1px solid var(--border); display: flex; align-items: center; gap: 1.5rem; }
-    .status-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-    .val { font-size: 1.8rem; font-weight: 800; line-height: 1; }
-    .lab { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-top: 5px; }
+    .status-card { background: white; padding: 1.5rem; border-radius: var(--radius-xl); border: 1px solid var(--border); display: flex; align-items: center; gap: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .status-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+    .val { font-size: 2rem; font-weight: 800; line-height: 1; }
+    .lab { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
-    /* Middle Analytics */
+    /* Analytics Section with Numbers */
     .analytics-row { display: grid; grid-template-columns: 220px 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
-    .glass-card { background: white; border-radius: var(--radius-xl); border: 1px solid var(--border); padding: 1.5rem; overflow: hidden; }
-    .scroll-box { max-height: 160px; overflow-y: auto; margin-top: 10px; padding-right: 5px; }
+    .glass-card { background: white; border-radius: var(--radius-xl); border: 1px solid var(--border); padding: 1.5rem; display: flex; flex-direction: column; }
+    
+    .scroll-box { flex-grow: 1; max-height: 180px; overflow-y: auto; margin-top: 12px; padding-right: 8px; }
     .scroll-box::-webkit-scrollbar { width: 4px; }
     .scroll-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
     
-    .item-row { display: flex; justify-content: space-between; padding: 8px 12px; background: #f8fafc; border-radius: 10px; margin-bottom: 6px; font-size: 0.75rem; font-weight: 700; }
+    .data-pill { 
+      display: flex; justify-content: space-between; align-items: center; 
+      padding: 10px 14px; background: #f1f5f9; border-radius: 12px; 
+      margin-bottom: 8px; border: 1px solid transparent; transition: 0.2s ease;
+    }
+    .data-pill:hover { background: white; border-color: var(--accent); transform: translateX(3px); }
+    .data-name { font-size: 0.8rem; font-weight: 700; color: var(--text-main); }
+    .data-count { 
+      background: var(--primary); color: white; padding: 2px 10px; 
+      border-radius: 20px; font-size: 0.75rem; font-weight: 800; min-width: 35px; text-align: center;
+    }
 
     /* Table System */
-    .table-box { margin-top: 1.5rem; background: white; border-radius: var(--radius-xl); border: 1px solid var(--border); overflow: hidden; min-height: 600px; display: flex; flex-direction: column; }
+    .table-box { margin-top: 1.5rem; background: white; border-radius: var(--radius-xl); border: 1px solid var(--border); overflow: hidden; min-height: 620px; }
     .toolbar { padding: 1.2rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-    .table-wrapper { flex-grow: 1; overflow: auto; position: relative; }
+    .search-input { padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border); width: 320px; font-weight: 600; outline: none; transition: 0.3s; }
+    .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+
     table { width: 100%; border-collapse: collapse; min-width: 1000px; table-layout: fixed; }
-    th { position: sticky; top: 0; background: #f8fafc; padding: 1rem; text-align: left; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); z-index: 5; }
-    td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    th { position: sticky; top: 0; background: #f8fafc; padding: 1rem; text-align: left; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); z-index: 10; }
+    td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; }
 
-    .pagination { padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
-    .btn-pg { padding: 8px 16px; border: 1px solid var(--border); background: white; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 0.7rem; }
-    .btn-pg:disabled { opacity: 0.3; }
+    .badge-shift { padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border); }
+    .online-indicator { color: var(--success); display: flex; align-items: center; gap: 6px; font-weight: 800; }
+    .online-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; animation: pulse 1.5s infinite; }
 
-    .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
-    .dot-online { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; margin-right: 5px; animation: pulse 2s infinite; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.7; } 70% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.7; } }
   </style>
 </head>
 <body>
 
 <nav>
-  <div class="brand"><i class="fas fa-microchip"></i> NEXUS<span>TRACK</span></div>
-  <div id="armeniaTime" style="font-size: 0.8rem; font-weight: 800; color: var(--accent);">TIME: --:--:-- (AMT)</div>
+  <div class="brand"><i class="fas fa-chart-line"></i> NEXUS<span>DATA</span></div>
+  <div id="armeniaClock" style="font-size: 0.85rem; font-weight: 800; color: var(--accent); background: var(--accent-soft); padding: 5px 15px; border-radius: 30px;">--:--:-- AMT</div>
 </nav>
 
 <div class="container">
   <div class="live-grid">
     <div class="status-card">
-      <div class="status-icon" style="background:#eff6ff; color:var(--accent)"><i class="fas fa-users"></i></div>
-      <div><div class="val" id="totalStaff">0</div><div class="lab">Total Staff</div></div>
+      <div class="status-icon" style="background:var(--accent-soft); color:var(--accent)"><i class="fas fa-users-viewfinder"></i></div>
+      <div><div class="lab">Total Staff</div><div class="val" id="totalStaff">0</div></div>
     </div>
     <div class="status-card">
-      <div class="status-icon" style="background:#ecfdf5; color:var(--success)"><i class="fas fa-signal"></i></div>
-      <div><div class="val" id="totalOnline" style="color:var(--success)">0</div><div class="lab">Online Now (AMT)</div></div>
+      <div class="status-icon" style="background:#ecfdf5; color:var(--success)"><i class="fas fa-bolt-lightning"></i></div>
+      <div><div class="lab">Online Now (AMT)</div><div class="val" id="totalOnline" style="color:var(--success)">0</div></div>
     </div>
     <div class="status-card">
-      <div class="status-icon" style="background:#fef2f2; color:var(--danger)"><i class="fas fa-moon"></i></div>
-      <div><div class="val" id="totalOffline" style="color:var(--danger)">0</div><div class="lab">Offline / Resting</div></div>
+      <div class="status-icon" style="background:#fff7ed; color:var(--warning)"><i class="fas fa-bed"></i></div>
+      <div><div class="lab">Offline Status</div><div class="val" id="totalOffline" style="color:var(--warning)">0</div></div>
     </div>
   </div>
 
   <div class="analytics-row">
-    <div class="glass-card" style="display:flex; align-items:center; justify-content:center;">
-      <canvas id="countryChart" style="max-width: 140px;"></canvas>
+    <div class="glass-card" style="align-items:center; justify-content:center;">
+      <div style="width: 140px; height: 140px; position: relative;">
+        <canvas id="countryChart"></canvas>
+      </div>
+      <div style="margin-top: 15px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted);">GEO-DISTRIBUTION</div>
     </div>
+
     <div class="glass-card">
-      <div class="lab"><i class="fas fa-briefcase"></i> Total per Jabatan</div>
-      <div id="jobList" class="scroll-box"></div>
+      <div class="lab"><i class="fas fa-id-badge"></i> Data Jabatan</div>
+      <div id="jobStats" class="scroll-box"></div>
     </div>
+
     <div class="glass-card">
-      <div class="lab"><i class="fas fa-globe"></i> Total per Negara</div>
-      <div id="geoList" class="scroll-box"></div>
+      <div class="lab"><i class="fas fa-flag"></i> Data Negara</div>
+      <div id="geoStats" class="scroll-box"></div>
     </div>
   </div>
 
   <div class="table-box">
     <div class="toolbar">
-      <h4 style="font-weight: 800;">Real-Time Database</h4>
-      <input type="text" id="masterSearch" style="padding:10px 15px; border-radius:10px; border:1px solid var(--border); width: 300px; font-weight: 600;" placeholder="Search staff...">
+      <h3 style="font-weight: 800;">Master Records</h3>
+      <input type="text" id="masterSearch" class="search-input" placeholder="Search by name, ID, or role...">
     </div>
-    <div class="table-wrapper">
+    <div style="overflow-x: auto; position: relative;">
       <table id="mainTable">
         <thead>
           <tr>
             <th style="width: 100px;">Platform</th>
             <th style="width: 150px;">Jabatan</th>
             <th style="width: 80px;">ID</th>
-            <th style="width: 250px;">Nama Lengkap</th>
-            <th style="width: 150px;">Shift</th>
-            <th style="width: 100px;">Status</th>
+            <th style="width: 280px;">Nama Lengkap</th>
+            <th style="width: 120px;">Shift</th>
+            <th style="width: 120px;">Status AMT</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
       </table>
-      <div id="noData" style="display:none; text-align:center; padding: 100px; color:var(--text-muted); font-weight:700;">Data Tidak Ditemukan</div>
+      <div id="noResult" style="display:none; text-align:center; padding: 100px; color:var(--text-muted); font-weight: 700;">No records found</div>
     </div>
-    <div class="pagination">
-      <span id="pageInfo" style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted);">Page 1 of 1</span>
-      <div style="display:flex; gap:10px;">
-        <button class="btn-pg" id="prevBtn" onclick="changePage(-1)">PREV</button>
-        <button class="btn-pg" id="nextBtn" onclick="changePage(1)">NEXT</button>
+    <div style="padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); background: #f8fafc;">
+      <span id="pageInfo" style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted);">PAGE 1</span>
+      <div style="display:flex; gap:8px;">
+        <button class="page-btn" id="prevBtn" onclick="changePage(-1)" style="padding:8px 16px; border:1px solid var(--border); border-radius:8px; font-weight:800; cursor:pointer;">PREV</button>
+        <button class="page-btn" id="nextBtn" onclick="changePage(1)" style="padding:8px 16px; border:1px solid var(--border); border-radius:8px; font-weight:800; cursor:pointer;">NEXT</button>
       </div>
     </div>
   </div>
@@ -134,134 +150,141 @@
 <script>
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
   
-  let rawData = [];
-  let viewData = [];
-  let currentPage = 1;
-  const limit = 10;
-  let chart = null;
+  let rawDb = [];
+  let currentDb = [];
+  let page = 1;
+  const perPage = 10;
+  let pieChart = null;
 
-  async function init() {
+  async function fetchDb() {
     try {
-      const res = await fetch(`${CSV_URL}&t=${Date.now()}`);
-      const text = await res.text();
-      const lines = text.split(/\r?\n/).map(l => l.split(',')).filter(l => l.length > 5);
-      rawData = lines.slice(1).filter(r => r[3] && r[3].trim() !== "");
-      viewData = [...rawData];
+      const r = await fetch(`${CSV_URL}&t=${Date.now()}`);
+      const t = await r.text();
+      const lines = t.split(/\r?\n/).map(l => l.split(',')).filter(l => l.length > 5);
+      rawDb = lines.slice(1).filter(d => d[3] && d[3].trim() !== "");
+      currentDb = [...rawDb];
       
-      updateClockAndStats();
-      setInterval(updateClockAndStats, 1000); // Update waktu tiap detik
-      render();
+      updateAll();
+      setInterval(updateClockAndLive, 1000);
+      renderTable();
     } catch (e) { console.error(e); }
   }
 
-  function getArmeniaTime() {
-    // Jam Armenia (UTC+4)
+  function getAMT() {
     return new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"}));
   }
 
-  function updateClockAndStats() {
-    const now = getArmeniaTime();
-    const hours = now.getHours();
-    const mins = now.getMinutes();
-    const totalMins = hours * 60 + mins;
-
-    document.getElementById('armeniaTime').innerText = `ARMENIA: ${now.toLocaleTimeString('en-GB')}`;
-
-    let online = 0;
-    const jobs = {};
-    const geos = {};
-
-    rawData.forEach(r => {
-      const shift = (r[5] || '').toLowerCase();
-      let isOnline = false;
-
-      // Logika Shift Armenia
-      if (shift.includes('day')) {
-        if (hours >= 4 && hours < 16) isOnline = true;
-      } else if (shift.includes('night')) {
-        if (hours >= 16 || hours < 4) isOnline = true;
-      } else if (shift.includes('mid')) {
-        // Jam 09:30 sampai 21:30 (instruksi Anda)
-        if (totalMins >= 570 && totalMins < 1290) isOnline = true;
-      }
-
-      if (isOnline) online++;
-      
-      // Hitung Analytics
-      const j = (r[1] || 'Unknown').trim();
-      const g = (r[8] || 'Unknown').trim();
-      jobs[j] = (jobs[j] || 0) + 1;
-      geos[g] = (geos[g] || 0) + 1;
-    });
-
-    document.getElementById('totalStaff').innerText = rawData.length;
-    document.getElementById('totalOnline').innerText = online;
-    document.getElementById('totalOffline').innerText = rawData.length - online;
-
-    // Update List Visual
-    document.getElementById('jobList').innerHTML = Object.entries(jobs).map(([n, c]) => `<div class="item-row"><span>${n}</span><span>${c}</span></div>`).join('');
-    document.getElementById('geoList').innerHTML = Object.entries(geos).map(([n, c]) => `<div class="item-row"><span>${n}</span><span>${c}</span></div>`).join('');
-
-    updateChart(geos);
+  function updateAll() {
+    updateClockAndLive();
+    updateAnalytics();
   }
 
-  function updateChart(geos) {
+  function updateClockAndLive() {
+    const amt = getAMT();
+    const h = amt.getHours();
+    const m = amt.getMinutes();
+    const totalMins = h * 60 + m;
+    
+    document.getElementById('armeniaClock').innerText = `${amt.toLocaleTimeString('en-GB')} AMT`;
+
+    let onlineCount = 0;
+    rawDb.forEach(r => {
+      const s = (r[5]||'').toLowerCase();
+      let on = false;
+      if(s.includes('day') && (h>=4 && h<16)) on = true;
+      else if(s.includes('night') && (h>=16 || h<4)) on = true;
+      else if(s.includes('mid') && (totalMins >= 570 && totalMins < 1290)) on = true;
+      if(on) onlineCount++;
+    });
+
+    document.getElementById('totalStaff').innerText = rawDb.length;
+    document.getElementById('totalOnline').innerText = onlineCount;
+    document.getElementById('totalOffline').innerText = rawDb.length - onlineCount;
+  }
+
+  function updateAnalytics() {
+    const jobs = {};
+    const countries = {};
+
+    rawDb.forEach(r => {
+      const j = (r[1] || 'Unknown').trim();
+      const c = (r[8] || 'Unknown').trim();
+      jobs[j] = (jobs[j] || 0) + 1;
+      countries[c] = (countries[c] || 0) + 1;
+    });
+
+    const pillHTML = (name, count, color) => `
+      <div class="data-pill">
+        <span class="data-name">${name}</span>
+        <span class="data-count" style="background:${color}">${count}</span>
+      </div>
+    `;
+
+    document.getElementById('jobStats').innerHTML = Object.entries(jobs)
+      .sort((a,b) => b[1] - a[1])
+      .map(([n, c]) => pillHTML(n, c, 'var(--primary)')).join('');
+
+    document.getElementById('geoStats').innerHTML = Object.entries(countries)
+      .sort((a,b) => b[1] - a[1])
+      .map(([n, c]) => pillHTML(n, c, 'var(--accent)')).join('');
+
+    // Chart Update
     const ctx = document.getElementById('countryChart').getContext('2d');
-    if(chart) chart.destroy();
-    chart = new Chart(ctx, {
+    if(pieChart) pieChart.destroy();
+    pieChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: Object.keys(geos),
-        datasets: [{ data: Object.values(geos), backgroundColor: ['#2563eb','#10b981','#f59e0b','#ef4444','#8b5cf6'], borderWidth: 0 }]
+        labels: Object.keys(countries),
+        datasets: [{ data: Object.values(countries), backgroundColor: ['#2563eb','#10b981','#f59e0b','#ef4444','#8b5cf6'], borderWidth: 0 }]
       },
-      options: { plugins: { legend: { display: false } }, cutout: '75%' }
+      options: { plugins: { legend: { display: false } }, cutout: '80%' }
     });
   }
 
-  function render() {
+  function renderTable() {
     const tbody = document.getElementById('tableBody');
-    const start = (currentPage - 1) * limit;
-    const pageSlice = viewData.slice(start, start + limit);
+    const start = (page - 1) * perPage;
+    const slice = currentDb.slice(start, start + perPage);
 
-    document.getElementById('noData').style.display = viewData.length === 0 ? 'block' : 'none';
-    
-    tbody.innerHTML = pageSlice.map(r => {
-      const now = getArmeniaTime();
-      const h = now.getHours();
-      const shift = (r[5]||'').toLowerCase();
-      let live = false;
-      if(shift.includes('day') && (h>=4 && h<16)) live = true;
-      if(shift.includes('night') && (h>=16 || h<4)) live = true;
-      if(shift.includes('mid') && (now.getHours()*60+now.getMinutes() >= 570 && now.getHours()*60+now.getMinutes() < 1290)) live = true;
+    document.getElementById('noResult').style.display = currentDb.length === 0 ? 'block' : 'none';
+
+    tbody.innerHTML = slice.map(r => {
+      const amt = getAMT();
+      const h = amt.getHours();
+      const s = (r[5]||'').toLowerCase();
+      let isLive = false;
+      if(s.includes('day') && (h>=4 && h<16)) isLive = true;
+      if(s.includes('night') && (h>=16 || h<4)) isLive = true;
+      if(s.includes('mid') && (amt.getHours()*60+amt.getMinutes() >= 570 && amt.getHours()*60+amt.getMinutes() < 1290)) isLive = true;
 
       return `
         <tr>
-          <td><span class="badge" style="background:var(--accent-soft); color:var(--accent)">${r[0]}</span></td>
-          <td>${r[1]}</td>
-          <td style="opacity:0.5;">#${r[2]}</td>
+          <td><span style="font-size:0.7rem; font-weight:800; color:var(--accent)">${r[0]}</span></td>
+          <td style="font-weight:700;">${r[1]}</td>
+          <td style="opacity:0.5; font-family:monospace;">#${r[2]}</td>
           <td style="font-weight:800;">${r[3]}</td>
-          <td style="font-size:0.75rem;">${r[5]}</td>
-          <td>${live ? '<span class="dot-online"></span><b style="color:var(--success)">ONLINE</b>' : '<b style="color:var(--text-muted)">OFFLINE</b>'}</td>
+          <td><span class="badge-shift">${r[5]}</span></td>
+          <td>${isLive ? '<div class="online-indicator"><div class="online-dot"></div>ONLINE</div>' : '<span style="color:var(--text-muted); opacity:0.6;">OFFLINE</span>'}</td>
         </tr>
       `;
     }).join('');
 
-    const totalPages = Math.ceil(viewData.length / limit);
-    document.getElementById('pageInfo').innerText = `PAGE ${currentPage} OF ${totalPages || 1}`;
-    document.getElementById('prevBtn').disabled = currentPage === 1;
-    document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+    const totalPages = Math.ceil(currentDb.length / perPage);
+    document.getElementById('pageInfo').innerText = `PAGE ${page} OF ${totalPages || 1} (${currentDb.length} TOTAL)`;
+    document.getElementById('prevBtn').disabled = page === 1;
+    document.getElementById('nextBtn').disabled = page >= totalPages;
   }
 
-  function changePage(s) { currentPage += s; render(); }
+  function changePage(dir) { page += dir; renderTable(); }
 
   document.getElementById('masterSearch').addEventListener('input', (e) => {
     const q = e.target.value.toLowerCase();
-    viewData = rawData.filter(r => r.some(col => col.toLowerCase().includes(q)));
-    currentPage = 1;
-    render();
+    currentDb = rawDb.filter(r => r.some(c => c.toLowerCase().includes(q)));
+    page = 1;
+    renderTable();
   });
 
-  init();
+  fetchDb();
 </script>
 </body>
 </html>
