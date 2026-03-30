@@ -311,7 +311,8 @@
       flex-wrap: wrap;
     }
 
-    .fake-input {
+    .fake-input,
+    .real-input {
       min-width: 220px;
       border: 1px solid var(--border);
       border-radius: 14px;
@@ -491,7 +492,7 @@
             <p>Bagian ini nanti digunakan untuk menampilkan informasi utama seluruh staff perusahaan.</p>
           </div>
           <div class="toolbar">
-            <div class="fake-input">Search employee...</div>
+            <div class="fake-input">Google Sheets connected internally</div>
           </div>
         </div>
 
@@ -511,7 +512,7 @@
                 <th>状态</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="employeeTableBody">
               <tr>
                 <td><span class="tag tag-blue">66GAME</span></td>
                 <td>审核</td>
@@ -551,6 +552,7 @@
             </tbody>
           </table>
         </div>
+        <div class="footer-note">Bagian ini sudah disiapkan untuk membaca data karyawan langsung dari Google Sheets melalui script internal tanpa menampilkan link sumber di halaman web.</div>
       </div>
     </section>
 
@@ -644,6 +646,126 @@
     }, { threshold: 0.5 });
 
     sections.forEach(section => section && observer.observe(section));
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cell = '';
+      let insideQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"') {
+          if (insideQuotes && next === '"') {
+            cell += '"';
+            i++;
+          } else {
+            insideQuotes = !insideQuotes;
+          }
+        } else if (char === ',' && !insideQuotes) {
+          row.push(cell);
+          cell = '';
+        } else if ((char === '
+' || char === '
+') && !insideQuotes) {
+          if (char === '
+' && next === '
+') i++;
+          row.push(cell);
+          if (row.some(v => String(v).trim() !== '')) rows.push(row);
+          row = [];
+          cell = '';
+        } else {
+          cell += char;
+        }
+      }
+
+      if (cell.length || row.length) {
+        row.push(cell);
+        if (row.some(v => String(v).trim() !== '')) rows.push(row);
+      }
+      return rows;
+    }
+
+    function renderEmployeeRows(rows) {
+      const tbody = document.getElementById('employeeTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (!rows.length || rows.length === 1) {
+        tbody.innerHTML = '<tr><td colspan="10">Belum ada data.</td></tr>';
+        return;
+      }
+
+      const headers = rows[0].map(h => String(h).trim());
+      const bodyRows = rows.slice(1);
+
+      const getIdx = (...names) => headers.findIndex(h => names.map(n => n.toLowerCase()).includes(h.toLowerCase()));
+
+      const idxPan = getIdx('盘口');
+      const idxPos = getIdx('岗位');
+      const idxId = getIdx('ID', 'id');
+      const idxName = getIdx('姓名', 'name');
+      const idxBack = getIdx('后台账号');
+      const idxShift = getIdx('班次', 'shift');
+      const idxJoin = getIdx('入职日期');
+      const idxTime = getIdx('工作时间');
+      const idxCountry = getIdx('国家', 'country', '国家 / Country');
+      const idxStatus = getIdx('状态', 'status');
+
+      bodyRows.forEach(r => {
+        const tr = document.createElement('tr');
+        const values = [
+          idxPan >= 0 ? r[idxPan] || '' : '',
+          idxPos >= 0 ? r[idxPos] || '' : '',
+          idxId >= 0 ? r[idxId] || '' : '',
+          idxName >= 0 ? r[idxName] || '' : '',
+          idxBack >= 0 ? r[idxBack] || '' : '',
+          idxShift >= 0 ? r[idxShift] || '' : '',
+          idxJoin >= 0 ? r[idxJoin] || '' : '',
+          idxTime >= 0 ? r[idxTime] || '' : '',
+          idxCountry >= 0 ? r[idxCountry] || '' : '',
+          idxStatus >= 0 ? r[idxStatus] || '' : ''
+        ];
+
+        values.forEach((val, i) => {
+          const td = document.createElement('td');
+          if (i === 0 && val) {
+            td.innerHTML = `<span class="tag tag-blue">${val}</span>`;
+          } else if (i === 9 && val) {
+            const cls = String(val).toLowerCase().includes('active') ? 'tag-green' : 'tag-gray';
+            td.innerHTML = `<span class="tag ${cls}">${val}</span>`;
+          } else {
+            td.textContent = val;
+          }
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    const EMPLOYEE_CSV_URL = "PASTE_GOOGLE_SHEETS_CSV_URL_HERE";
+
+    async function loadEmployeeData() {
+      const url = EMPLOYEE_CSV_URL.trim();
+      if (!url || url === 'PASTE_GOOGLE_SHEETS_CSV_URL_HERE') {
+        return;
+      }
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Gagal ambil data');
+        const text = await res.text();
+        const rows = parseCSV(text);
+        renderEmployeeRows(rows);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    loadEmployeeData();
   </script>
 </body>
 </html>
