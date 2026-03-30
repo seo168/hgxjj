@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus Executive v2.7 | Clean Analytics</title>
+  <title>Nexus Executive v2.8 | Stats Fixed</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
     :root {
@@ -32,20 +31,19 @@
 
     /* Top Analytics Grid */
     .top-stats { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 1.5rem; margin-top: 2rem; }
-    .card { background: white; padding: 1.5rem; border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .card { background: white; padding: 1.5rem; border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02); min-height: 180px; }
     
     .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border); }
     .stat-row:last-child { border: none; }
     .label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
     .value { font-weight: 800; color: var(--primary); }
 
-    /* Online by Category */
-    .online-tag { background: #ecfdf5; color: #065f46; padding: 2px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; display: flex; align-items: center; gap: 4px; }
-    .online-tag i { font-size: 0.5rem; animation: pulse 1.5s infinite; }
+    .online-tag { background: #ecfdf5; color: #065f46; padding: 6px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; justify-content: space-between; border: 1px solid #d1fae5; }
+    .online-tag i { font-size: 0.5rem; color: var(--success); animation: pulse 1.5s infinite; }
 
     /* Table System */
     .table-container { margin-top: 1.5rem; background: white; border-radius: var(--radius-xl); border: 1px solid var(--border); overflow: hidden; min-height: 600px; }
-    .toolbar { padding: 1.2rem 1.5rem; display: flex; justify-content: space-between; align-items: center; background: #fff; border-bottom: 1px solid var(--border); }
+    .toolbar { padding: 1.2rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
     .search-input { padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border); width: 320px; font-weight: 600; outline: none; }
 
     table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 1100px; }
@@ -60,49 +58,53 @@
 <body>
 
 <nav>
-  <div class="brand"><i class="fas fa-database"></i> NEXUS<span>CORE</span></div>
+  <div class="brand"><i class="fas fa-chart-line"></i> NEXUS<span>CORE</span></div>
   <div class="amt-clock" id="clock">00:00:00 AMT</div>
 </nav>
 
 <div class="container">
   <div class="top-stats">
     <div class="card">
-      <h4 style="font-size:0.7rem; margin-bottom:1rem; color:var(--accent)">STAFF DISTRIBUTION</h4>
-      <div class="stat-row"><span class="label">Total Staff</span><span class="value" id="totalStaff">0</span></div>
-      <div class="stat-row"><span class="label">Day Shift Staff</span><span class="value" id="totalDay">0</span></div>
-      <div class="stat-row"><span class="label">Night Shift Staff</span><span class="value" id="totalNight">0</span></div>
-      <div class="stat-row"><span class="label">Mid Shift Staff</span><span class="value" id="totalMid">0</span></div>
+      <h4 style="font-size:0.7rem; margin-bottom:1rem; color:var(--accent); text-transform: uppercase;">Staff Distribution</h4>
+      <div id="shiftStatsContainer">
+        <div class="stat-row"><span class="label">Total Staff</span><span class="value" id="totalStaff">0</span></div>
+        <div class="stat-row"><span class="label">Day Shift</span><span class="value" id="totalDay">0</span></div>
+        <div class="stat-row"><span class="label">Night Shift</span><span class="value" id="totalNight">0</span></div>
+        <div class="stat-row"><span class="label">Mid Shift</span><span class="value" id="totalMid">0</span></div>
+      </div>
     </div>
 
     <div class="card">
-      <h4 style="font-size:0.7rem; margin-bottom:1rem; color:var(--success)">WHO IS ONLINE NOW (BY ROLE)</h4>
+      <h4 style="font-size:0.7rem; margin-bottom:1rem; color:var(--success); text-transform: uppercase;">Online by Role (AMT)</h4>
       <div id="onlineCategories" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        </div>
+        <div style="font-size:0.75rem; color:var(--text-muted)">Loading stats...</div>
+      </div>
     </div>
 
     <div class="card">
-      <h4 style="font-size:0.7rem; margin-bottom:1rem; color:var(--warning)">GEOGRAPHIC STATS</h4>
-      <div id="geoStats" style="max-height: 120px; overflow-y: auto;">
-        </div>
+      <h4 style="font-size:0.7rem; margin-bottom:1rem; color:var(--warning); text-transform: uppercase;">Country Distribution</h4>
+      <div id="geoStats" style="max-height: 120px; overflow-y: auto; padding-right: 5px;">
+        <div style="font-size:0.75rem; color:var(--text-muted)">Loading stats...</div>
+      </div>
     </div>
   </div>
 
   <div class="table-container">
     <div class="toolbar">
-      <h3 style="font-weight: 800; font-size: 1rem;">Staff Identity Database</h3>
-      <input type="text" id="searchInput" class="search-input" placeholder="Quick search staff...">
+      <h3 style="font-weight: 800; font-size: 1rem;">Employee Master List</h3>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search name, ID, or account...">
     </div>
     <div style="overflow-x: auto;">
       <table>
         <thead>
           <tr>
-            <th style="width: 120px;">盘口 (Platform)</th>
-            <th style="width: 150px;">岗位 (Jabatan)</th>
+            <th style="width: 120px;">盘口</th>
+            <th style="width: 150px;">岗位</th>
             <th style="width: 100px;">ID</th>
-            <th style="width: 250px;">姓名 (Nama)</th>
-            <th style="width: 200px;">后台账号 (Account)</th>
-            <th style="width: 150px;">入职日期 (Join)</th>
-            <th style="width: 150px;">国家 (Negara)</th>
+            <th style="width: 250px;">姓名</th>
+            <th style="width: 200px;">后台账号</th>
+            <th style="width: 150px;">入职日期</th>
+            <th style="width: 150px;">国家</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -132,21 +134,22 @@
     try {
       const r = await fetch(`${CSV_URL}&t=${Date.now()}`);
       const t = await r.text();
-      const lines = t.split(/\r?\n/).map(l => l.split(',')).filter(l => l.length > 5);
-      db = lines.slice(1).filter(d => d[3] && d[3].trim() !== "");
+      // Perbaikan pemisahan baris CSV
+      const lines = t.split(/\r?\n/).map(l => l.split(','));
+      db = lines.slice(1).filter(d => d.length > 5 && d[3] && d[3].trim() !== "");
       filtered = [...db];
       
-      setInterval(updateLiveStats, 1000);
-      updateLiveStats();
+      setInterval(updateDashboard, 1000);
+      updateDashboard();
       renderTable();
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Fetch Error:", e); }
   }
 
   function getAMT() {
     return new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"}));
   }
 
-  function updateLiveStats() {
+  function updateDashboard() {
     const amt = getAMT();
     const h = amt.getHours();
     const m = amt.getMinutes();
@@ -154,47 +157,51 @@
     
     document.getElementById('clock').innerText = `${amt.toLocaleTimeString('en-GB')} AMT`;
 
-    let dayCount = 0, nightCount = 0, midCount = 0;
+    let day = 0, night = 0, mid = 0;
     let onlineRoles = {};
-    let geoCounts = {};
+    let geoMap = {};
 
     db.forEach(r => {
-      const shift = (r[5]||'').toLowerCase();
-      const role = (r[1]||'Unknown').trim();
-      const geo = (r[8]||'Unknown').trim();
+      const shift = (r[5] || '').toLowerCase();
+      const role = (r[1] || 'Unknown').trim();
+      const country = (r[8] || 'Unknown').trim();
 
-      // Count Shifts
-      if(shift.includes('day')) dayCount++;
-      else if(shift.includes('night')) nightCount++;
-      else if(shift.includes('mid')) midCount++;
+      // 1. Shift Stats
+      if(shift.includes('day')) day++;
+      else if(shift.includes('night')) night++;
+      else if(shift.includes('mid')) mid++;
 
-      // Check Online Logic
+      // 2. Online Logic (AMT)
       let isOnline = false;
-      if(shift.includes('day') && (h>=4 && h<16)) isOnline = true;
-      else if(shift.includes('night') && (h>=16 || h<4)) isOnline = true;
+      if(shift.includes('day') && (h >= 4 && h < 16)) isOnline = true;
+      else if(shift.includes('night') && (h >= 16 || h < 4)) isOnline = true;
       else if(shift.includes('mid') && (totalMins >= 570 && totalMins < 1290)) isOnline = true;
 
       if(isOnline) {
         onlineRoles[role] = (onlineRoles[role] || 0) + 1;
       }
 
-      geoCounts[geo] = (geoCounts[geo] || 0) + 1;
+      // 3. Country Stats
+      geoMap[country] = (geoMap[country] || 0) + 1;
     });
 
+    // Update Card 1
     document.getElementById('totalStaff').innerText = db.length;
-    document.getElementById('totalDay').innerText = dayCount;
-    document.getElementById('totalNight').innerText = nightCount;
-    document.getElementById('totalMid').innerText = midCount;
+    document.getElementById('totalDay').innerText = day;
+    document.getElementById('totalNight').innerText = night;
+    document.getElementById('totalMid').innerText = mid;
 
-    // Render Online by Categories
-    document.getElementById('onlineCategories').innerHTML = Object.entries(onlineRoles).map(([n, c]) => `
-      <div class="online-tag"><i class="fas fa-circle"></i> ${n}: ${c}</div>
-    `).join('') || '<div style="font-size:0.7rem; color:var(--text-muted)">No one is online.</div>';
+    // Update Card 2 (Online Roles)
+    const onlineHtml = Object.entries(onlineRoles).length > 0 
+      ? Object.entries(onlineRoles).map(([n, c]) => `<div class="online-tag"><span>${n}</span><span><i class="fas fa-circle"></i> ${c}</span></div>`).join('')
+      : '<div style="font-size:0.75rem; color:var(--text-muted)">No active shift now.</div>';
+    document.getElementById('onlineCategories').innerHTML = onlineHtml;
 
-    // Render Geo
-    document.getElementById('geoStats').innerHTML = Object.entries(geoCounts).map(([n, c]) => `
-      <div class="stat-row"><span class="label">${n}</span><span class="value">${c}</span></div>
-    `).join('');
+    // Update Card 3 (Geo Stats)
+    const geoHtml = Object.entries(geoMap).length > 0
+      ? Object.entries(geoMap).sort((a,b)=>b[1]-a[1]).map(([n, c]) => `<div class="stat-row"><span class="label">${n}</span><span class="value">${c}</span></div>`).join('')
+      : '<div style="font-size:0.75rem; color:var(--text-muted)">No country data.</div>';
+    document.getElementById('geoStats').innerHTML = geoHtml;
   }
 
   function renderTable() {
@@ -206,13 +213,13 @@
 
     tbody.innerHTML = slice.map(r => `
       <tr>
-        <td><span style="color:var(--accent); font-weight:800;">${r[0]}</span></td>
-        <td style="font-weight:700;">${r[1]}</td>
-        <td style="font-family:monospace; opacity:0.6;">#${r[2]}</td>
-        <td style="font-weight:800;">${r[3]}</td>
-        <td style="font-size:0.8rem; color:var(--text-muted);">${r[4]}</td>
-        <td style="font-size:0.8rem;">${r[6]}</td>
-        <td><i class="fas fa-location-dot" style="font-size:0.7rem; color:var(--danger)"></i> ${r[8]}</td>
+        <td><span style="color:var(--accent); font-weight:800;">${r[0] || '-'}</span></td>
+        <td style="font-weight:700;">${r[1] || '-'}</td>
+        <td style="font-family:monospace; opacity:0.6;">#${r[2] || '-'}</td>
+        <td style="font-weight:800;">${r[3] || '-'}</td>
+        <td style="font-size:0.8rem; color:var(--text-muted);">${r[4] || '-'}</td>
+        <td style="font-size:0.8rem;">${r[6] || '-'}</td>
+        <td><i class="fas fa-map-marker-alt" style="font-size:0.7rem; color:var(--danger)"></i> ${r[8] || '-'}</td>
       </tr>
     `).join('');
 
@@ -226,7 +233,7 @@
 
   document.getElementById('searchInput').addEventListener('input', (e) => {
     const q = e.target.value.toLowerCase();
-    filtered = db.filter(r => r.some(c => c.toLowerCase().includes(q)));
+    filtered = db.filter(r => r.some(c => c.toString().toLowerCase().includes(q)));
     page = 1;
     renderTable();
   });
