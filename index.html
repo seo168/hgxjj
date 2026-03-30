@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus Executive v2.9 | Unified Intelligence</title>
+  <title>Nexus Executive v3.0 | Sub-Dept Analytics</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -18,7 +18,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); line-height: 1.6; }
 
     nav {
       position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.9);
@@ -28,92 +28,99 @@
     .brand { font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
     .brand i { color: var(--accent); }
 
-    .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem 4rem; }
+    .container { max-width: 1500px; margin: 0 auto; padding: 0 2rem 4rem; }
 
-    /* Analytics Header */
-    .analytics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem; }
-    .stat-card { background: white; padding: 1.5rem; border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    /* Stats Grid 4 Columns */
+    .analytics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-top: 2rem; }
+    .stat-card { background: white; padding: 1.2rem; border-radius: var(--radius-xl); border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
     
-    .chart-container { width: 100px; height: 100px; margin: 0 auto 1rem; position: relative; }
-    .chart-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.8rem; }
+    .chart-box { width: 90px; height: 90px; margin: 0 auto 0.8rem; position: relative; }
+    .chart-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.75rem; }
 
-    .stat-list { max-height: 120px; overflow-y: auto; margin-top: 10px; padding-right: 5px; }
-    .stat-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.75rem; font-weight: 700; }
-    .stat-item:last-child { border: none; }
-    .val-pill { background: var(--primary); color: white; padding: 1px 8px; border-radius: 10px; font-size: 0.7rem; }
+    .stat-list { max-height: 110px; overflow-y: auto; margin-top: 8px; padding-right: 4px; }
+    .stat-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.7rem; font-weight: 700; }
+    .val-badge { background: var(--primary); color: white; padding: 1px 7px; border-radius: 8px; font-size: 0.65rem; }
 
-    /* Online Badge */
-    .online-indicator { background: #ecfdf5; color: #065f46; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; }
-    .online-indicator i { font-size: 0.5rem; animation: pulse 1.5s infinite; }
+    /* Table Design */
+    .table-container { margin-top: 2rem; background: white; border-radius: var(--radius-xl); border: 1px solid var(--border); overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    .toolbar { padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; background: #fff; border-bottom: 1px solid var(--border); }
+    .search-input { padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border); width: 380px; outline: none; font-weight: 600; transition: 0.3s; }
+    .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
 
-    /* Table Styling */
-    .table-section { margin-top: 2rem; background: white; border-radius: var(--radius-xl); border: 1px solid var(--border); overflow: hidden; }
-    .toolbar { padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-    .search-input { padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); width: 350px; outline: none; font-weight: 600; }
+    .table-responsive { overflow-x: auto; width: 100%; }
+    table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+    th { background: #f8fafc; padding: 1.2rem 1rem; text-align: left; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); }
+    td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; }
 
-    table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-    th { background: #f8fafc; padding: 1rem; text-align: left; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); }
-    td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; }
+    .sub-dept-tag { background: var(--accent-soft); color: var(--accent); padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
+    .amt-pill { background: var(--primary); color: white; padding: 8px 18px; border-radius: 30px; font-size: 0.85rem; font-weight: 800; }
 
-    .amt-time { background: var(--accent); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
-
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
   </style>
 </head>
 <body>
 
 <nav>
-  <div class="brand"><i class="fas fa-microchip"></i> NEXUS<span>CORE</span></div>
-  <div class="amt-time" id="amtClock">00:00:00 AMT</div>
+  <div class="brand"><i class="fas fa-layer-group"></i> NEXUS<span>MASTER</span></div>
+  <div class="amt-pill" id="liveTime">00:00:00 AMT</div>
 </nav>
 
 <div class="container">
   <div class="analytics-grid">
     <div class="stat-card">
-      <div class="chart-container"><canvas id="shiftChart"></canvas><div class="chart-label" id="totalStaff">0</div></div>
-      <h4 style="font-size:0.75rem; text-align:center; margin-bottom:10px;">SHIFT DISTRIBUTION</h4>
-      <div class="stat-list" id="shiftList"></div>
+      <div class="chart-box"><canvas id="c1"></canvas><div class="chart-center" id="t1">0</div></div>
+      <h4 style="font-size:0.65rem; text-align:center; color:var(--text-muted)">SHIFT SUMMARY</h4>
+      <div class="stat-list" id="l1"></div>
     </div>
-
     <div class="stat-card">
-      <div class="chart-container"><canvas id="jobChart"></canvas><div class="chart-label" id="totalOnline">0</div></div>
-      <h4 style="font-size:0.75rem; text-align:center; margin-bottom:10px;">ONLINE BY JOB (AMT)</h4>
-      <div class="stat-list" id="jobList"></div>
+      <div class="chart-box"><canvas id="c2"></canvas><div class="chart-center" id="t2" style="color:var(--success)">0</div></div>
+      <h4 style="font-size:0.65rem; text-align:center; color:var(--text-muted)">LIVE ONLINE BY ROLE</h4>
+      <div class="stat-list" id="l2"></div>
     </div>
-
     <div class="stat-card">
-      <div class="chart-container"><canvas id="geoChart"></canvas></div>
-      <h4 style="font-size:0.75rem; text-align:center; margin-bottom:10px;">COUNTRY DISTRIBUTION</h4>
-      <div class="stat-list" id="geoList"></div>
+      <div class="chart-box"><canvas id="c3"></canvas></div>
+      <h4 style="font-size:0.65rem; text-align:center; color:var(--text-muted)">SUB-DEPT (KOLOM J)</h4>
+      <div class="stat-list" id="l3"></div>
+    </div>
+    <div class="stat-card">
+      <div class="chart-box"><canvas id="c4"></canvas></div>
+      <h4 style="font-size:0.65rem; text-align:center; color:var(--text-muted)">COUNTRY TOTALS</h4>
+      <div class="stat-list" id="l4"></div>
     </div>
   </div>
 
-  <div class="table-section">
+  <div class="table-container">
     <div class="toolbar">
-      <h3 style="font-weight: 800;">Staff Identity List</h3>
-      <input type="text" id="masterSearch" class="search-input" placeholder="Quick search staff database...">
+      <div>
+        <h3 style="font-weight: 800; font-size: 1.1rem; color: var(--primary);">Staff Intelligence Database</h3>
+        <p style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">Data Real-time dari Google Sheets</p>
+      </div>
+      <input type="text" id="searchBox" class="search-input" placeholder="Cari nama, ID, jabatan, atau sub-bagian...">
     </div>
-    <div style="overflow-x: auto;">
+    <div class="table-responsive">
       <table>
         <thead>
           <tr>
-            <th>Platform (盘口)</th>
-            <th>Role (岗位)</th>
+            <th style="width: 100px;">Platform</th>
+            <th style="width: 150px;">Jabatan Utama</th>
+            <th style="width: 180px;">Keterangan Bagian (J)</th>
             <th style="width: 80px;">ID</th>
-            <th style="width: 250px;">Name (姓名)</th>
-            <th>Account (后台账号)</th>
-            <th>Join Date (入职)</th>
-            <th>Country (国家)</th>
+            <th style="width: 250px;">Nama Staff</th>
+            <th style="width: 180px;">Akun Backoffice</th>
+            <th>Tgl Masuk</th>
+            <th>Negara</th>
           </tr>
         </thead>
-        <tbody id="tableBody"></tbody>
+        <tbody id="mainBody"></tbody>
       </table>
     </div>
-    <div style="padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); background: #f8fafc;">
-      <span id="pageInfo" style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted);">PAGE 1</span>
-      <div style="display:flex; gap:10px;">
-        <button onclick="changePage(-1)" id="prevBtn" style="padding:8px 16px; border:1px solid var(--border); border-radius:10px; cursor:pointer; font-weight:800;">PREV</button>
-        <button onclick="changePage(1)" id="nextBtn" style="padding:8px 16px; border:1px solid var(--border); border-radius:10px; cursor:pointer; font-weight:800;">NEXT</button>
+    <div id="emptyData" style="display:none; text-align:center; padding: 60px; font-weight:800; color:var(--text-muted); background: #fafafa;">PENCARIAN TIDAK DITEMUKAN</div>
+    
+    <div style="padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); background: #f8fafc;">
+      <span id="pageTxt" style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted);">PAGE 1</span>
+      <div style="display:flex; gap:12px;">
+        <button onclick="movePage(-1)" id="prevBtn" style="padding:8px 20px; border:1px solid var(--border); background:white; border-radius:10px; cursor:pointer; font-weight:800; transition: 0.2s;">PREV</button>
+        <button onclick="movePage(1)" id="nextBtn" style="padding:8px 20px; border:1px solid var(--border); background:white; border-radius:10px; cursor:pointer; font-weight:800; transition: 0.2s;">NEXT</button>
       </div>
     </div>
   </div>
@@ -122,137 +129,145 @@
 <script>
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
   
-  let raw = [];
+  let db = [];
   let filtered = [];
   let page = 1;
-  const limit = 10;
-  let charts = {};
+  const size = 10;
+  let chartInstances = {};
 
-  async function init() {
+  async function start() {
     try {
       const r = await fetch(`${CSV_URL}&t=${Date.now()}`);
       const t = await r.text();
       const lines = t.split(/\r?\n/).map(l => l.split(','));
-      raw = lines.slice(1).filter(d => d.length > 5 && d[3] && d[3].trim() !== "");
-      filtered = [...raw];
+      // Ambil data (Filter baris yang punya nama di kolom ke-4 / Index 3)
+      db = lines.slice(1).filter(d => d.length >= 6 && d[3] && d[3].trim() !== "");
+      filtered = [...db];
       
-      setInterval(updateRealtime, 1000);
-      updateRealtime();
-      renderTable();
-    } catch (e) { console.error(e); }
+      setInterval(sync, 1000);
+      sync();
+      render();
+    } catch (e) { console.error("Load Error:", e); }
   }
 
   function getAMT() {
     return new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"}));
   }
 
-  function updateRealtime() {
+  function sync() {
     const amt = getAMT();
     const h = amt.getHours();
     const totalM = h * 60 + amt.getMinutes();
-    document.getElementById('amtClock').innerText = amt.toLocaleTimeString('en-GB') + " AMT";
+    document.getElementById('liveTime').innerText = amt.toLocaleTimeString('en-GB') + " AMT";
 
-    let shifts = { day: 0, night: 0, mid: 0 };
+    let shifts = { Day: 0, Night: 0, Mid: 0 };
     let onlineJobs = {};
+    let subDepts = {};
     let countries = {};
-    let totalOnline = 0;
+    let onTotal = 0;
 
-    raw.forEach(r => {
+    db.forEach(r => {
       const s = (r[5] || '').toLowerCase().trim();
       const job = (r[1] || 'Unknown').trim();
+      const sub = (r[9] || 'Unassigned').trim(); // Kolom J (Index 9)
       const geo = (r[8] || 'Unknown').trim();
 
-      // Robust Shift Counting
-      if (s.includes('day')) shifts.day++;
-      else if (s.includes('night')) shifts.night++;
-      else if (s.includes('mid')) shifts.mid++;
+      // 1. Shift Stats
+      if (s.includes('day')) shifts.Day++;
+      else if (s.includes('night')) shifts.Night++;
+      else if (s.includes('mid')) shifts.Mid++;
 
-      // Online Logic
-      let on = false;
-      if(s.includes('day') && (h>=4 && h<16)) on = true;
-      else if(s.includes('night') && (h>=16 || h<4)) on = true;
-      else if(s.includes('mid') && (totalM >= 570 && totalM < 1290)) on = true;
+      // 2. Sub-Dept Stats
+      subDepts[sub] = (subDepts[sub] || 0) + 1;
 
-      if(on) {
-        totalOnline++;
+      // 3. Online Status
+      let isOnline = false;
+      if(s.includes('day') && (h>=4 && h<16)) isOnline = true;
+      else if(s.includes('night') && (h>=16 || h<4)) isOnline = true;
+      else if(s.includes('mid') && (totalM >= 570 && totalM < 1290)) isOnline = true;
+
+      if(isOnline) {
+        onTotal++;
         onlineJobs[job] = (onlineJobs[job] || 0) + 1;
       }
 
       countries[geo] = (countries[geo] || 0) + 1;
     });
 
-    document.getElementById('totalStaff').innerText = raw.length;
-    document.getElementById('totalOnline').innerText = totalOnline;
+    document.getElementById('t1').innerText = db.length;
+    document.getElementById('t2').innerText = onTotal;
 
-    // Update Visual Lists
-    const listHtml = (obj, color) => Object.entries(obj).sort((a,b)=>b[1]-a[1]).map(([n,c]) => `
-      <div class="stat-item"><span>${n}</span><span class="val-pill" style="background:${color}">${c}</span></div>
-    `).join('');
+    const fillList = (id, obj, color) => {
+      document.getElementById(id).innerHTML = Object.entries(obj).sort((a,b)=>b[1]-a[1]).map(([n,c]) => `
+        <div class="stat-item"><span>${n}</span><span class="val-badge" style="background:${color}">${c}</span></div>
+      `).join('');
+    };
 
-    document.getElementById('shiftList').innerHTML = listHtml(shifts, 'var(--accent)');
-    document.getElementById('jobList').innerHTML = listHtml(onlineJobs, 'var(--success)');
-    document.getElementById('geoList').innerHTML = listHtml(countries, 'var(--warning)');
+    fillList('l1', shifts, '#2563eb');
+    fillList('l2', onlineJobs, '#10b981');
+    fillList('l3', subDepts, '#8b5cf6');
+    fillList('l4', countries, '#f59e0b');
 
-    // Sync Charts
-    updateChart('shiftChart', shifts, ['#2563eb', '#0f172a', '#64748b']);
-    updateChart('jobChart', onlineJobs, ['#10b981', '#34d399', '#059669']);
-    updateChart('geoChart', countries, ['#f59e0b', '#fbbf24', '#d97706']);
+    draw('c1', shifts, ['#2563eb', '#1e293b', '#64748b']);
+    draw('c2', onlineJobs, ['#10b981', '#34d399', '#059669']);
+    draw('c3', subDepts, ['#8b5cf6', '#a78bfa', '#c4b5fd']);
+    draw('c4', countries, ['#f59e0b', '#fbbf24', '#d97706']);
   }
 
-  function updateChart(id, dataObj, colors) {
+  function draw(id, dataObj, colors) {
     const ctx = document.getElementById(id).getContext('2d');
     const labels = Object.keys(dataObj);
-    const values = Object.values(dataObj);
+    const vals = Object.values(dataObj);
 
-    if (charts[id]) {
-      charts[id].data.labels = labels;
-      charts[id].data.datasets[0].data = values;
-      charts[id].update('none');
+    if (chartInstances[id]) {
+      chartInstances[id].data.labels = labels;
+      chartInstances[id].data.datasets[0].data = vals;
+      chartInstances[id].update('none');
     } else {
-      charts[id] = new Chart(ctx, {
+      chartInstances[id] = new Chart(ctx, {
         type: 'doughnut',
-        data: {
-          labels: labels,
-          datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }]
-        },
-        options: { plugins: { legend: { display: false } }, cutout: '80%', responsive: true }
+        data: { labels, datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] },
+        options: { plugins: { legend: { display: false } }, cutout: '75%', responsive: true }
       });
     }
   }
 
-  function renderTable() {
-    const tbody = document.getElementById('tableBody');
-    const start = (page - 1) * limit;
-    const slice = filtered.slice(start, start + limit);
+  function render() {
+    const tbody = document.getElementById('mainBody');
+    const start = (page - 1) * size;
+    const slice = filtered.slice(start, start + size);
+
+    document.getElementById('emptyData').style.display = filtered.length === 0 ? 'block' : 'none';
 
     tbody.innerHTML = slice.map(r => `
       <tr>
-        <td><b style="color:var(--accent)">${r[0]}</b></td>
-        <td>${r[1]}</td>
-        <td style="opacity:0.5">#${r[2]}</td>
-        <td style="font-weight:800; color:var(--primary)">${r[3]}</td>
-        <td style="font-size:0.8rem; color:var(--text-muted)">${r[4]}</td>
-        <td style="font-size:0.8rem">${r[6]}</td>
-        <td><i class="fas fa-globe" style="font-size:0.7rem; color:var(--warning)"></i> ${r[8]}</td>
+        <td><span style="color:var(--accent); font-weight:800;">${r[0] || '-'}</span></td>
+        <td><span style="font-weight:700;">${r[1] || '-'}</span></td>
+        <td><span class="sub-dept-tag">${r[9] || '-'}</span></td>
+        <td style="opacity:0.6; font-family:monospace;">#${r[2] || '-'}</td>
+        <td style="font-weight:800; color:var(--primary); font-size:0.85rem;">${r[3] || '-'}</td>
+        <td style="font-size:0.75rem; color:var(--text-muted);">${r[4] || '-'}</td>
+        <td style="font-size:0.75rem;">${r[6] || '-'}</td>
+        <td><i class="fas fa-location-dot" style="font-size:0.6rem; color:var(--danger)"></i> ${r[8] || '-'}</td>
       </tr>
     `).join('');
 
-    const totalPages = Math.ceil(filtered.length / limit);
-    document.getElementById('pageInfo').innerText = `PAGE ${page} OF ${totalPages || 1} (${filtered.length} Staff)`;
+    const totalP = Math.ceil(filtered.length / size);
+    document.getElementById('pageTxt').innerText = `PAGE ${page} OF ${totalP || 1} (${filtered.length} STAFF)`;
     document.getElementById('prevBtn').disabled = page === 1;
-    document.getElementById('nextBtn').disabled = page >= totalPages;
+    document.getElementById('nextBtn').disabled = page >= totalP;
   }
 
-  function changePage(d) { page += d; renderTable(); }
+  function movePage(d) { page += d; render(); }
 
-  document.getElementById('masterSearch').addEventListener('input', (e) => {
+  document.getElementById('searchBox').addEventListener('input', (e) => {
     const q = e.target.value.toLowerCase();
-    filtered = raw.filter(r => r.some(c => c.toLowerCase().includes(q)));
+    filtered = db.filter(r => r.some(c => c.toString().toLowerCase().includes(q)));
     page = 1;
-    renderTable();
+    render();
   });
 
-  init();
+  start();
 </script>
 </body>
 </html>
