@@ -755,7 +755,7 @@
       }
 
       try {
-        const res = await fetch(url);
+        const res = await fetch(url + "&t=" + Date.now());
         if (!res.ok) throw new Error('Gagal ambil data');
         const text = await res.text();
         const rows = parseCSV(text);
