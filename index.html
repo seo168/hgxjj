@@ -173,11 +173,14 @@
   const BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
   const GID_MASTER = "0"; 
   const GID_PERF_GENERAL = "1680695165"; 
-  const GID_PERF_WITHDRAW = "1054251920"; // GID Sheet Baru Anda
+  const GID_PERF_WITHDRAW = "1054251920"; // GID Sheet HGX Performa Anda
 
   let dbMaster = [], dbPerfGen = [], dbPerfWD = [], filtered = [], charts = {};
   let mainPage = 1; const mainRows = 10;
   const palette = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];
+
+  // Membersihkan String ID (Penting agar sinkron)
+  const cleanStr = (s) => String(s || "").trim().toLowerCase();
 
   function showPage(p) {
     document.querySelectorAll('.page-content').forEach(pc => pc.classList.remove('active'));
@@ -247,61 +250,57 @@
 
   function openDetail(idx) {
     const r = filtered[idx];
-    const rawID = String(r[2]).trim().toLowerCase();
+    const targetID = cleanStr(r[2]);
     const group = (r[1] || "").toLowerCase();
     const team = (r[9] || "").toLowerCase();
     
-    // 1. Hitung Tenure
+    // Perhitungan Tenure
     const joinDate = parseDate(r[6]);
     let tenure = "-", totalDays = "0 Hari";
     if (joinDate) {
       const now = new Date();
-      const diffTime = Math.abs(now - joinDate);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const diffDays = Math.ceil(Math.abs(now - joinDate) / (1000 * 60 * 60 * 24));
       totalDays = diffDays + " Hari";
       let y = now.getFullYear() - joinDate.getFullYear();
       let m = now.getMonth() - joinDate.getMonth();
-      let d = now.getDate() - joinDate.getDate();
-      if (d < 0) { m--; d += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
       if (m < 0) { y--; m += 12; }
-      tenure = `${y} Thn, ${m} Bln, ${d} Hari`;
+      tenure = `${y} Thn, ${m} Bln`;
     }
 
-    // 2. Pilih Sumber Data Performance secara otomatis
+    // Pemilihan Database Performance
     let p = null;
     let isWithdrawal = group.includes('出款') || team.includes('出款');
 
     if (isWithdrawal) {
-      p = dbPerfWD.find(x => String(x[0]).trim().toLowerCase() === rawID);
+      p = dbPerfWD.find(x => cleanStr(x[0]) === targetID);
     } else {
-      p = dbPerfGen.find(x => String(x[0]).trim().toLowerCase() === rawID);
+      p = dbPerfGen.find(x => cleanStr(x[0]) === targetID);
     }
 
-    // 3. Update Modal
     document.getElementById('mName').innerText = r[3];
     document.getElementById('mID').innerText = "#" + r[2];
     document.getElementById('mTenure').innerText = tenure;
     document.getElementById('mWorkDays').innerText = totalDays;
     
     if (p) {
-        // Jika data WD, kolomnya: A:ID, B:Nama, C:Mentor, D:Total Order, E:Avg
         if (isWithdrawal) {
+            // Sheet WD: A:ID, B:Nama, C:Mentor, D:Total Order, E:Avg
             document.getElementById('mAvg').innerText = p[4] || "0";
             document.getElementById('mTotalOrder').innerText = p[3] || "0";
-            document.getElementById('mMistake').innerText = "0"; // Sesuaikan jika ada kolom mistake
-            document.getElementById('mMentor').innerText = p[2] || "No Mentor";
+            document.getElementById('mMistake').innerText = "0"; 
+            document.getElementById('mMentor').innerText = p[2] || "-";
         } else {
-            // Data General: A:ID, B:Avg, C:Order, D:Mistake, E:Mentor
+            // Sheet General: A:ID, B:Avg, C:Order, D:Mistake, E:Mentor
             document.getElementById('mAvg').innerText = p[1] || "0";
             document.getElementById('mTotalOrder').innerText = p[2] || "0";
             document.getElementById('mMistake').innerText = p[3] || "0";
-            document.getElementById('mMentor').innerText = p[4] || "No Mentor";
+            document.getElementById('mMentor').innerText = p[4] || "-";
         }
     } else {
         document.getElementById('mAvg').innerText = "0";
         document.getElementById('mTotalOrder').innerText = "0";
         document.getElementById('mMistake').innerText = "0";
-        document.getElementById('mMentor').innerText = "No Data";
+        document.getElementById('mMentor').innerText = "Not Connected";
     }
 
     document.getElementById('modalOverlay').style.display = 'flex';
