@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus Master v4.6 | Multi-Color Stats</title>
+  <title>Nexus Master v4.7 | Stats Fixed</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -26,16 +26,13 @@
     
     .chart-box { width: 85px; height: 85px; margin: 0 auto 10px; position: relative; }
     .chart-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.8rem; }
-    .dept-title { font-size: 0.7rem; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .dept-title { font-size: 0.7rem; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; }
     
     .stat-list { max-height: 125px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 5px; }
-    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid #f1f5f9; font-size: 0.7rem; font-weight: 700; width: 100%; transition: 0.2s; }
-    .stat-row:hover { background: #f8fafc; }
+    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid #f1f5f9; font-size: 0.7rem; font-weight: 700; width: 100%; }
     
-    /* Indikator Titik Warna */
     .indicator { display: flex; align-items: center; gap: 8px; }
     .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-
     .badge { padding: 2px 8px; border-radius: 6px; color: white; font-size: 0.65rem; min-width: 30px; text-align: center; }
 
     .table-container { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
@@ -60,7 +57,7 @@
 <body>
 
 <nav>
-  <div style="font-weight: 900; color: var(--primary); font-size: 1.1rem;"><i class="fas fa-layer-group" style="color:var(--accent)"></i> NEXUS<span>PRO v4.6</span></div>
+  <div style="font-weight: 900; color: var(--primary); font-size: 1.1rem;"><i class="fas fa-chart-pie" style="color:var(--accent)"></i> NEXUS<span>PRO v4.7</span></div>
   <div class="amt-clock" id="clock">00:00:00 AMT</div>
 </nav>
 
@@ -76,7 +73,7 @@
   <div class="table-container">
     <div class="table-header">
       <h3 style="font-weight: 800; font-size: 0.9rem;">员工详细信息表</h3>
-      <input type="text" id="search" class="search-input" placeholder="搜索姓名, ID, 部门...">
+      <input type="text" id="search" class="search-input" placeholder="搜索关键词...">
     </div>
     <div style="overflow-x: auto;">
       <table>
@@ -103,8 +100,6 @@
 
   const shiftOrder = ["Day", "Mid", "Night"];
   const countryOrder = ["印尼", "缅甸", "柬埔寨", "菲律宾"];
-  
-  // Warna-warna cerah untuk list statistik
   const palette = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4"];
 
   function superFormatDate(val) {
@@ -138,19 +133,26 @@
 
   function syncCharts() {
     let wdO = {}, csO = {}, fnO = {}, geO = {}, shO = {};
+    
+    // Pastikan Shifting terbaca meski ada spasi/beda huruf
     shiftOrder.forEach(s => shO[s] = 0);
     countryOrder.forEach(c => geO[c] = 0);
 
     db.forEach(r => {
-      const dept = r[1]||"", sub = r[9]||"", shift = r[5]||"", geo = r[8]||"";
-      const sMatch = shiftOrder.find(s => shift.includes(s)); if(sMatch) shO[sMatch]++;
-      const cMatch = countryOrder.find(c => geo.includes(c)); if(cMatch) geO[cMatch]++;
+      const dept = r[1]||"", sub = r[9]||"", shift = (r[5]||"").toLowerCase(), geo = (r[8]||"").toLowerCase();
+      
+      const sMatch = shiftOrder.find(s => shift.includes(s.toLowerCase()));
+      if(sMatch) shO[sMatch]++;
+      
+      const cMatch = countryOrder.find(c => geo.includes(c.toLowerCase()));
+      if(cMatch) geO[cMatch]++;
+
       if (dept.includes('出款') || sub.includes('出款')) wdO[sub || "其他"] = (wdO[sub || "其他"] || 0) + 1;
       else if (dept.includes('客服') || sub.includes('客服')) csO[sub || "其他"] = (csO[sub || "其他"] || 0) + 1;
-      else if (dept.includes('财务') || sub.includes('财务')) fnO[sub || "其他"] = (fnO[sub || "财务"] || 0) + 1;
+      else if (dept.includes('财务') || sub.includes('财务')) fnO[sub || "其他"] = (fnO[sub || "其他"] || 0) + 1;
     });
 
-    const draw = (id, data, baseColors, labelId, listId, sortRef = null) => {
+    const draw = (id, data, labelId, listId, sortRef = null) => {
       const ctx = document.getElementById(id).getContext('2d');
       if (charts[id]) charts[id].destroy();
       
@@ -161,7 +163,6 @@
         entries.sort((a,b) => b[1] - a[1]);
       }
 
-      // Gunakan palet warna berbeda untuk tiap item
       const itemColors = entries.map((_, i) => palette[i % palette.length]);
 
       charts[id] = new Chart(ctx, {
@@ -173,20 +174,17 @@
       document.getElementById(labelId).innerText = entries.reduce((a,b) => a + b[1], 0);
       document.getElementById(listId).innerHTML = entries.map(([n,v], i) => `
         <div class="stat-row">
-          <div class="indicator">
-            <span class="dot" style="background:${itemColors[i]}"></span>
-            <span>${n}</span>
-          </div>
+          <div class="indicator"><span class="dot" style="background:${itemColors[i]}"></span><span>${n}</span></div>
           <span class="badge" style="background:${itemColors[i]}">${v}</span>
         </div>
       `).join('');
     };
 
-    draw('cWD', wdO, null, 'tWD', 'lWD');
-    draw('cCS', csO, null, 'tCS', 'lCS');
-    draw('cFN', fnO, null, 'tFN', 'lFN');
-    draw('cGEO', geO, null, 'tGEO', 'lGEO', countryOrder);
-    draw('cSH', shO, null, 'tSH', 'lSH', shiftOrder);
+    draw('cWD', wdO, 'tWD', 'lWD');
+    draw('cCS', csO, 'tCS', 'lCS');
+    draw('cFN', fnO, 'tFN', 'lFN');
+    draw('cGEO', geO, 'tGEO', 'lGEO', countryOrder);
+    draw('cSH', shO, 'tSH', 'lSH', shiftOrder);
   }
 
   function renderTable() {
@@ -196,7 +194,7 @@
       let cls = (r[1].includes('出款') || (r[9] && r[9].includes('出款'))) ? 'tag-wd' : (r[1].includes('客服') || (r[9] && r[9].includes('客服'))) ? 'tag-cs' : (r[1].includes('财务') || (r[9] && r[9].includes('财务'))) ? 'tag-fn' : '';
       return `<tr>
         <td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]||'-'}</td><td style="opacity:0.5">#${r[2]}</td>
-        <td style="font-weight:800">${r[3]}</td><td style="color:${r[5].includes('Mid')?'#f59e0b':'inherit'}">${r[5]}</td>
+        <td style="font-weight:800">${r[3]}</td><td style="color:${r[5].toLowerCase().includes('mid')?'#f59e0b':'inherit'}">${r[5]}</td>
         <td><span class="strict-date">${superFormatDate(r[6])}</span></td><td style="color:var(--country)">${r[8]}</td>
       </tr>`;
     }).join('');
@@ -208,7 +206,8 @@
 
   function changePage(dir) { currentPage += dir; renderTable(); }
   document.getElementById('search').addEventListener('input', (e) => {
-    filtered = db.filter(r => r.some(c => c.toLowerCase().includes(e.target.value.toLowerCase())));
+    const q = e.target.value.toLowerCase();
+    filtered = db.filter(r => r.some(c => c.toLowerCase().includes(q)));
     currentPage = 1; renderTable();
   });
 
