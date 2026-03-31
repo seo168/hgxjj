@@ -168,6 +168,34 @@
   </div>
 </div>
 
+<div id="performance" class="page-content">
+  <div class="filter-wrapper">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-chart-line"></i> PERFORMANCE MONITORING</h3>
+      <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">Data From: AN (Total) & AO (Average)</div>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Total Order (AN)</th>
+            <th>Daily Avg (AO)</th>
+            <th>Performance Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-perf">
+          </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <script>
   const URL_MASTER = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?gid=0&output=csv";
   const URL_PERF = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQlA6btKuVajZNe2XPoc3b9BAhbeqFYzAS97f2f8mawUCB4-NOHXryGY_b-4WyZ_A/pub?gid=0&output=csv";
@@ -311,8 +339,10 @@
     const total = Math.ceil(filtered.length / mainRows) || 1;
     if (mainPage < 1) mainPage = 1; if (mainPage > total) mainPage = total;
     const start = (mainPage - 1) * mainRows;
-    
-    document.getElementById('tbody').innerHTML = filtered.slice(start, start + mainRows).map((r, i) => {
+    const currentData = filtered.slice(start, start + mainRows);
+
+    // ISI TABEL OVERVIEW (Sudah ada di kode sebelumnya)
+    document.getElementById('tbody').innerHTML = currentData.map((r, i) => {
         const b = r[1]||"", j = r[9]||"";
         let cls = (b.includes('出款') || j.includes('出款')) ? 'tag-wd' : (b.includes('客服') || j.includes('客服')) ? 'tag-cs' : 'tag-fn';
         return `<tr>
@@ -322,13 +352,36 @@
           <td><span class="date-badge">${r[6]}</span></td><td>${r[8]}</td>
         </tr>`;
     }).join('');
-    
+
+    // --- TAMBAHKAN LOGIKA BARU DI SINI UNTUK TABEL PERFORMANCE ---
+    const perfBody = document.getElementById('tbody-perf');
+    if(perfBody) {
+      perfBody.innerHTML = currentData.map((r, i) => {
+        const staffID = clean(r[2]);
+        const p = dbPerf.find(row => clean(row[2]) === staffID); // Cari di C (index 2)
+        
+        const totalOrder = p ? (p[39] || "0") : "-"; // AN (39)
+        const avgDaily = p ? (p[40] || "0") : "-";    // AO (40)
+        
+        // Indikator simpel berdasarkan angka
+        let status = '<span class="tag-cs">Normal</span>';
+        if(parseFloat(avgDaily) > 50) status = '<span class="tag-wd">High</span>';
+        if(parseFloat(avgDaily) < 10 && p) status = '<span class="tag-fn">Low</span>';
+
+        return `<tr>
+          <td><span class="id-link" onclick="openDetail(${start + i})">#${r[2]}</span></td>
+          <td style="text-align:left; font-weight:700;">${r[3]}</td>
+          <td>${totalOrder}</td>
+          <td style="color:var(--accent); font-weight:800;">${avgDaily}</td>
+          <td>${status}</td>
+          <td><button class="menu-btn" style="padding:5px 10px; font-size:0.6rem" onclick="openDetail(${start + i})">VIEW</button></td>
+        </tr>`;
+      }).join('');
+    }
+
     document.getElementById('infoMain').innerText = `Page ${mainPage} / ${total}`;
     syncCharts();
   }
-
-  function changeMainPage(s) { mainPage += s; updateUI(); }
-  function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
   loadData();
 </script>
