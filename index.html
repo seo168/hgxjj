@@ -57,7 +57,6 @@
     .dot { width: 7px; height: 7px; border-radius: 50%; }
     .count-badge { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
     
-    /* Pagination Buttons Styling */
     .page-btn-small { padding: 4px 10px; border: 1px solid var(--border); background: white; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: 800; transition: 0.2s; }
     .page-btn-small:hover { background: var(--primary); color: white; }
   </style>
@@ -98,6 +97,14 @@
     </div>
 
     <div class="table-container">
+      <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);">
+        <span><i class="fas fa-list"></i> ALL RECORDS</span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button class="page-btn-small" onclick="changeMainPage(-1)"><i class="fas fa-chevron-left"></i></button>
+            <span id="infoMain" style="font-size: 0.75rem;">Page 1</span>
+            <button class="page-btn-small" onclick="changeMainPage(1)"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
       <div style="overflow-x: auto;">
         <table>
           <thead>
@@ -182,8 +189,13 @@
 <script>
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
   let db = [], filtered = [], charts = {};
+  
+  // State Pagination
+  let mainPage = 1;
+  const mainRows = 10; // Overview 10 per page
   let subPages = { WD: 1, CS: 1, FN: 1 };
-  const subRows = 5;
+  const subRows = 5; // Performance 5 per page
+
   const palette = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];
 
   function showPage(pageId) {
@@ -219,7 +231,10 @@
     fill('fShift', getU(5));
     fill('fCountry', getU(8));
     ['searchName', 'fShift', 'fTeam', 'fGroup', 'fCountry', 'fPlatform'].forEach(id => {
-      document.getElementById(id).addEventListener('input', runFilters);
+      document.getElementById(id).addEventListener('input', () => {
+          mainPage = 1; // Reset to page 1 on filter
+          runFilters();
+      });
     });
   }
 
@@ -232,6 +247,11 @@
     const sp = document.getElementById('fPlatform').value;
     
     filtered = db.filter(r => (r.join(' ').toLowerCase().includes(sn)) && (!sf || r[5] === sf) && (!sg || r[1] === sg) && (!st || r[9] === st) && (!sc || r[8] === sc) && (!sp || r[0] === sp));
+    updateUI();
+  }
+
+  function changeMainPage(step) {
+    mainPage += step;
     updateUI();
   }
 
@@ -256,18 +276,22 @@
   function updateUI() {
     const sortType = document.getElementById('sortOrder') ? document.getElementById('sortOrder').value : 'asc';
     
-    // Sort Data based on ID
     let sortedData = [...filtered].sort((a, b) => {
         let idA = parseInt(a[2]) || 0;
         let idB = parseInt(b[2]) || 0;
         return sortType === 'asc' ? idA - idB : idB - idA;
     });
 
-    // 1. Render Overview (Always Top 50)
+    // 1. Render Overview (10 rows per page)
     const tbody = document.getElementById('tbody');
-    tbody.innerHTML = sortedData.slice(0, 50).map(r => renderRow(r)).join('');
+    const totalMainPages = Math.ceil(sortedData.length / mainRows) || 1;
+    if (mainPage < 1) mainPage = 1;
+    if (mainPage > totalMainPages) mainPage = totalMainPages;
+    const startMain = (mainPage - 1) * mainRows;
+    tbody.innerHTML = sortedData.slice(startMain, startMain + mainRows).map(r => renderRow(r)).join('');
+    document.getElementById('infoMain').innerText = `Page ${mainPage} / ${totalMainPages}`;
 
-    // 2. Render Performance Sub-tables (Paginated 5 rows)
+    // 2. Render Performance Sub-tables (5 rows per page)
     const renderSubTable = (type, keywords, tbodyId, infoId) => {
         const data = sortedData.filter(r => keywords.some(k => (r[1]||"").includes(k) || (r[9]||"").includes(k)));
         const totalPages = Math.ceil(data.length / subRows) || 1;
