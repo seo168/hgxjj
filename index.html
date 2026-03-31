@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus Master v4.7 | Stats Fixed</title>
+  <title>Nexus Master v4.8 | Advanced Filters</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -21,48 +21,57 @@
     .amt-clock { background: var(--primary); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
 
     .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
-    .dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-    .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); min-height: 280px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     
-    .chart-box { width: 85px; height: 85px; margin: 0 auto 10px; position: relative; }
+    /* Stats Grid */
+    .dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); min-height: 260px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .chart-box { width: 80px; height: 80px; margin: 0 auto 10px; position: relative; }
     .chart-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.8rem; }
     .dept-title { font-size: 0.7rem; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; }
-    
-    .stat-list { max-height: 125px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 5px; }
-    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid #f1f5f9; font-size: 0.7rem; font-weight: 700; width: 100%; }
-    
-    .indicator { display: flex; align-items: center; gap: 8px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-    .badge { padding: 2px 8px; border-radius: 6px; color: white; font-size: 0.65rem; min-width: 30px; text-align: center; }
+    .stat-list { max-height: 110px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; border-bottom: 1px solid #f1f5f9; font-size: 0.65rem; font-weight: 700; width: 100%; }
+    .indicator { display: flex; align-items: center; gap: 6px; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+    .badge { padding: 1px 6px; border-radius: 5px; color: white; font-size: 0.6rem; min-width: 25px; }
 
-    .table-container { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
-    .table-header { padding: 1.2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-    .search-input { padding: 10px 18px; border-radius: 10px; border: 1px solid var(--border); width: 300px; outline: none; font-weight: 600; text-align: center; }
+    /* Filter System (Reference Image Style) */
+    .filter-wrapper { background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 1rem; text-align: left; }
+    .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px; }
+    .filter-group select, .filter-group input { 
+      width: 100%; padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border); 
+      background: #fff; font-size: 0.75rem; font-weight: 600; color: var(--text-main); outline: none; transition: 0.2s;
+    }
+    .filter-group select:hover { border-color: var(--accent); }
     
+    /* Table System */
+    .table-container { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; position: relative; }
     table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 1200px; }
-    th { background: #f8fafc; padding: 1rem; text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); }
-    td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; vertical-align: middle; height: 60px; }
+    th { background: #f8fafc; padding: 1rem; text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    td { padding: 0.8rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.75rem; font-weight: 600; text-align: center; height: 55px; }
 
-    .tag-wd { background: #ecfdf5; color: #065f46; padding: 3px 10px; border-radius: 6px; }
-    .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 3px 10px; border-radius: 6px; }
-    .tag-fn { background: #fffbeb; color: #92400e; padding: 3px 10px; border-radius: 6px; }
-    .strict-date { background: #f1f5f9; color: #334155; padding: 4px 12px; border-radius: 6px; font-family: monospace; font-weight: 800; font-size: 0.75rem; border: 1px solid #e2e8f0; }
+    /* Row Tags */
+    .tag-wd { background: #ecfdf5; color: #065f46; padding: 3px 8px; border-radius: 6px; }
+    .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 3px 8px; border-radius: 6px; }
+    .tag-fn { background: #fffbeb; color: #92400e; padding: 3px 8px; border-radius: 6px; }
+    .strict-date { background: #f1f5f9; color: #334155; padding: 3px 10px; border-radius: 5px; font-family: monospace; font-size: 0.7rem; }
 
-    .pagination-bar { padding: 1rem; background: #f8fafc; display: flex; justify-content: center; align-items: center; gap: 20px; border-top: 1px solid var(--border); }
+    /* Status Bar (Right Bottom Style) */
+    .status-bar { padding: 10px 20px; text-align: right; font-size: 0.7rem; color: var(--text-muted); font-weight: 700; border-top: 1px solid var(--border); background: #fff; }
+
+    .pagination-bar { padding: 1rem; background: #f8fafc; display: flex; justify-content: center; align-items: center; gap: 20px; }
     .page-btn { padding: 8px 16px; border: 1px solid var(--border); background: white; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 0.75rem; }
     .page-btn:hover:not(:disabled) { background: var(--primary); color: white; }
-    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   </style>
 </head>
 <body>
 
 <nav>
-  <div style="font-weight: 900; color: var(--primary); font-size: 1.1rem;"><i class="fas fa-chart-pie" style="color:var(--accent)"></i> NEXUS<span>PRO v4.7</span></div>
+  <div style="font-weight: 900; color: var(--primary); font-size: 1.1rem;"><i class="fas fa-database" style="color:var(--accent)"></i> NEXUS<span>PRO v4.8</span></div>
   <div class="amt-clock" id="clock">00:00:00 AMT</div>
 </nav>
 
 <div class="container">
-  <div class="dept-grid">
+  <div class="dept-grid" id="statsGrid">
     <div class="dept-card"><div style="color:var(--withdraw)" class="dept-title">出款部统计</div><div class="chart-box"><canvas id="cWD"></canvas><div class="chart-val" id="tWD">0</div></div><div class="stat-list" id="lWD"></div></div>
     <div class="dept-card"><div style="color:var(--cs)" class="dept-title">客服部统计</div><div class="chart-box"><canvas id="cCS"></canvas><div class="chart-val" id="tCS">0</div></div><div class="stat-list" id="lCS"></div></div>
     <div class="dept-card"><div style="color:var(--finance)" class="dept-title">财务部统计</div><div class="chart-box"><canvas id="cFN"></canvas><div class="chart-val" id="tFN">0</div></div><div class="stat-list" id="lFN"></div></div>
@@ -70,13 +79,20 @@
     <div class="dept-card"><div style="color:var(--accent)" class="dept-title">班次统计</div><div class="chart-box"><canvas id="cSH"></canvas><div class="chart-val" id="tSH">0</div></div><div class="stat-list" id="lSH"></div></div>
   </div>
 
-  <div class="table-container">
-    <div class="table-header">
-      <h3 style="font-weight: 800; font-size: 0.9rem;">员工详细信息表</h3>
-      <input type="text" id="search" class="search-input" placeholder="搜索关键词...">
+  <div class="filter-wrapper">
+    <div class="filter-grid">
+      <div class="filter-group"><input type="text" id="searchName" placeholder="搜索姓名 / ID / 关键词..."></div>
+      <div class="filter-group"><select id="fShift"><option value="">所有班次 (班次)</option></select></div>
+      <div class="filter-group"><select id="fTeam"><option value="">所有部门 (团队)</option></select></div>
+      <div class="filter-group"><select id="fGroup"><option value="">所有组别 (组别)</option></select></div>
+      <div class="filter-group"><select id="fCountry"><option value="">所有国家 (国家)</option></select></div>
+      <div class="filter-group"><select id="fPlatform"><option value="">所有盘口 (盘口)</option></select></div>
     </div>
+  </div>
+
+  <div class="table-container">
     <div style="overflow-x: auto;">
-      <table>
+      <table id="mainTable">
         <thead>
           <tr>
             <th>平台</th><th>部门</th><th>组别</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th>
@@ -85,6 +101,11 @@
         <tbody id="tbody"></tbody>
       </table>
     </div>
+    
+    <div class="status-bar" id="statusBar">
+      Rows: 0 • Filtered: 0 • Last Update: --/--/-- --:--
+    </div>
+
     <div class="pagination-bar">
       <button class="page-btn" id="prevBtn" onclick="changePage(-1)"><i class="fas fa-chevron-left"></i> 上一页</button>
       <span id="pageNumber" style="font-size:0.75rem; font-weight:800;">第 1 页</span>
@@ -95,18 +116,12 @@
 
 <script>
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
-  let db = []; let filtered = []; let charts = {};
+  let db = [], filtered = [], charts = {};
   let currentPage = 1; const rowsPerPage = 10;
 
   const shiftOrder = ["Day", "Mid", "Night"];
   const countryOrder = ["印尼", "缅甸", "柬埔寨", "菲律宾"];
   const palette = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4"];
-
-  function superFormatDate(val) {
-    if (!val || val.trim() === "" || val === "-") return "-";
-    let d = (!isNaN(val) && val.length >= 5) ? new Date((val - 25569) * 86400 * 1000) : new Date(val.replace(/-/g, '/'));
-    return !isNaN(d.getTime()) ? `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth()+1).padStart(2, '0')}-${d.getFullYear()}` : val;
-  }
 
   async function load() {
     try {
@@ -114,39 +129,84 @@
       const t = await r.text();
       db = t.split(/\r?\n/).slice(1).map(l => l.split(',').map(c => c.trim())).filter(d => d[3]);
       
+      // Initial Sort
       db.sort((a, b) => {
-        const sA = shiftOrder.findIndex(s => a[5].toLowerCase().includes(s.toLowerCase()));
-        const sB = shiftOrder.findIndex(s => b[5].toLowerCase().includes(s.toLowerCase()));
+        const sA = shiftOrder.findIndex(s => a[5].includes(s));
+        const sB = shiftOrder.findIndex(s => b[5].includes(s));
         if (sA !== sB) return (sA === -1 ? 99 : sA) - (sB === -1 ? 99 : sB);
-        const cA = countryOrder.findIndex(c => a[8].toLowerCase().includes(c.toLowerCase()));
-        const cB = countryOrder.findIndex(c => b[8].toLowerCase().includes(c.toLowerCase()));
-        return (cA === -1 ? 99 : cA) - (cB === -1 ? 99 : cB);
+        return 0;
       });
 
       filtered = [...db];
+      setupFilters();
+      updateDisplay();
+      
       setInterval(() => {
         document.getElementById('clock').innerText = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"})).toLocaleTimeString('en-GB') + " AMT";
       }, 1000);
-      syncCharts(); renderTable();
     } catch (e) { console.error(e); }
+  }
+
+  function setupFilters() {
+    const getUnique = (idx) => [...new Set(db.map(r => r[idx]))].filter(v => v && v !== "-").sort();
+    
+    const fill = (id, vals) => {
+      const sel = document.getElementById(id);
+      vals.forEach(v => sel.innerHTML += `<option value="${v}">${v}</option>`);
+    };
+
+    fill('fShift', shiftOrder);
+    fill('fTeam', getUnique(1));
+    fill('fGroup', getUnique(9));
+    fill('fCountry', countryOrder);
+    fill('fPlatform', getUnique(0));
+
+    // Event Listeners
+    ['searchName', 'fShift', 'fTeam', 'fGroup', 'fCountry', 'fPlatform'].forEach(id => {
+      document.getElementById(id).addEventListener('input', runFilters);
+    });
+  }
+
+  function runFilters() {
+    const sName = document.getElementById('searchName').value.toLowerCase();
+    const sShift = document.getElementById('fShift').value;
+    const sTeam = document.getElementById('fTeam').value;
+    const sGroup = document.getElementById('fGroup').value;
+    const sCountry = document.getElementById('fCountry').value;
+    const sPlatform = document.getElementById('fPlatform').value;
+
+    filtered = db.filter(r => {
+      return (r.join(' ').toLowerCase().includes(sName)) &&
+             (!sShift || r[5].includes(sShift)) &&
+             (!sTeam || r[1] === sTeam) &&
+             (!sGroup || r[9] === sGroup) &&
+             (!sCountry || r[8].includes(sCountry)) &&
+             (!sPlatform || r[0] === sPlatform);
+    });
+
+    currentPage = 1;
+    updateDisplay();
+  }
+
+  function updateDisplay() {
+    syncCharts();
+    renderTable();
+    
+    // Update Status Bar
+    const now = new Date();
+    const timeStr = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+    document.getElementById('statusBar').innerText = `Rows: ${db.length} • Filtered: ${filtered.length} • Last Update: ${timeStr}`;
   }
 
   function syncCharts() {
     let wdO = {}, csO = {}, fnO = {}, geO = {}, shO = {};
-    
-    // Pastikan Shifting terbaca meski ada spasi/beda huruf
     shiftOrder.forEach(s => shO[s] = 0);
     countryOrder.forEach(c => geO[c] = 0);
 
-    db.forEach(r => {
-      const dept = r[1]||"", sub = r[9]||"", shift = (r[5]||"").toLowerCase(), geo = (r[8]||"").toLowerCase();
-      
-      const sMatch = shiftOrder.find(s => shift.includes(s.toLowerCase()));
-      if(sMatch) shO[sMatch]++;
-      
-      const cMatch = countryOrder.find(c => geo.includes(c.toLowerCase()));
-      if(cMatch) geO[cMatch]++;
-
+    filtered.forEach(r => {
+      const dept = r[1]||"", sub = r[9]||"", shift = r[5], geo = r[8];
+      const sMatch = shiftOrder.find(s => shift.includes(s)); if(sMatch) shO[sMatch]++;
+      const cMatch = countryOrder.find(c => geo.includes(c)); if(cMatch) geO[cMatch]++;
       if (dept.includes('出款') || sub.includes('出款')) wdO[sub || "其他"] = (wdO[sub || "其他"] || 0) + 1;
       else if (dept.includes('客服') || sub.includes('客服')) csO[sub || "其他"] = (csO[sub || "其他"] || 0) + 1;
       else if (dept.includes('财务') || sub.includes('财务')) fnO[sub || "其他"] = (fnO[sub || "其他"] || 0) + 1;
@@ -155,35 +215,27 @@
     const draw = (id, data, labelId, listId, sortRef = null) => {
       const ctx = document.getElementById(id).getContext('2d');
       if (charts[id]) charts[id].destroy();
-      
       let entries = Object.entries(data);
-      if (sortRef) {
-        entries.sort((a,b) => (sortRef.indexOf(a[0]) === -1 ? 99 : sortRef.indexOf(a[0])) - (sortRef.indexOf(b[0]) === -1 ? 99 : sortRef.indexOf(b[0])));
-      } else {
-        entries.sort((a,b) => b[1] - a[1]);
-      }
+      if (sortRef) entries.sort((a,b) => sortRef.indexOf(a[0]) - sortRef.indexOf(b[0]));
+      else entries.sort((a,b) => b[1] - a[1]);
 
-      const itemColors = entries.map((_, i) => palette[i % palette.length]);
-
+      const colors = entries.map((_, i) => palette[i % palette.length]);
       charts[id] = new Chart(ctx, {
         type: 'doughnut',
-        data: { labels: entries.map(e => e[0]), datasets: [{ data: entries.map(e => e[1]), backgroundColor: itemColors, borderWidth: 0 }] },
-        options: { plugins: { legend: { display: false } }, cutout: '78%', responsive: true }
+        data: { datasets: [{ data: entries.map(e => e[1]), backgroundColor: colors, borderWidth: 0 }] },
+        options: { plugins: { legend: { display: false } }, cutout: '75%' }
       });
 
       document.getElementById(labelId).innerText = entries.reduce((a,b) => a + b[1], 0);
       document.getElementById(listId).innerHTML = entries.map(([n,v], i) => `
         <div class="stat-row">
-          <div class="indicator"><span class="dot" style="background:${itemColors[i]}"></span><span>${n}</span></div>
-          <span class="badge" style="background:${itemColors[i]}">${v}</span>
-        </div>
-      `).join('');
+          <div class="indicator"><span class="dot" style="background:${colors[i]}"></span><span>${n}</span></div>
+          <span class="badge" style="background:${colors[i]}">${v}</span>
+        </div>`).join('');
     };
 
-    draw('cWD', wdO, 'tWD', 'lWD');
-    draw('cCS', csO, 'tCS', 'lCS');
-    draw('cFN', fnO, 'tFN', 'lFN');
-    draw('cGEO', geO, 'tGEO', 'lGEO', countryOrder);
+    draw('cWD', wdO, 'tWD', 'lWD'); draw('cCS', csO, 'tCS', 'lCS');
+    draw('cFN', fnO, 'tFN', 'lFN'); draw('cGEO', geO, 'tGEO', 'lGEO', countryOrder);
     draw('cSH', shO, 'tSH', 'lSH', shiftOrder);
   }
 
@@ -191,13 +243,14 @@
     const tbody = document.getElementById('tbody');
     const pageData = filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
     tbody.innerHTML = pageData.map(r => {
-      let cls = (r[1].includes('出款') || (r[9] && r[9].includes('出款'))) ? 'tag-wd' : (r[1].includes('客服') || (r[9] && r[9].includes('客服'))) ? 'tag-cs' : (r[1].includes('财务') || (r[9] && r[9].includes('财务'))) ? 'tag-fn' : '';
+      let cls = (r[1].includes('出款') || r[9]?.includes('出款')) ? 'tag-wd' : (r[1].includes('客服') || r[9]?.includes('客服')) ? 'tag-cs' : (r[1].includes('财务') || r[9]?.includes('财务')) ? 'tag-fn' : '';
       return `<tr>
         <td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]||'-'}</td><td style="opacity:0.5">#${r[2]}</td>
-        <td style="font-weight:800">${r[3]}</td><td style="color:${r[5].toLowerCase().includes('mid')?'#f59e0b':'inherit'}">${r[5]}</td>
+        <td style="font-weight:800">${r[3]}</td><td>${r[5]}</td>
         <td><span class="strict-date">${superFormatDate(r[6])}</span></td><td style="color:var(--country)">${r[8]}</td>
       </tr>`;
     }).join('');
+    
     const totalPages = Math.ceil(filtered.length / rowsPerPage);
     document.getElementById('pageNumber').innerText = `第 ${currentPage} 页 / 共 ${totalPages || 1} 页`;
     document.getElementById('prevBtn').disabled = currentPage === 1;
@@ -205,11 +258,11 @@
   }
 
   function changePage(dir) { currentPage += dir; renderTable(); }
-  document.getElementById('search').addEventListener('input', (e) => {
-    const q = e.target.value.toLowerCase();
-    filtered = db.filter(r => r.some(c => c.toLowerCase().includes(q)));
-    currentPage = 1; renderTable();
-  });
+  function superFormatDate(v) {
+    if (!v || v === "-") return "-";
+    let d = (!isNaN(v) && v.length > 4) ? new Date((v - 25569) * 86400 * 1000) : new Date(v.replace(/-/g, '/'));
+    return !isNaN(d.getTime()) ? `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}` : v;
+  }
 
   load();
 </script>
