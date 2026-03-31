@@ -6,64 +6,56 @@
   <title>Nexus | Absent Record</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    /* CSS Identik dengan Performance di atas */
     :root { --primary: #0f172a; --accent: #2563eb; --border: #e2e8f0; --bg: #f8fafc; --text-main: #1e293b; --text-muted: #64748b; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); }
     nav { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.9); border-bottom: 1px solid var(--border); padding: 0.8rem 5%; display: flex; justify-content: space-between; align-items: center; }
+    .amt-clock { background: var(--primary); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
     .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
-    
+    .dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); min-height: 260px; overflow: hidden; }
+    .chart-box { width: 85px; height: 85px; margin: 0 auto 15px; position: relative; }
+    .chart-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.85rem; }
+    .dept-title { font-size: 0.7rem; font-weight: 800; text-align: center; margin-bottom: 15px; text-transform: uppercase; }
+    .stat-list { display: flex; flex-direction: column; gap: 5px; padding-top: 10px; border-top: 1px solid #f1f5f9; overflow: hidden; }
+    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 5px; font-size: 0.65rem; font-weight: 700; }
+    .count-badge { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
     .nav-menu { display: flex; gap: 12px; margin-bottom: 1.5rem; padding: 10px; background: white; border-radius: 20px; border: 1px solid var(--border); }
-    .menu-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; border-radius: 15px; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-decoration: none; background: #f8fafc; }
+    .menu-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; border-radius: 15px; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-decoration: none; background: #f8fafc; transition: 0.3s; }
     .menu-btn.active { background: var(--primary); color: white; }
-
-    .absent-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-    .stat-card { background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid var(--border); text-align: center; }
-    .stat-card h4 { font-size: 0.65rem; color: var(--text-muted); margin-bottom: 10px; }
-    .stat-card div { font-size: 1.5rem; font-weight: 800; }
-
     .table-container { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
-    table { width: 100%; border-collapse: collapse; }
+    table { width: 100%; border-collapse: collapse; min-width: 1200px; }
     th { background: #f8fafc; padding: 1rem; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); }
-    td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
-    
-    .tag { padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; }
-    .tag-sick { background: #fee2e2; color: #b91c1c; }
-    .tag-leave { background: #e0e7ff; color: #3730a3; }
-    .tag-late { background: #ffedd5; color: #9a3412; }
+    td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
   </style>
 </head>
 <body>
-<nav>
-  <div style="font-weight: 900;"><i class="fas fa-user-clock"></i> NEXUS ABSENT RECORD</div>
-  <div style="font-weight: 800; font-size: 0.8rem;">March 2026</div>
-</nav>
+<nav><div style="font-weight: 900;"><i class="fas fa-user-clock"></i> NEXUS ABSENT</div><div class="amt-clock">00:00:00 AMT</div></nav>
 <div class="container">
+  <div class="dept-grid">
+    <div class="dept-card"><div class="dept-title">Present</div><div class="chart-box"><canvas id="a1"></canvas><div class="chart-val">98%</div></div><div class="stat-list"><div class="stat-row">Attendance<span class="count-badge">920</span></div></div></div>
+    <div class="dept-card"><div class="dept-title">Sick</div><div class="chart-box"><canvas id="a2"></canvas><div class="chart-val">5</div></div><div class="stat-list"><div class="stat-row">Medical Leave<span class="count-badge">Red</span></div></div></div>
+    <div class="dept-card"><div class="dept-title">Late</div><div class="chart-box"><canvas id="a3"></canvas><div class="chart-val">12</div></div><div class="stat-list"><div class="stat-row">Late Comers<span class="count-badge">Warn</span></div></div></div>
+    <div class="dept-card"><div class="dept-title">Off Day</div><div class="chart-box"><canvas id="a4"></canvas><div class="chart-val">45</div></div><div class="stat-list"><div class="stat-row">Total Off<span class="count-badge">Sat-Sun</span></div></div></div>
+    <div class="dept-card"><div class="dept-title">AL / UL</div><div class="chart-box"><canvas id="a5"></canvas><div class="chart-val">2</div></div><div class="stat-list"><div class="stat-row">Annual Leave<span class="count-badge">Apprv</span></div></div></div>
+  </div>
+
   <div class="nav-menu">
     <a href="index.html" class="menu-btn"><i class="fas fa-th-large"></i> OVERVIEW</a>
     <a href="performance.html" class="menu-btn"><i class="fas fa-chart-line"></i> PERFORMANCE</a>
     <a href="#" class="menu-btn active"><i class="fas fa-user-clock"></i> ABSENT RECORD</a>
-  </div>
-
-  <div class="absent-stats">
-    <div class="stat-card"><h4>SICK LEAVE</h4><div style="color:#ef4444">12</div></div>
-    <div class="stat-card"><h4>ANNUAL LEAVE</h4><div style="color:#3b82f6">05</div></div>
-    <div class="stat-card"><h4>LATE COMING</h4><div style="color:#f59e0b">24</div></div>
-    <div class="stat-card"><h4>ATTENDANCE RATE</h4><div style="color:#10b981">98.2%</div></div>
+    <a href="salary.html" class="menu-btn"><i class="fas fa-wallet"></i> SALARY SLIP</a>
   </div>
 
   <div class="table-container">
     <table>
-      <thead>
-        <tr><th>DATE</th><th>ID</th><th>NAME</th><th>TYPE</th><th>REASON</th><th>DURATION</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>30-03-2026</td><td>#WD000283</td><td>Angelica G. Milaran</td><td><span class="tag tag-sick">SICK</span></td><td>Fever</td><td>1 Day</td></tr>
-        <tr><td>28-03-2026</td><td>#WD000104</td><td>MONICA RAMOS</td><td><span class="tag tag-late">LATE</span></td><td>Traffic</td><td>15 Min</td></tr>
-        <tr><td>25-03-2026</td><td>#WD000205</td><td>Rafael J. Sartorio</td><td><span class="tag tag-leave">LEAVE</span></td><td>Family Trip</td><td>3 Days</td></tr>
-      </tbody>
+      <thead><tr><th>DATE</th><th>ID</th><th>NAME</th><th>TYPE</th><th>REASON</th><th>STATUS</th></tr></thead>
+      <tbody><tr><td>31-03-2026</td><td>#WD102</td><td>Rafael J. Sartorio</td><td>SICK</td><td>Fever</td><td>APPRV</td></tr></tbody>
     </table>
   </div>
 </div>
 </body>
-</html>absent.html
+</html>
