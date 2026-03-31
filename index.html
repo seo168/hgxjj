@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus v6.6 | Stats Restored & 10 Rows</title>
+  <title>Nexus v6.7 | No Scrollbars</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,48 +20,55 @@
     .amt-clock { background: var(--primary); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
     .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
     
-    /* Stats Grid */
+    /* Stats Grid - CLEAN LOOK */
     .dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-    .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); min-height: 280px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); min-height: 260px; overflow: hidden; }
     .chart-box { width: 85px; height: 85px; margin: 0 auto 15px; position: relative; }
     .chart-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.85rem; }
     .dept-title { font-size: 0.7rem; font-weight: 800; text-align: center; margin-bottom: 15px; text-transform: uppercase; }
 
-    /* Legend List (Keterangan Statistik) */
-    .stat-list { max-height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding-top: 10px; border-top: 1px solid #f1f5f9; }
-    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; font-size: 0.65rem; font-weight: 700; }
+    /* Legend List - NO SCROLLBAR */
+    .stat-list { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 5px; 
+      padding-top: 10px; 
+      border-top: 1px solid #f1f5f9;
+      overflow: hidden; /* Menghilangkan scrollbar */
+    }
+    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 5px; font-size: 0.65rem; font-weight: 700; }
     .indicator { display: flex; align-items: center; gap: 6px; }
     .dot { width: 7px; height: 7px; border-radius: 50%; }
-    .count-badge { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; min-width: 25px; text-align: center; }
+    .count-badge { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; min-width: 25px; text-align: center; color: var(--primary); }
 
     /* Filters */
     .filter-wrapper { background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 1rem; }
     .filter-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr; gap: 12px; }
-    .filter-group label { display: block; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); margin-bottom: 5px; }
+    .filter-group label { display: block; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
     .filter-group select, .filter-group input { width: 100%; padding: 11px 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.75rem; font-weight: 600; outline: none; }
 
     /* Table */
     .table-container { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
     table { width: 100%; border-collapse: collapse; min-width: 1200px; }
     th { background: #f8fafc; padding: 1rem; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); border-bottom: 1px solid var(--border); }
-    td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
+    td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
     
     .tag-wd { background: #ecfdf5; color: #065f46; padding: 3px 10px; border-radius: 6px; }
     .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 3px 10px; border-radius: 6px; }
     .tag-fn { background: #fffbeb; color: #92400e; padding: 3px 10px; border-radius: 6px; }
-    .date-text { background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-family: monospace; font-size: 0.75rem; }
+    .date-badge { background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-family: monospace; font-size: 0.75rem; font-weight: 700; }
 
     /* Pagination */
     .pagination-bar { padding: 1.2rem; background: #fff; border-top: 1px solid var(--border); display: flex; justify-content: center; align-items: center; gap: 20px; }
-    .page-btn { padding: 8px 18px; border: 1px solid var(--border); background: white; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 0.75rem; }
-    .page-btn:disabled { opacity: 0.3; }
+    .page-btn { padding: 8px 20px; border: 1px solid var(--border); background: white; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 0.75rem; transition: 0.2s; }
+    .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
     .status-bar { padding: 8px 25px; text-align: right; font-size: 0.65rem; color: var(--text-muted); font-weight: 800; background: #f8fafc; }
   </style>
 </head>
 <body>
 
 <nav>
-  <div style="font-weight: 900;"><i class="fas fa-chart-pie" style="color:var(--accent)"></i> NEXUS v6.6</div>
+  <div style="font-weight: 900;"><i class="fas fa-layer-group"></i> NEXUS v6.7</div>
   <div class="amt-clock" id="clock">00:00:00 AMT</div>
 </nav>
 
@@ -96,12 +103,12 @@
 
   <div class="filter-wrapper">
     <div class="filter-grid">
-      <div class="filter-group"><label>KEYWORD</label><input type="text" id="searchName" placeholder="Search..."></div>
-      <div class="filter-group"><label>SHIFT</label><select id="fShift"></select></div>
-      <div class="filter-group"><label>TEAM (J)</label><select id="fTeam"></select></div>
-      <div class="filter-group"><label>GROUP (B)</label><select id="fGroup"></select></div>
-      <div class="filter-group"><label>COUNTRY</label><select id="fCountry"></select></div>
-      <div class="filter-group"><label>PLATFORM</label><select id="fPlatform"></select></div>
+      <div class="filter-group"><label>Keyword</label><input type="text" id="searchName" placeholder="Search..."></div>
+      <div class="filter-group"><label>Shift</label><select id="fShift"></select></div>
+      <div class="filter-group"><label>Team (J)</label><select id="fTeam"></select></div>
+      <div class="filter-group"><label>Group (B)</label><select id="fGroup"></select></div>
+      <div class="filter-group"><label>Country</label><select id="fCountry"></select></div>
+      <div class="filter-group"><label>Platform</label><select id="fPlatform"></select></div>
     </div>
   </div>
 
@@ -128,7 +135,7 @@
   let db = [], filtered = [], charts = {};
   let currentPage = 1;
   const rowsPerPage = 10;
-  const palette = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#f472b6", "#94a3b8"];
+  const palette = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];
 
   async function load() {
     try {
@@ -196,7 +203,7 @@
       return `<tr>
         <td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]}</td>
         <td style="opacity:0.5">#${r[2]}</td><td style="font-weight:800">${r[3]}</td>
-        <td>${r[5]}</td><td><span class="date-text">${formatDate(r[6])}</span></td>
+        <td>${r[5]}</td><td><span class="date-badge">${formatDate(r[6])}</span></td>
         <td style="color:var(--country)">${r[8]}</td>
       </tr>`;
     }).join('');
@@ -205,7 +212,7 @@
     document.getElementById('pageInfo').innerText = `Page ${currentPage} / ${totalPages}`;
     document.getElementById('prevBtn').disabled = currentPage === 1;
     document.getElementById('nextBtn').disabled = currentPage >= totalPages;
-    document.getElementById('statusBar').innerText = `Displaying ${pageData.length} of ${filtered.length} matches`;
+    document.getElementById('statusBar').innerText = `Total Found: ${filtered.length}`;
   }
 
   function changePage(step) { currentPage += step; updateUI(); }
@@ -228,7 +235,6 @@
       
       const entries = Object.entries(datasets[id]).sort((a,b)=>b[1]-a[1]);
       const dataValues = entries.map(e => e[1]);
-      const dataLabels = entries.map(e => e[0]);
       const colors = entries.map((_, i) => palette[i % palette.length]);
 
       charts[id] = new Chart(ctx, {
@@ -239,9 +245,9 @@
 
       document.getElementById('t' + id.slice(1)).innerText = dataValues.reduce((a, b) => a + b, 0);
       
-      // Render Legend List
+      // Render Legend List (Limit to top 4 to prevent overflow)
       const listEl = document.getElementById('list_' + id);
-      listEl.innerHTML = entries.map(([name, val], i) => `
+      listEl.innerHTML = entries.slice(0, 4).map(([name, val], i) => `
         <div class="stat-row">
           <div class="indicator">
             <span class="dot" style="background:${colors[i]}"></span>
