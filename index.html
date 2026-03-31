@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus v6.3 | Pagination Restored</title>
+  <title>Nexus v6.4 | Locked Logic & UI</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,7 +20,7 @@
     .amt-clock { background: var(--primary); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
     .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
     
-    /* Stats */
+    /* Stats Section */
     .dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
     .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .chart-box { width: 85px; height: 85px; margin: 0 auto 10px; position: relative; }
@@ -29,24 +29,24 @@
     .stat-row { display: flex; justify-content: space-between; padding: 6px 10px; border-bottom: 1px solid #f1f5f9; font-size: 0.7rem; font-weight: 700; }
     .badge { padding: 2px 8px; border-radius: 6px; color: white; font-size: 0.65rem; min-width: 32px; text-align: center; }
 
-    /* Filter System */
+    /* Filter System (Urutan sesuai gambar) */
     .filter-wrapper { background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 1rem; }
     .filter-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr; gap: 12px; }
     .filter-group label { display: block; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
-    .filter-group select, .filter-group input { width: 100%; padding: 11px 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.75rem; font-weight: 600; outline: none; }
+    .filter-group select, .filter-group input { width: 100%; padding: 11px 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.75rem; font-weight: 600; outline: none; background: #fff; }
 
     /* Table & Pagination */
-    .table-container { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
+    .table-container { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; margin-top: 1rem; }
     table { width: 100%; border-collapse: collapse; min-width: 1200px; }
-    th { background: #f8fafc; padding: 1rem; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    th { background: #f8fafc; padding: 1rem; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); border-bottom: 1px solid var(--border); text-align: center; }
     td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
+    
     .tag-wd { background: #ecfdf5; color: #065f46; padding: 4px 10px; border-radius: 6px; }
     .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 4px 10px; border-radius: 6px; }
     .tag-fn { background: #fffbeb; color: #92400e; padding: 4px 10px; border-radius: 6px; }
     
     .pagination-bar { padding: 1.2rem; background: #fff; border-top: 1px solid var(--border); display: flex; justify-content: center; align-items: center; gap: 20px; }
-    .page-btn { padding: 8px 20px; border: 1px solid var(--border); background: white; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 0.75rem; transition: 0.2s; }
-    .page-btn:hover:not(:disabled) { background: var(--primary); color: white; }
+    .page-btn { padding: 8px 20px; border: 1px solid var(--border); background: white; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 0.75rem; }
     .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .status-bar { padding: 10px 25px; text-align: right; font-size: 0.7rem; color: var(--text-muted); font-weight: 800; background: #f8fafc; }
   </style>
@@ -54,7 +54,7 @@
 <body>
 
 <nav>
-  <div style="font-weight: 900;"><i class="fas fa-database"></i> NEXUS v6.3</div>
+  <div style="font-weight: 900;"><i class="fas fa-shield-alt"></i> NEXUS v6.4 (LOCKED)</div>
   <div class="amt-clock" id="clock">00:00:00 AMT</div>
 </nav>
 
@@ -71,8 +71,10 @@
     <div class="filter-grid">
       <div class="filter-group"><label>Keyword</label><input type="text" id="searchName" placeholder="Search..."></div>
       <div class="filter-group"><label>Shift</label><select id="fShift"></select></div>
-      <div class="filter-group"><label>Team (J)</label><select id="fTeam"></select></div>
-      <div class="filter-group"><label>Group (B)</label><select id="fGroup"></select></div>
+      
+      <div class="filter-group"><label>Team (团队 - Col J)</label><select id="fTeam"></select></div>
+      <div class="filter-group"><label>Group (组别 - Col B)</label><select id="fGroup"></select></div>
+      
       <div class="filter-group"><label>Country</label><select id="fCountry"></select></div>
       <div class="filter-group"><label>Platform</label><select id="fPlatform"></select></div>
     </div>
@@ -81,11 +83,22 @@
   <div class="table-container">
     <div style="overflow-x: auto;">
       <table>
-        <thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead>
+        <thead>
+          <tr>
+            <th>平台</th>
+            <th>组别(B)</th>
+            <th>团队(J)</th>
+            <th>ID</th>
+            <th>姓名</th>
+            <th>班次</th>
+            <th>入职日期</th>
+            <th>国家</th>
+          </tr>
+        </thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
-    <div class="status-bar" id="statusBar">Loading...</div>
+    <div class="status-bar" id="statusBar">Connecting to Sheets...</div>
     <div class="pagination-bar">
       <button class="page-btn" id="prevBtn" onclick="changePage(-1)">PREV</button>
       <span id="pageInfo" style="font-weight: 800; font-size: 0.8rem;">Page 1</span>
@@ -95,22 +108,25 @@
 </div>
 
 <script>
-  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJs_b9jexKArco/pub?output=csv";
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
   let db = [], filtered = [], charts = {};
-  let currentPage = 1; 
-  const rowsPerPage = 15; // Menampilkan 15 data per halaman
+  let currentPage = 1;
+  const rowsPerPage = 15;
 
   async function load() {
     try {
       const r = await fetch(`${CSV_URL}&t=${Date.now()}`);
       const t = await r.text();
-      db = t.split(/\r?\n/).slice(1).map(l => l.split(',').map(c => c.trim())).filter(d => d[3]);
+      // Parsing CSV dan menghapus baris kosong
+      db = t.split(/\r?\n/).slice(1).map(l => l.split(',').map(c => c.trim())).filter(d => d.length > 3 && d[3]);
+      
       initFilters();
       runFilters(); 
+      
       setInterval(() => {
         document.getElementById('clock').innerText = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"})).toLocaleTimeString('en-GB') + " AMT";
       }, 1000);
-    } catch (e) { console.error(e); }
+    } catch (e) { document.getElementById('statusBar').innerText = "Error: Check Connection"; }
   }
 
   function initFilters() {
@@ -120,13 +136,16 @@
       s.innerHTML = `<option value="">All Records</option>`;
       vals.forEach(v => s.innerHTML += `<option value="${v}">${v}</option>`);
     };
+
     fill('fPlatform', getU(0));
-    fill('fGroup', getU(1));
-    fill('fTeam', getU(9));
+    fill('fGroup', getU(1)); // Kolom B
+    fill('fTeam', getU(9));  // Kolom J
     fill('fShift', getU(5));
     fill('fCountry', getU(8));
+
     ['searchName', 'fShift', 'fTeam', 'fGroup', 'fCountry', 'fPlatform'].forEach(id => {
       document.getElementById(id).addEventListener('input', () => { currentPage = 1; runFilters(); });
+      document.getElementById(id).addEventListener('change', () => { currentPage = 1; runFilters(); });
     });
   }
 
@@ -140,8 +159,11 @@
 
     filtered = db.filter(r => {
       return (r.join(' ').toLowerCase().includes(sn)) &&
-             (!sf || r[5] === sf) && (!sg || r[1] === sg) &&
-             (!st || r[9] === st) && (!sc || r[8] === sc) && (!sp || r[0] === sp);
+             (!sf || r[5] === sf) && 
+             (!sg || r[1] === sg) && 
+             (!st || r[9] === st) && 
+             (!sc || r[8] === sc) && 
+             (!sp || r[0] === sp);
     });
     updateUI();
   }
@@ -150,28 +172,38 @@
     syncCharts();
     const tbody = document.getElementById('tbody');
     const start = (currentPage - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    const pageData = filtered.slice(start, end);
+    const pageData = filtered.slice(start, start + rowsPerPage);
 
     tbody.innerHTML = pageData.map(r => {
-      const b = r[1]||"", j = r[9]||"";
-      let cls = (b.includes('出款') || j.includes('出款') || b.includes('审核转盘')) ? 'tag-wd' : 
-                (b.includes('客服') || j.includes('客服')) ? 'tag-cs' : 
-                (b.includes('财务') || j.includes('财务')) ? 'tag-fn' : '';
-      return `<tr><td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]}</td><td>#${r[2]}</td><td>${r[3]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[8]}</td></tr>`;
+      const groupB = r[1] || "";
+      const teamJ = r[9] || "";
+      // Warna Tag berdasarkan keyword di Kolom B atau J
+      let cls = (groupB.includes('出款') || teamJ.includes('出款') || groupB.includes('审核转盘')) ? 'tag-wd' : 
+                (groupB.includes('客服') || teamJ.includes('客服')) ? 'tag-cs' : 
+                (groupB.includes('财务') || teamJ.includes('财务')) ? 'tag-fn' : '';
+      
+      return `<tr>
+        <td><b>${r[0]}</b></td>
+        <td><span class="${cls}">${r[1]}</span></td>
+        <td>${r[9]}</td>
+        <td style="opacity:0.6">#${r[2]}</td>
+        <td style="font-weight:800">${r[3]}</td>
+        <td>${r[5]}</td>
+        <td>${r[6]}</td>
+        <td style="color:var(--country)">${r[8]}</td>
+      </tr>`;
     }).join('');
 
     const totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
     document.getElementById('pageInfo').innerText = `Page ${currentPage} / ${totalPages}`;
     document.getElementById('prevBtn').disabled = currentPage === 1;
     document.getElementById('nextBtn').disabled = currentPage >= totalPages;
-    document.getElementById('statusBar').innerText = `Total Data: ${db.length} | Found: ${filtered.length}`;
+    document.getElementById('statusBar').innerText = `Total: ${db.length} | Found: ${filtered.length}`;
   }
 
   function changePage(step) {
     currentPage += step;
     updateUI();
-    window.scrollTo({ top: 500, behavior: 'smooth' });
   }
 
   function syncCharts() {
@@ -193,11 +225,16 @@
       const entries = Object.entries(data).sort((a,b)=>b[1]-a[1]);
       const colors = entries.map((_,i)=>palette[i%5]);
       charts[id] = new Chart(ctx, {
-        type: 'doughnut', data: { datasets:[{data:entries.map(e=>e[1]), backgroundColor:colors, borderWidth:0}] },
+        type: 'doughnut', 
+        data: { datasets:[{data:entries.map(e=>e[1]), backgroundColor:colors, borderWidth:0}] },
         options: { plugins:{legend:{display:false}}, cutout:'75%' }
       });
       document.getElementById(tId).innerText = entries.reduce((a,b)=>a+b[1],0);
+      
+      const list = document.getElementById(lId.replace('c','l')); // Mencari div list
+      if(list) list.innerHTML = entries.slice(0,4).map(([n,v],i)=>`<div class="stat-row"><span>${n}</span><span class="badge" style="background:${colors[i]}">${v}</span></div>`).join('');
     };
+
     draw('cWD', wdO, 'tWD', 'lWD'); draw('cCS', csO, 'tCS', 'lCS');
     draw('cFN', fnO, 'tFN', 'lFN'); draw('cGEO', geO, 'tGEO', 'lGEO');
     draw('cSH', shO, 'tSH', 'lSH');
