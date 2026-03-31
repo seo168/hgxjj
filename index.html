@@ -132,6 +132,10 @@
       </div>
     </div>
   </div>
+
+  <div id="performance" class="page-content"><div class="table-container" style="padding:100px; text-align:center"><h3>Performance Analytics Module</h3></div></div>
+  <div id="absent" class="page-content"><div class="table-container" style="padding:100px; text-align:center"><h3>Attendance Tracking System</h3></div></div>
+  <div id="salary" class="page-content"><div class="table-container" style="padding:100px; text-align:center"><h3>Payroll Distribution</h3></div></div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
@@ -149,7 +153,6 @@
         <div class="perf-label"><i class="fas fa-hourglass-half"></i> TOTAL MASA KERJA</div>
         <div class="perf-val" id="mTenure">-</div>
       </div>
-      
       <div class="perf-item">
         <div class="perf-label"><i class="fas fa-chart-line"></i> RATA-RATA HARIAN</div>
         <div class="perf-val" id="mAvg">-</div>
@@ -175,10 +178,10 @@
 </div>
 
 <script>
-  // CONFIG: Ganti URL & GID sesuai spreadsheet kamu
+  // CONFIGURATION
   const BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
   const GID_MASTER = "0"; 
-  const GID_PERFORMANCE = "1680695165"; // GID Sheet Performance
+  const GID_PERFORMANCE = "1680695165"; 
 
   let dbMaster = [], dbPerf = [], filtered = [], charts = {};
   let mainPage = 1; const mainRows = 10;
@@ -187,7 +190,8 @@
   function showPage(p) {
     document.querySelectorAll('.page-content').forEach(pc => pc.classList.remove('active'));
     document.querySelectorAll('.menu-btn').forEach(mb => mb.classList.remove('active'));
-    document.getElementById(p).classList.add('active');
+    const target = document.getElementById(p);
+    if(target) target.classList.add('active');
     document.getElementById('btn-'+p).classList.add('active');
   }
 
@@ -208,13 +212,14 @@
       setInterval(() => {
         document.getElementById('clock').innerText = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"})).toLocaleTimeString('en-GB') + " AMT";
       }, 1000);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Fetch Error:", e); }
   }
 
   function initFilters() {
     const getU = (i) => [...new Set(dbMaster.map(r => r[i]))].filter(v => v && v !== "-").sort();
     const fill = (id, v) => {
       const s = document.getElementById(id);
+      if(!s) return;
       s.innerHTML = `<option value="">All</option>`;
       v.forEach(x => s.innerHTML += `<option value="${x}">${x}</option>`);
     };
@@ -231,6 +236,7 @@
     const sg = document.getElementById('fGroup').value;
     const sc = document.getElementById('fCountry').value;
     const sp = document.getElementById('fPlatform').value;
+    
     filtered = dbMaster.filter(r => (r.join(' ').toLowerCase().includes(sn)) && (!sf || r[5] === sf) && (!sg || r[1] === sg) && (!st || r[9] === st) && (!sc || r[8] === sc) && (!sp || r[0] === sp));
     updateUI();
   }
@@ -250,9 +256,10 @@
     return `${y} Tahun, ${m} Bulan, ${d} Hari`;
   }
 
+  // CORE LOGIC: Mencari ID di sheet sebelah
   function openDetail(idx) {
     const r = filtered[idx];
-    const idS = r[2];
+    const idS = r[2]; // ID dari Master
     
     // Cari data di Sheet Performance (Kolom A=ID, B=Avg, C=Order, D=Mistake, E=Mentor, F=Days)
     const p = dbPerf.find(x => x[0] == idS) || ["", "0", "0", "0", "No Mentor", "0"];
@@ -261,8 +268,8 @@
     document.getElementById('mID').innerText = "#" + idS;
     document.getElementById('mTenure').innerText = calculateTenure(r[6]);
     
-    // Update Modal dengan data Performance
-    document.getElementById('mAvg').innerText = p[1] || "-";
+    // Map data Performance ke Modal
+    document.getElementById('mAvg').innerText = p[1] || "0";
     document.getElementById('mTotalOrder').innerText = p[2] || "0";
     document.getElementById('mMistake').innerText = p[3] || "0";
     document.getElementById('mMentor').innerText = p[4] || "Unassigned";
