@@ -47,16 +47,32 @@
     td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
     
     /* Performance Scroll Specific */
-    .perf-table { table-layout: fixed; width: 100%; min-width: auto; }
-    .perf-scroll-area { max-height: 350px; overflow-y: auto; overflow-x: hidden; border-top: 1px solid var(--border); }
+    .perf-table { 
+        table-layout: fixed; /* KUNCI: Memaksa kolom mengikuti width kita, bukan isi teks */
+        width: 100%; 
+        border-collapse: collapse; 
+    }
+    .perf-scroll-area { 
+        max-height: 350px; 
+        overflow-y: auto; 
+        overflow-x: hidden; 
+        border-top: 1px solid var(--border); 
+    }
     .perf-scroll-area::-webkit-scrollbar { width: 6px; }
     .perf-scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     
-    .col-name { width: 30%; text-align: left !important; }
-    .col-id { width: 15%; }
-    .col-tot { width: 20%; }
-    .col-avg { width: 20%; }
-    .col-act { width: 15%; }
+    /* Pengaturan Lebar Kolom - Harus SAMA antara Header dan Body */
+    .col-name { width: 30%; text-align: left !important; padding-left: 15px !important; }
+    .col-id   { width: 15%; text-align: center !important; }
+    .col-tot  { width: 20%; text-align: center !important; }
+    .col-avg  { width: 20%; text-align: center !important; }
+    .col-act  { width: 15%; text-align: center !important; }
+
+    /* Tambahan agar padding tidak merusak tata letak */
+    .perf-table th, .perf-table td {
+        padding: 12px 5px;
+        box-sizing: border-box;
+    }
 
     .id-link { background: #eff6ff; color: #2563eb; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-weight: 800; transition: 0.2s; display: inline-block; }
     .id-link:hover { background: var(--accent); color: white; transform: scale(1.05); }
@@ -397,14 +413,33 @@
   function updatePerfTable(type, keyword) {
     const body = document.getElementById(`tbody-perf-${type.toLowerCase()}`);
     if(!body) return;
-    const deptData = filtered.filter(r => (r[1]||"").includes(keyword) || (r[9]||"").includes(keyword) || (keyword === '客服' && (r[1]||"").includes('风控')));
+
+    // Filter data berdasarkan keyword departemen
+    const deptData = filtered.filter(r => 
+        (r[1]||"").includes(keyword) || 
+        (r[9]||"").includes(keyword) || 
+        (keyword === '客服' && (r[1]||"").includes('风控'))
+    );
+
     body.innerHTML = deptData.map((r) => {
         const staffID = clean(r[2]);
         const p = dbPerf.find(x => clean(x[2]) === staffID);
         const tot = p ? (p[39] || "0") : "0";
         const avg = p ? (p[40] || "0") : "0";
         const originalIdx = dbMaster.indexOf(r); 
-        return `<tr><td class="col-name" style="font-weight:800; color:var(--primary);">${r[3]}</td><td class="col-id"><span class="id-link" onclick="openDetail(${originalIdx})">#${r[2]}</span></td><td class="col-tot" style="font-weight:700">${tot}</td><td class="col-avg" style="color:var(--accent); font-weight:800;">${avg}</td><td class="col-act"><button class="menu-btn" style="padding:5px 12px; font-size:0.6rem" onclick="openDetail(${originalIdx})">VIEW</button></td></tr>`;
+
+        return `
+            <tr>
+                <td class="col-name" style="font-weight:800; color:var(--primary);">${r[3]}</td>
+                <td class="col-id"><span class="id-link" onclick="openDetail(${originalIdx})">#${r[2]}</span></td>
+                <td class="col-tot" style="font-weight:700">${tot}</td>
+                <td class="col-avg" style="color:var(--accent); font-weight:800;">${avg}</td>
+                <td class="col-act">
+                    <button class="menu-btn" 
+                            style="padding:5px 12px; font-size:0.6rem; min-width:65px; margin:0 auto; display:block;" 
+                            onclick="openDetail(${originalIdx})">VIEW</button>
+                </td>
+            </tr>`;
     }).join('');
   }
 
