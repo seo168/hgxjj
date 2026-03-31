@@ -22,12 +22,21 @@
     
     .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
     
+    /* Stats Grid */
     .dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-    .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); min-height: 260px; transition: 0.3s; }
+    .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); min-height: 280px; transition: 0.3s; }
     .chart-box { width: 85px; height: 85px; margin: 0 auto 15px; position: relative; }
     .chart-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.85rem; }
     .dept-title { font-size: 0.7rem; font-weight: 800; text-align: center; margin-bottom: 15px; text-transform: uppercase; }
 
+    /* Remarks Styling */
+    .stat-list { display: flex; flex-direction: column; gap: 6px; padding-top: 10px; border-top: 1px solid #f1f5f9; }
+    .stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; font-weight: 700; }
+    .indicator { display: flex; align-items: center; gap: 6px; color: var(--text-muted); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .remark-text { color: var(--text-main); max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Navigation & Tabs */
     .nav-menu { display: flex; gap: 12px; margin-bottom: 1.5rem; padding: 10px; background: white; border-radius: 20px; border: 1px solid var(--border); }
     .menu-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; border-radius: 15px; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); cursor: pointer; transition: 0.3s; background: #f8fafc; border: none; outline: none; }
     .menu-btn:hover { background: #f1f5f9; color: var(--primary); }
@@ -51,14 +60,10 @@
     .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 3px 10px; border-radius: 6px; }
     .tag-fn { background: #fffbeb; color: #92400e; padding: 3px 10px; border-radius: 6px; }
     .date-badge { background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-family: monospace; font-size: 0.75rem; font-weight: 700; }
-
-    .stat-list { display: flex; flex-direction: column; gap: 5px; padding-top: 10px; border-top: 1px solid #f1f5f9; }
-    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 5px; font-size: 0.65rem; font-weight: 700; }
-    .dot { width: 7px; height: 7px; border-radius: 50%; }
-    .count-badge { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
     
     .page-btn-small { padding: 4px 10px; border: 1px solid var(--border); background: white; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: 800; transition: 0.2s; }
     .page-btn-small:hover { background: var(--primary); color: white; }
+    .count-badge { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: var(--primary); }
   </style>
 </head>
 <body>
@@ -118,61 +123,52 @@
 
   <div id="performance" class="page-content">
     <div class="filter-wrapper" style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
-      <span style="font-weight: 800; font-size: 0.8rem;"><i class="fas fa-sort-amount-up"></i> SORT DATA BY ID</span>
+      <span style="font-weight: 800; font-size: 0.8rem; color: var(--primary);"><i class="fas fa-sort-amount-up"></i> SORT DATA BY ID</span>
       <select id="sortOrder" onchange="updateUI()" style="padding: 8px 15px; border-radius: 10px; border: 1px solid var(--border); font-weight: 700; font-size: 0.75rem;">
         <option value="asc">Low to High (ID)</option>
         <option value="desc">High to Low (ID)</option>
       </select>
     </div>
 
-    <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--withdraw);">
-      <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
-        <span><i class="fas fa-money-bill-wave"></i> 出款部明细 (WITHDRAW)</span>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <button class="page-btn-small" onclick="changeSubPage('WD', -1)"><i class="fas fa-chevron-left"></i></button>
-            <span id="infoWD" style="font-size: 0.75rem;">Page 1</span>
-            <button class="page-btn-small" onclick="changeSubPage('WD', 1)"><i class="fas fa-chevron-right"></i></button>
+    <div id="performance-tables">
+      <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--withdraw);">
+        <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
+          <span><i class="fas fa-money-bill-wave"></i> 出款部 (WITHDRAW)</span>
+          <div style="display: flex; align-items: center; gap: 10px;">
+              <button class="page-btn-small" onclick="changeSubPage('WD', -1)"><i class="fas fa-chevron-left"></i></button>
+              <span id="infoWD" style="font-size: 0.75rem;">Page 1</span>
+              <button class="page-btn-small" onclick="changeSubPage('WD', 1)"><i class="fas fa-chevron-right"></i></button>
+          </div>
+        </div>
+        <div style="overflow-x: auto;">
+          <table><thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead><tbody id="tbodyWD"></tbody></table>
         </div>
       </div>
-      <div style="overflow-x: auto;">
-        <table>
-          <thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead>
-          <tbody id="tbodyWD"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--cs);">
-      <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
-        <span><i class="fas fa-user-shield"></i> 客服 / 风控部明细 (CS / RISK)</span>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <button class="page-btn-small" onclick="changeSubPage('CS', -1)"><i class="fas fa-chevron-left"></i></button>
-            <span id="infoCS" style="font-size: 0.75rem;">Page 1</span>
-            <button class="page-btn-small" onclick="changeSubPage('CS', 1)"><i class="fas fa-chevron-right"></i></button>
+      <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--cs);">
+        <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
+          <span><i class="fas fa-user-shield"></i> 客服 / 风控 (CS / RISK)</span>
+          <div style="display: flex; align-items: center; gap: 10px;">
+              <button class="page-btn-small" onclick="changeSubPage('CS', -1)"><i class="fas fa-chevron-left"></i></button>
+              <span id="infoCS" style="font-size: 0.75rem;">Page 1</span>
+              <button class="page-btn-small" onclick="changeSubPage('CS', 1)"><i class="fas fa-chevron-right"></i></button>
+          </div>
+        </div>
+        <div style="overflow-x: auto;">
+          <table><thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead><tbody id="tbodyCS"></tbody></table>
         </div>
       </div>
-      <div style="overflow-x: auto;">
-        <table>
-          <thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead>
-          <tbody id="tbodyCS"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--finance);">
-      <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
-        <span><i class="fas fa-file-invoice-dollar"></i> 财务部明细 (FINANCE)</span>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <button class="page-btn-small" onclick="changeSubPage('FN', -1)"><i class="fas fa-chevron-left"></i></button>
-            <span id="infoFN" style="font-size: 0.75rem;">Page 1</span>
-            <button class="page-btn-small" onclick="changeSubPage('FN', 1)"><i class="fas fa-chevron-right"></i></button>
+      <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--finance);">
+        <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
+          <span><i class="fas fa-file-invoice-dollar"></i> 财务部 (FINANCE)</span>
+          <div style="display: flex; align-items: center; gap: 10px;">
+              <button class="page-btn-small" onclick="changeSubPage('FN', -1)"><i class="fas fa-chevron-left"></i></button>
+              <span id="infoFN" style="font-size: 0.75rem;">Page 1</span>
+              <button class="page-btn-small" onclick="changeSubPage('FN', 1)"><i class="fas fa-chevron-right"></i></button>
+          </div>
         </div>
-      </div>
-      <div style="overflow-x: auto;">
-        <table>
-          <thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead>
-          <tbody id="tbodyFN"></tbody>
-        </table>
+        <div style="overflow-x: auto;">
+          <table><thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead><tbody id="tbodyFN"></tbody></table>
+        </div>
       </div>
     </div>
   </div>
@@ -192,9 +188,9 @@
   
   // State Pagination
   let mainPage = 1;
-  const mainRows = 10; // Overview 10 per page
+  const mainRows = 10;
   let subPages = { WD: 1, CS: 1, FN: 1 };
-  const subRows = 5; // Performance 5 per page
+  const subRows = 5;
 
   const palette = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];
 
@@ -231,10 +227,7 @@
     fill('fShift', getU(5));
     fill('fCountry', getU(8));
     ['searchName', 'fShift', 'fTeam', 'fGroup', 'fCountry', 'fPlatform'].forEach(id => {
-      document.getElementById(id).addEventListener('input', () => {
-          mainPage = 1; // Reset to page 1 on filter
-          runFilters();
-      });
+      document.getElementById(id).addEventListener('input', () => { mainPage = 1; runFilters(); });
     });
   }
 
@@ -250,15 +243,8 @@
     updateUI();
   }
 
-  function changeMainPage(step) {
-    mainPage += step;
-    updateUI();
-  }
-
-  function changeSubPage(type, step) {
-    subPages[type] += step;
-    updateUI();
-  }
+  function changeMainPage(step) { mainPage += step; updateUI(); }
+  function changeSubPage(type, step) { subPages[type] += step; updateUI(); }
 
   function formatDate(v) {
     if (!v || v === "-") return "-";
@@ -269,34 +255,27 @@
 
   function renderRow(r) {
     const b = r[1]||"", j = r[9]||"";
-    let cls = (b.includes('出款') || j.includes('出款')) ? 'tag-wd' : (b.includes('客服') || j.includes('客服')) ? 'tag-cs' : (b.includes('财务') || j.includes('财务')) ? 'tag-fn' : '';
+    let cls = (b.includes('出款') || j.includes('出款')) ? 'tag-wd' : (b.includes('客服') || j.includes('客服') || b.includes('风控')) ? 'tag-cs' : (b.includes('财务') || j.includes('财务')) ? 'tag-fn' : '';
     return `<tr><td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]}</td><td style="opacity:0.5">#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td>${r[5]}</td><td><span class="date-badge">${formatDate(r[6])}</span></td><td style="color:var(--country)">${r[8]}</td></tr>`;
   }
 
   function updateUI() {
     const sortType = document.getElementById('sortOrder') ? document.getElementById('sortOrder').value : 'asc';
-    
     let sortedData = [...filtered].sort((a, b) => {
-        let idA = parseInt(a[2]) || 0;
-        let idB = parseInt(b[2]) || 0;
+        let idA = parseInt(a[2]) || 0; let idB = parseInt(b[2]) || 0;
         return sortType === 'asc' ? idA - idB : idB - idA;
     });
 
-    // 1. Render Overview (10 rows per page)
-    const tbody = document.getElementById('tbody');
     const totalMainPages = Math.ceil(sortedData.length / mainRows) || 1;
-    if (mainPage < 1) mainPage = 1;
-    if (mainPage > totalMainPages) mainPage = totalMainPages;
+    if (mainPage < 1) mainPage = 1; if (mainPage > totalMainPages) mainPage = totalMainPages;
     const startMain = (mainPage - 1) * mainRows;
-    tbody.innerHTML = sortedData.slice(startMain, startMain + mainRows).map(r => renderRow(r)).join('');
+    document.getElementById('tbody').innerHTML = sortedData.slice(startMain, startMain + mainRows).map(r => renderRow(r)).join('');
     document.getElementById('infoMain').innerText = `Page ${mainPage} / ${totalMainPages}`;
 
-    // 2. Render Performance Sub-tables (5 rows per page)
     const renderSubTable = (type, keywords, tbodyId, infoId) => {
         const data = sortedData.filter(r => keywords.some(k => (r[1]||"").includes(k) || (r[9]||"").includes(k)));
         const totalPages = Math.ceil(data.length / subRows) || 1;
-        if (subPages[type] < 1) subPages[type] = 1;
-        if (subPages[type] > totalPages) subPages[type] = totalPages;
+        if (subPages[type] < 1) subPages[type] = 1; if (subPages[type] > totalPages) subPages[type] = totalPages;
         const start = (subPages[type] - 1) * subRows;
         document.getElementById(tbodyId).innerHTML = data.slice(start, start + subRows).map(r => renderRow(r)).join('');
         document.getElementById(infoId).innerText = `Page ${subPages[type]} / ${totalPages}`;
@@ -305,7 +284,6 @@
     renderSubTable('WD', ['出款'], 'tbodyWD', 'infoWD');
     renderSubTable('CS', ['客服', '风控'], 'tbodyCS', 'infoCS');
     renderSubTable('FN', ['财务'], 'tbodyFN', 'infoFN');
-
     syncCharts();
   }
 
@@ -314,7 +292,7 @@
     filtered.forEach(r => {
       const b = r[1]||"", j = r[9]||"";
       if (b.includes('出款') || j.includes('出款')) ds.cWD[b] = (ds.cWD[b]||0)+1;
-      else if (b.includes('客服') || j.includes('客服')) ds.cCS[b] = (ds.cCS[b]||0)+1;
+      else if (b.includes('客服') || j.includes('客服') || b.includes('风控')) ds.cCS[b] = (ds.cCS[b]||0)+1;
       else if (b.includes('财务') || j.includes('财务')) ds.cFN[b] = (ds.cFN[b]||0)+1;
       if(r[8]) ds.cGEO[r[8]] = (ds.cGEO[r[8]]||0)+1;
       if(r[5]) ds.cSH[r[5]] = (ds.cSH[r[5]]||0)+1;
@@ -328,10 +306,18 @@
       if (charts[id]) charts[id].destroy();
       charts[id] = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] }, options: { plugins: { legend: { display: false } }, cutout: '75%', animation: false } });
       document.getElementById('t' + id.slice(1)).innerText = vals.reduce((a, b) => a + b, 0);
-      document.getElementById('list_' + id).innerHTML = entries.slice(0, 4).map(([n, v], i) => `<div class="stat-row"><div class="indicator"><span class="dot" style="background:${colors[i]}"></span><span>${n}</span></div><span class="count-badge">${v}</span></div>`).join('');
+      
+      // Update Stat List with REMARKS
+      document.getElementById('list_' + id).innerHTML = entries.slice(0, 4).map(([n, v], i) => `
+        <div class="stat-row">
+          <div class="indicator">
+            <span class="dot" style="background:${colors[i]}"></span>
+            <span class="remark-text">${n}</span>
+          </div>
+          <span class="count-badge">${v}</span>
+        </div>`).join('');
     });
   }
-
   load();
 </script>
 </body>
