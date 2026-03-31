@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus v6.5 | 10 Rows & Date Fixed</title>
+  <title>Nexus v6.6 | Stats Restored & 10 Rows</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,64 +20,88 @@
     .amt-clock { background: var(--primary); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
     .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
     
-    /* Stats */
+    /* Stats Grid */
     .dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-    .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); text-align: center; }
-    .chart-box { width: 80px; height: 80px; margin: 0 auto 10px; position: relative; }
-    .chart-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.8rem; }
-    .dept-title { font-size: 0.7rem; font-weight: 800; margin-bottom: 12px; text-transform: uppercase; }
+    .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); min-height: 280px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .chart-box { width: 85px; height: 85px; margin: 0 auto 15px; position: relative; }
+    .chart-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.85rem; }
+    .dept-title { font-size: 0.7rem; font-weight: 800; text-align: center; margin-bottom: 15px; text-transform: uppercase; }
+
+    /* Legend List (Keterangan Statistik) */
+    .stat-list { max-height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding-top: 10px; border-top: 1px solid #f1f5f9; }
+    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; font-size: 0.65rem; font-weight: 700; }
+    .indicator { display: flex; align-items: center; gap: 6px; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; }
+    .count-badge { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; min-width: 25px; text-align: center; }
 
     /* Filters */
     .filter-wrapper { background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 1rem; }
     .filter-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr; gap: 12px; }
-    .filter-group label { display: block; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
+    .filter-group label { display: block; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); margin-bottom: 5px; }
     .filter-group select, .filter-group input { width: 100%; padding: 11px 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.75rem; font-weight: 600; outline: none; }
 
     /* Table */
     .table-container { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
     table { width: 100%; border-collapse: collapse; min-width: 1200px; }
     th { background: #f8fafc; padding: 1rem; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); border-bottom: 1px solid var(--border); }
-    td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
+    td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
     
-    .tag-wd { background: #ecfdf5; color: #065f46; padding: 4px 10px; border-radius: 6px; }
-    .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 4px 10px; border-radius: 6px; }
-    .tag-fn { background: #fffbeb; color: #92400e; padding: 4px 10px; border-radius: 6px; }
-    
-    /* Date Styling */
-    .date-badge { background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 6px; font-family: 'Courier New', monospace; font-weight: 700; font-size: 0.75rem; border: 1px solid #e2e8f0; }
+    .tag-wd { background: #ecfdf5; color: #065f46; padding: 3px 10px; border-radius: 6px; }
+    .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 3px 10px; border-radius: 6px; }
+    .tag-fn { background: #fffbeb; color: #92400e; padding: 3px 10px; border-radius: 6px; }
+    .date-text { background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-family: monospace; font-size: 0.75rem; }
 
     /* Pagination */
     .pagination-bar { padding: 1.2rem; background: #fff; border-top: 1px solid var(--border); display: flex; justify-content: center; align-items: center; gap: 20px; }
-    .page-btn { padding: 8px 20px; border: 1px solid var(--border); background: white; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 0.75rem; transition: 0.2s; }
-    .page-btn:hover:not(:disabled) { background: var(--primary); color: white; }
-    .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-    .status-bar { padding: 10px 25px; text-align: right; font-size: 0.7rem; color: var(--text-muted); font-weight: 800; background: #f8fafc; }
+    .page-btn { padding: 8px 18px; border: 1px solid var(--border); background: white; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 0.75rem; }
+    .page-btn:disabled { opacity: 0.3; }
+    .status-bar { padding: 8px 25px; text-align: right; font-size: 0.65rem; color: var(--text-muted); font-weight: 800; background: #f8fafc; }
   </style>
 </head>
 <body>
 
 <nav>
-  <div style="font-weight: 900;"><i class="fas fa-calendar-check"></i> NEXUS v6.5</div>
+  <div style="font-weight: 900;"><i class="fas fa-chart-pie" style="color:var(--accent)"></i> NEXUS v6.6</div>
   <div class="amt-clock" id="clock">00:00:00 AMT</div>
 </nav>
 
 <div class="container">
   <div class="dept-grid">
-    <div class="dept-card"><div style="color:var(--withdraw)" class="dept-title">出款部汇总</div><div class="chart-box"><canvas id="cWD"></canvas><div class="chart-val" id="tWD">0</div></div></div>
-    <div class="dept-card"><div style="color:var(--cs)" class="dept-title">客服部汇总</div><div class="chart-box"><canvas id="cCS"></canvas><div class="chart-val" id="tCS">0</div></div></div>
-    <div class="dept-card"><div style="color:var(--finance)" class="dept-title">财务部汇总</div><div class="chart-box"><canvas id="cFN"></canvas><div class="chart-val" id="tFN">0</div></div></div>
-    <div class="dept-card"><div style="color:var(--country)" class="dept-title">国家汇总</div><div class="chart-box"><canvas id="cGEO"></canvas><div class="chart-val" id="tGEO">0</div></div></div>
-    <div class="dept-card"><div style="color:var(--accent)" class="dept-title">班次汇总</div><div class="chart-box"><canvas id="cSH"></canvas><div class="chart-val" id="tSH">0</div></div></div>
+    <div class="dept-card">
+      <div style="color:var(--withdraw)" class="dept-title">出款部汇总</div>
+      <div class="chart-box"><canvas id="cWD"></canvas><div class="chart-val" id="tWD">0</div></div>
+      <div class="stat-list" id="list_cWD"></div>
+    </div>
+    <div class="dept-card">
+      <div style="color:var(--cs)" class="dept-title">客服部汇总</div>
+      <div class="chart-box"><canvas id="cCS"></canvas><div class="chart-val" id="tCS">0</div></div>
+      <div class="stat-list" id="list_cCS"></div>
+    </div>
+    <div class="dept-card">
+      <div style="color:var(--finance)" class="dept-title">财务部汇总</div>
+      <div class="chart-box"><canvas id="cFN"></canvas><div class="chart-val" id="tFN">0</div></div>
+      <div class="stat-list" id="list_cFN"></div>
+    </div>
+    <div class="dept-card">
+      <div style="color:var(--country)" class="dept-title">国家汇总</div>
+      <div class="chart-box"><canvas id="cGEO"></canvas><div class="chart-val" id="tGEO">0</div></div>
+      <div class="stat-list" id="list_cGEO"></div>
+    </div>
+    <div class="dept-card">
+      <div style="color:var(--accent)" class="dept-title">班次汇总</div>
+      <div class="chart-box"><canvas id="cSH"></canvas><div class="chart-val" id="tSH">0</div></div>
+      <div class="stat-list" id="list_cSH"></div>
+    </div>
   </div>
 
   <div class="filter-wrapper">
     <div class="filter-grid">
-      <div class="filter-group"><label>Keyword</label><input type="text" id="searchName" placeholder="Search..."></div>
-      <div class="filter-group"><label>Shift</label><select id="fShift"></select></div>
-      <div class="filter-group"><label>Team (J)</label><select id="fTeam"></select></div>
-      <div class="filter-group"><label>Group (B)</label><select id="fGroup"></select></div>
-      <div class="filter-group"><label>Country</label><select id="fCountry"></select></div>
-      <div class="filter-group"><label>Platform</label><select id="fPlatform"></select></div>
+      <div class="filter-group"><label>KEYWORD</label><input type="text" id="searchName" placeholder="Search..."></div>
+      <div class="filter-group"><label>SHIFT</label><select id="fShift"></select></div>
+      <div class="filter-group"><label>TEAM (J)</label><select id="fTeam"></select></div>
+      <div class="filter-group"><label>GROUP (B)</label><select id="fGroup"></select></div>
+      <div class="filter-group"><label>COUNTRY</label><select id="fCountry"></select></div>
+      <div class="filter-group"><label>PLATFORM</label><select id="fPlatform"></select></div>
     </div>
   </div>
 
@@ -85,14 +109,12 @@
     <div style="overflow-x: auto;">
       <table>
         <thead>
-          <tr>
-            <th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th>
-          </tr>
+          <tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr>
         </thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
-    <div class="status-bar" id="statusBar">Syncing...</div>
+    <div class="status-bar" id="statusBar">Ready</div>
     <div class="pagination-bar">
       <button class="page-btn" id="prevBtn" onclick="changePage(-1)">PREV</button>
       <span id="pageInfo" style="font-weight: 800; font-size: 0.8rem;">Page 1</span>
@@ -105,7 +127,8 @@
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
   let db = [], filtered = [], charts = {};
   let currentPage = 1;
-  const rowsPerPage = 10; // LOCK 10 DATA PER PAGE
+  const rowsPerPage = 10;
+  const palette = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#f472b6", "#94a3b8"];
 
   async function load() {
     try {
@@ -153,43 +176,27 @@
     updateUI();
   }
 
-  // DATE FORMATTER: Memaksa DD-MM-YYYY
-  function strictDateFormat(val) {
-    if (!val || val === "-") return "-";
-    let d;
-    if (!isNaN(val) && val.length > 4) {
-      // Jika format serial Google Sheets (misal 45212)
-      d = new Date((val - 25569) * 86400 * 1000);
-    } else {
-      // Jika format teks (YYYY-MM-DD atau DD/MM/YYYY)
-      d = new Date(val.replace(/-/g, '/'));
-    }
-    if (isNaN(d.getTime())) return val;
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${day}-${month}-${year}`;
+  function formatDate(v) {
+    if (!v || v === "-") return "-";
+    let d = (!isNaN(v) && v.length > 4) ? new Date((v - 25569) * 86400 * 1000) : new Date(v.replace(/-/g, '/'));
+    if (isNaN(d.getTime())) return v;
+    return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
   }
 
   function updateUI() {
     syncCharts();
     const tbody = document.getElementById('tbody');
-    const start = (currentPage - 1) * rowsPerPage;
-    const pageData = filtered.slice(start, start + rowsPerPage);
+    const pageData = filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
     tbody.innerHTML = pageData.map(r => {
       const b = r[1]||"", j = r[9]||"";
-      let cls = (b.includes('出款') || j.includes('出款') || b.includes('审核转盘')) ? 'tag-wd' : 
+      let cls = (b.includes('出款') || j.includes('出款')) ? 'tag-wd' : 
                 (b.includes('客服') || j.includes('客服')) ? 'tag-cs' : 
                 (b.includes('财务') || j.includes('财务')) ? 'tag-fn' : '';
       return `<tr>
-        <td><b>${r[0]}</b></td>
-        <td><span class="${cls}">${r[1]}</span></td>
-        <td>${r[9]}</td>
-        <td style="opacity:0.5">#${r[2]}</td>
-        <td style="font-weight:800">${r[3]}</td>
-        <td>${r[5]}</td>
-        <td><span class="date-badge">${strictDateFormat(r[6])}</span></td>
+        <td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]}</td>
+        <td style="opacity:0.5">#${r[2]}</td><td style="font-weight:800">${r[3]}</td>
+        <td>${r[5]}</td><td><span class="date-text">${formatDate(r[6])}</span></td>
         <td style="color:var(--country)">${r[8]}</td>
       </tr>`;
     }).join('');
@@ -198,38 +205,52 @@
     document.getElementById('pageInfo').innerText = `Page ${currentPage} / ${totalPages}`;
     document.getElementById('prevBtn').disabled = currentPage === 1;
     document.getElementById('nextBtn').disabled = currentPage >= totalPages;
-    document.getElementById('statusBar').innerText = `Found: ${filtered.length} Records`;
+    document.getElementById('statusBar').innerText = `Displaying ${pageData.length} of ${filtered.length} matches`;
   }
 
-  function changePage(step) {
-    currentPage += step;
-    updateUI();
-  }
+  function changePage(step) { currentPage += step; updateUI(); }
 
   function syncCharts() {
-    let wdO = {}, csO = {}, fnO = {}, geO = {}, shO = {};
-    const palette = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
+    let datasets = { cWD: {}, cCS: {}, cFN: {}, cGEO: {}, cSH: {} };
+    
     filtered.forEach(r => {
       const b = r[1]||"", j = r[9]||"";
-      if (b.includes('出款') || j.includes('出款')) wdO[b] = (wdO[b]||0)+1;
-      else if (b.includes('客服') || j.includes('客服')) csO[b] = (csO[b]||0)+1;
-      else if (b.includes('财务') || j.includes('财务')) fnO[b] = (fnO[b]||0)+1;
-      if(r[8]) geO[r[8]] = (geO[r[8]]||0)+1;
-      if(r[5]) shO[r[5]] = (shO[r[5]]||0)+1;
+      if (b.includes('出款') || j.includes('出款')) datasets.cWD[b] = (datasets.cWD[b]||0)+1;
+      else if (b.includes('客服') || j.includes('客服')) datasets.cCS[b] = (datasets.cCS[b]||0)+1;
+      else if (b.includes('财务') || j.includes('财务')) datasets.cFN[b] = (datasets.cFN[b]||0)+1;
+      if(r[8]) datasets.cGEO[r[8]] = (datasets.cGEO[r[8]]||0)+1;
+      if(r[5]) datasets.cSH[r[5]] = (datasets.cSH[r[5]]||0)+1;
     });
-    const draw = (id, data, tId) => {
+
+    Object.keys(datasets).forEach(id => {
       const ctx = document.getElementById(id).getContext('2d');
       if (charts[id]) charts[id].destroy();
-      const entries = Object.entries(data);
+      
+      const entries = Object.entries(datasets[id]).sort((a,b)=>b[1]-a[1]);
+      const dataValues = entries.map(e => e[1]);
+      const dataLabels = entries.map(e => e[0]);
+      const colors = entries.map((_, i) => palette[i % palette.length]);
+
       charts[id] = new Chart(ctx, {
-        type: 'doughnut', data: { datasets:[{data:entries.map(e=>e[1]), backgroundColor:palette, borderWidth:0}] },
-        options: { plugins:{legend:{display:false}}, cutout:'75%' }
+        type: 'doughnut',
+        data: { datasets: [{ data: dataValues, backgroundColor: colors, borderWidth: 0 }] },
+        options: { plugins: { legend: { display: false } }, cutout: '75%', animation: false }
       });
-      document.getElementById(tId).innerText = entries.reduce((a,b)=>a+b[1],0);
-    };
-    draw('cWD', wdO, 'tWD'); draw('cCS', csO, 'tCS');
-    draw('cFN', fnO, 'tFN'); draw('cGEO', geO, 'tGEO');
-    draw('cSH', shO, 'tSH');
+
+      document.getElementById('t' + id.slice(1)).innerText = dataValues.reduce((a, b) => a + b, 0);
+      
+      // Render Legend List
+      const listEl = document.getElementById('list_' + id);
+      listEl.innerHTML = entries.map(([name, val], i) => `
+        <div class="stat-row">
+          <div class="indicator">
+            <span class="dot" style="background:${colors[i]}"></span>
+            <span>${name}</span>
+          </div>
+          <span class="count-badge">${val}</span>
+        </div>
+      `).join('');
+    });
   }
 
   load();
