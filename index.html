@@ -132,21 +132,28 @@
   <div id="performance" class="page-content">
   <div class="filter-wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-chart-line"></i> PERFORMANCE BY DEPARTMENT</h3>
-      <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">Live Data: AN (Total) & AO (Avg)</div>
+      <h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-chart-line"></i> PERFORMANCE MONITORING (VERTICAL VIEW)</h3>
+      <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">Data: AN (Total) & AO (Avg)</div>
     </div>
   </div>
 
-  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+  <div style="display: flex; flex-direction: column; gap: 2rem;">
     
     <div class="table-container">
-      <div style="padding: 1rem; background: var(--withdraw); color: white; font-weight: 800; font-size: 0.8rem;">
-        <i class="fas fa-money-bill-wave"></i> WITHDRAW (出款)
+      <div style="padding: 1.2rem; background: var(--withdraw); color: white; font-weight: 800; display: flex; justify-content: space-between;">
+        <span><i class="fas fa-money-bill-wave"></i> WITHDRAWAL DEPARTMENT (出款)</span>
+        <span style="font-size: 0.7rem; opacity: 0.8;">Live Update</span>
       </div>
-      <div style="overflow-x: auto; max-height: 500px;">
+      <div style="overflow-x: auto;">
         <table>
           <thead>
-            <tr><th>Name</th><th>Total</th><th>Avg</th></tr>
+            <tr>
+              <th>Staff Name</th>
+              <th>Staff ID</th>
+              <th>Total Order (AN)</th>
+              <th>Daily Average (AO)</th>
+              <th>Action</th>
+            </tr>
           </thead>
           <tbody id="tbody-perf-wd"></tbody>
         </table>
@@ -154,18 +161,49 @@
     </div>
 
     <div class="table-container">
-      <div style="padding: 1rem; background: var(--cs); color: white; font-weight: 800; font-size: 0.8rem;">
-        <i class="fas fa-headset"></i> CUSTOMER SERVICE (客服)
+      <div style="padding: 1.2rem; background: var(--cs); color: white; font-weight: 800; display: flex; justify-content: space-between;">
+        <span><i class="fas fa-headset"></i> CUSTOMER SERVICE & RISK (客服)</span>
+        <span style="font-size: 0.7rem; opacity: 0.8;">Live Update</span>
       </div>
-      <div style="overflow-x: auto; max-height: 500px;">
+      <div style="overflow-x: auto;">
         <table>
           <thead>
-            <tr><th>Name</th><th>Total</th><th>Avg</th></tr>
+            <tr>
+              <th>Staff Name</th>
+              <th>Staff ID</th>
+              <th>Total Order (AN)</th>
+              <th>Daily Average (AO)</th>
+              <th>Action</th>
+            </tr>
           </thead>
           <tbody id="tbody-perf-cs"></tbody>
         </table>
       </div>
     </div>
+
+    <div class="table-container">
+      <div style="padding: 1.2rem; background: var(--finance); color: white; font-weight: 800; display: flex; justify-content: space-between;">
+        <span><i class="fas fa-calculator"></i> FINANCE DEPARTMENT (财务)</span>
+        <span style="font-size: 0.7rem; opacity: 0.8;">Live Update</span>
+      </div>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Staff Name</th>
+              <th>Staff ID</th>
+              <th>Total Order (AN)</th>
+              <th>Daily Average (AO)</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-perf-fn"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
 
     <div class="table-container">
       <div style="padding: 1rem; background: var(--finance); color: white; font-weight: 800; font-size: 0.8rem;">
@@ -356,6 +394,43 @@
     const start = (mainPage - 1) * mainRows;
     const current = filtered.slice(start, start + mainRows);
 
+    // --- LOGIKA PERFORMANCE VERTIKAL ---
+    const bodyWD = document.getElementById('tbody-perf-wd');
+    const bodyCS = document.getElementById('tbody-perf-cs');
+    const bodyFN = document.getElementById('tbody-perf-fn');
+
+    if(bodyWD && bodyCS && bodyFN) {
+        bodyWD.innerHTML = ''; bodyCS.innerHTML = ''; bodyFN.innerHTML = '';
+
+        filtered.forEach((r) => {
+            const groupName = r[1] || "";
+            const teamName = r[9] || "";
+            const staffID = clean(r[2]);
+            const p = dbPerf.find(x => clean(x[2]) === staffID);
+            
+            const tot = p ? (p[39] || "0") : "0";
+            const avg = p ? (p[40] || "0") : "0";
+
+            // Row Template yang lebih lebar untuk tampilan vertikal
+            const rowHTML = `
+                <tr>
+                    <td style="text-align:left; font-weight:800; color:var(--primary);">${r[3]}</td>
+                    <td><span class="id-link" onclick="openDetail(${filtered.indexOf(r)})">#${r[2]}</span></td>
+                    <td style="font-weight:700">${tot}</td>
+                    <td style="color:var(--accent); font-weight:800; font-size:1rem;">${avg}</td>
+                    <td><button class="menu-btn" style="padding:5px 15px; font-size:0.65rem" onclick="openDetail(${filtered.indexOf(r)})">VIEW DETAIL</button></td>
+                </tr>`;
+
+            if (groupName.includes('出款') || teamName.includes('出款')) {
+                bodyWD.innerHTML += rowHTML;
+            } else if (groupName.includes('客服') || teamName.includes('客服') || groupName.includes('风控')) {
+                bodyCS.innerHTML += rowHTML;
+            } else if (groupName.includes('财务') || teamName.includes('财务')) {
+                bodyFN.innerHTML += rowHTML;
+            }
+        });
+    }
+    
     // Update Overview
     document.getElementById('tbody').innerHTML = current.map((r, i) => {
         const b = r[1]||"", j = r[9]||"";
