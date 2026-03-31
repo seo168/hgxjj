@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus Master v5.4 | Full Features Locked</title>
+  <title>Nexus Master v5.5 | Dual-Column Sync</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,66 +15,57 @@
       --bg: #f8fafc; --text-main: #1e293b; --text-muted: #64748b;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); text-align: center; min-height: 100vh; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); text-align: center; }
     
-    /* Navigation Bar */
-    nav { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0.8rem 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-    .nav-brand { font-weight: 900; color: var(--primary); font-size: 1.15rem; display: flex; align-items: center; gap: 10px; }
-    .amt-clock { background: var(--primary); color: white; padding: 7px 18px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.5px; }
+    /* Nav & Clock */
+    nav { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0.8rem 5%; display: flex; justify-content: space-between; align-items: center; }
+    .nav-brand { font-weight: 900; color: var(--primary); font-size: 1.1rem; }
+    .amt-clock { background: var(--primary); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
 
-    .container { max-width: 1650px; margin: 0 auto; padding: 1.8rem; }
+    .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
     
-    /* Stats Section - Grid of 5 Cards */
-    .dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.2rem; margin-bottom: 1.8rem; }
-    .dept-card { background: white; padding: 1.4rem; border-radius: 24px; border: 1px solid var(--border); min-height: 300px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.3s ease; }
-    .dept-card:hover { transform: translateY(-5px); }
+    /* Stats Section */
+    .dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); min-height: 280px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .chart-box { width: 85px; height: 85px; margin: 0 auto 10px; position: relative; }
+    .chart-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.8rem; }
+    .dept-title { font-size: 0.7rem; font-weight: 800; margin-bottom: 12px; text-transform: uppercase; }
     
-    .chart-box { width: 90px; height: 90px; margin: 0 auto 15px; position: relative; }
-    .chart-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.9rem; color: var(--primary); }
-    .dept-title { font-size: 0.75rem; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.8px; }
-    
-    .stat-list { max-height: 130px; overflow-y: auto; display: flex; flex-direction: column; padding: 4px; border-top: 1px solid #f8fafc; margin-top: 5px; }
-    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-bottom: 1px solid #f1f5f9; font-size: 0.72rem; font-weight: 700; width: 100%; color: var(--text-main); }
-    .indicator { display: flex; align-items: center; gap: 10px; }
-    .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; box-shadow: 0 0 4px rgba(0,0,0,0.1); }
-    .badge { padding: 3px 10px; border-radius: 8px; color: white; font-size: 0.68rem; min-width: 35px; text-align: center; font-weight: 800; }
+    .stat-list { max-height: 120px; overflow-y: auto; display: flex; flex-direction: column; padding: 2px; }
+    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid #f1f5f9; font-size: 0.7rem; font-weight: 700; width: 100%; }
+    .indicator { display: flex; align-items: center; gap: 8px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .badge { padding: 2px 8px; border-radius: 6px; color: white; font-size: 0.65rem; min-width: 32px; text-align: center; }
 
     /* Filters System */
-    .filter-wrapper { background: white; padding: 1.8rem; border-radius: 24px; border: 1px solid var(--border); margin-bottom: 1.2rem; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-    .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-    .filter-group label { display: block; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; margin-left: 5px; text-transform: uppercase; }
+    .filter-wrapper { background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 1rem; text-align: left; }
+    .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
     .filter-group select, .filter-group input { 
-      width: 100%; padding: 12px 18px; border-radius: 14px; border: 1px solid var(--border); 
-      background: #fcfdfe; font-size: 0.8rem; font-weight: 600; color: var(--text-main); outline: none; transition: all 0.2s ease;
+      width: 100%; padding: 11px 16px; border-radius: 12px; border: 1px solid var(--border); 
+      background: #fff; font-size: 0.75rem; font-weight: 600; color: var(--text-main); outline: none;
     }
-    .filter-group select:focus, .filter-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); background: #fff; }
 
-    /* Table System */
-    .table-container { background: white; border-radius: 24px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-    .table-scroll { overflow-x: auto; width: 100%; }
+    /* Table Section */
+    .table-container { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
     table { width: 100%; border-collapse: collapse; min-width: 1200px; }
-    th { background: #f8fafc; padding: 1.2rem 1rem; text-align: center; font-size: 0.72rem; font-weight: 800; color: var(--text-muted); border-bottom: 2px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; }
-    td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.82rem; font-weight: 600; text-align: center; vertical-align: middle; height: 65px; }
-    tr:hover td { background-color: #fcfdfe; }
+    th { background: #f8fafc; padding: 1rem; text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; vertical-align: middle; height: 60px; }
 
     /* Custom Tags */
-    .tag-wd { background: #ecfdf5; color: #065f46; padding: 5px 12px; border-radius: 8px; border: 1px solid #d1fae5; }
-    .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 5px 12px; border-radius: 8px; border: 1px solid #ede9fe; }
-    .tag-fn { background: #fffbeb; color: #92400e; padding: 5px 12px; border-radius: 8px; border: 1px solid #fef3c7; }
-    .strict-date { background: #f1f5f9; color: #334155; padding: 5px 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; border: 1px solid #e2e8f0; }
+    .tag-wd { background: #ecfdf5; color: #065f46; padding: 3px 10px; border-radius: 6px; }
+    .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 3px 10px; border-radius: 6px; }
+    .tag-fn { background: #fffbeb; color: #92400e; padding: 3px 10px; border-radius: 6px; }
+    .strict-date { background: #f1f5f9; color: #334155; padding: 4px 12px; border-radius: 6px; font-family: monospace; font-size: 0.75rem; border: 1px solid #e2e8f0; }
 
-    /* Footer / Status Bar */
-    .status-bar { padding: 15px 30px; text-align: right; font-size: 0.72rem; color: var(--text-muted); font-weight: 800; border-top: 1px solid var(--border); background: #fff; display: flex; justify-content: space-between; align-items: center; }
-    .pagination-bar { padding: 1.5rem; background: #f8fafc; display: flex; justify-content: center; align-items: center; gap: 25px; }
-    .page-btn { padding: 10px 22px; border: 1px solid var(--border); background: white; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 0.78rem; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
-    .page-btn:hover:not(:disabled) { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-1px); }
-    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .status-bar { padding: 12px 25px; text-align: right; font-size: 0.7rem; color: var(--text-muted); font-weight: 800; border-top: 1px solid var(--border); background: #fff; }
+    .pagination-bar { padding: 1.2rem; background: #f8fafc; display: flex; justify-content: center; align-items: center; gap: 20px; }
+    .page-btn { padding: 8px 18px; border: 1px solid var(--border); background: white; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 0.75rem; }
   </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-brand"><i class="fas fa-layer-group" style="color:var(--accent); font-size: 1.4rem;"></i> NEXUS<span>DATA PRO v5.4</span></div>
+  <div class="nav-brand"><i class="fas fa-database" style="color:var(--accent)"></i> NEXUS PRO v5.5</div>
   <div class="amt-clock" id="clock">00:00:00 AMT</div>
 </nav>
 
@@ -89,34 +80,27 @@
 
   <div class="filter-wrapper">
     <div class="filter-grid">
-      <div class="filter-group"><label>Search Personnel</label><input type="text" id="searchName" placeholder="ID / Name / Keyword..."></div>
-      <div class="filter-group"><label>Shift Filter</label><select id="fShift"><option value="">All shifts (班次)</option></select></div>
-      <div class="filter-group"><label>Team Category</label><select id="fTeam"><option value="">All teams (团队)</option></select></div>
-      <div class="filter-group"><label>Group Category</label><select id="fGroup"><option value="">All groups (组别)</option></select></div>
-      <div class="filter-group"><label>Region</label><select id="fCountry"><option value="">All 国家 (国家)</option></select></div>
-      <div class="filter-group"><label>Platform</label><select id="fPlatform"><option value="">All 盘口 (盘口)</option></select></div>
+      <div class="filter-group"><input type="text" id="searchName" placeholder="Search Name / ID / Keyword..."></div>
+      <div class="filter-group"><select id="fShift"><option value="">All shifts (班次)</option></select></div>
+      <div class="filter-group"><select id="fTeam"><option value="">All teams (团队)</option></select></div>
+      <div class="filter-group"><select id="fGroup"><option value="">All groups (组别)</option></select></div>
+      <div class="filter-group"><select id="fCountry"><option value="">All 国家 (国家)</option></select></div>
+      <div class="filter-group"><select id="fPlatform"><option value="">All 盘口 (盘口)</option></select></div>
     </div>
   </div>
 
   <div class="table-container">
-    <div class="table-scroll">
+    <div style="overflow-x: auto;">
       <table id="mainTable">
-        <thead>
-          <tr>
-            <th>平台</th><th>部门</th><th>组别</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th>
-          </tr>
-        </thead>
+        <thead><tr><th>平台</th><th>部门</th><th>组别</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
-    <div class="status-bar" id="statusBar">
-      <div id="statLeft">Total Database: 0</div>
-      <div id="statRight">Filtered Results: 0 • Last Update: --</div>
-    </div>
+    <div class="status-bar" id="statusBar">Rows: 0 • Filtered: 0 • Last Update: --</div>
     <div class="pagination-bar">
-      <button class="page-btn" id="prevBtn" onclick="changePage(-1)"><i class="fas fa-chevron-left"></i> 上一页</button>
-      <span id="pageNumber" style="font-size:0.8rem; font-weight:800; color:var(--primary);">第 1 页</span>
-      <button class="page-btn" id="nextBtn" onclick="changePage(1)">下一页 <i class="fas fa-chevron-right"></i></button>
+      <button class="page-btn" id="prevBtn" onclick="changePage(-1)">上一页</button>
+      <span id="pageNumber" style="font-size:0.75rem; font-weight:800;">第 1 页</span>
+      <button class="page-btn" id="nextBtn" onclick="changePage(1)">下一页</button>
     </div>
   </div>
 </div>
@@ -126,11 +110,14 @@
   let db = [], filtered = [], charts = {};
   let currentPage = 1; const rowsPerPage = 10;
 
-  // HARD LOCKED CATEGORIES
   const shiftOrder = ["Day", "Mid", "Night"];
   const countryOrder = ["印尼", "缅甸", "柬埔寨", "菲律宾"];
+  
+  // HARD LOCKED CATEGORIES
   const teamCategories = ["出款", "客服", "财务", "抄数据", "报数据"];
+  // Group Categories (As requested, looking into Column B and J)
   const groupCategories = ["培训", "质检", "审核转盘", "导师", "出款", "报数据", "抄数据"];
+  
   const palette = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4"];
 
   async function load() {
@@ -138,17 +125,12 @@
       const r = await fetch(`${CSV_URL}&t=${Date.now()}`);
       const t = await r.text();
       db = t.split(/\r?\n/).slice(1).map(l => l.split(',').map(c => c.trim())).filter(d => d[3]);
-      
       setupFilters();
       runFilters(); 
-      startTime();
-    } catch (e) { console.error("Database Load Error:", e); }
-  }
-
-  function startTime() {
-    setInterval(() => {
-      document.getElementById('clock').innerText = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"})).toLocaleTimeString('en-GB') + " AMT";
-    }, 1000);
+      setInterval(() => {
+        document.getElementById('clock').innerText = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"})).toLocaleTimeString('en-GB') + " AMT";
+      }, 1000);
+    } catch (e) { console.error(e); }
   }
 
   function setupFilters() {
@@ -159,16 +141,13 @@
     };
 
     fill('fShift', shiftOrder);
-    fill('fTeam', teamCategories);
-    fill('fGroup', groupCategories);
+    fill('fTeam', teamCategories); 
+    fill('fGroup', groupCategories); 
     fill('fCountry', countryOrder);
     fill('fPlatform', getUnique(0));
 
     ['searchName', 'fShift', 'fTeam', 'fGroup', 'fCountry', 'fPlatform'].forEach(id => {
-      document.getElementById(id).addEventListener('input', () => {
-        currentPage = 1;
-        runFilters();
-      });
+      document.getElementById(id).addEventListener('input', runFilters);
     });
   }
 
@@ -182,28 +161,26 @@
 
     filtered = db.filter(r => {
       const rShift = (r[5] || "").toLowerCase();
-      const rTeam = (r[1] || "");
-      const rGroup = (r[9] || "");
+      const rTeam = (r[1] || ""); // Column B
+      const rGroup = (r[9] || ""); // Column J
       
-      const matchName = r.join(' ').toLowerCase().includes(sName);
-      const matchShift = !sShift || rShift.includes(sShift);
-      const matchTeam = !sTeam || rTeam.includes(sTeam);
-      const matchGroup = !sGroup || (rGroup === sGroup || rTeam.includes(sGroup));
-      const matchCountry = !sCountry || r[8].includes(sCountry);
-      const matchPlatform = !sPlatform || r[0] === sPlatform;
+      // LOGIC: Filter Group refers to both Column B (Team) and Column J (Group)
+      const matchGroup = !sGroup || (rGroup.includes(sGroup) || rTeam.includes(sGroup));
 
-      return matchName && matchShift && matchTeam && matchGroup && matchCountry && matchPlatform;
+      return (r.join(' ').toLowerCase().includes(sName)) &&
+             (!sShift || rShift.includes(sShift)) &&
+             (!sTeam || rTeam.includes(sTeam)) &&
+             matchGroup &&
+             (!sCountry || r[8].includes(sCountry)) &&
+             (!sPlatform || r[0] === sPlatform);
     });
-
-    updateDisplay();
+    currentPage = 1; updateDisplay();
   }
 
   function updateDisplay() {
-    syncCharts();
-    renderTable();
+    syncCharts(); renderTable();
     const now = new Date();
-    document.getElementById('statLeft').innerText = `Total Database: ${db.length} entries`;
-    document.getElementById('statRight').innerText = `Filtered: ${filtered.length} • Last Update: ${now.toLocaleTimeString()}`;
+    document.getElementById('statusBar').innerText = `Rows: ${db.length} • Filtered: ${filtered.length} • Last Update: ${now.toLocaleTimeString()}`;
   }
 
   function syncCharts() {
@@ -213,72 +190,41 @@
 
     filtered.forEach(r => {
       const dept = r[1]||"", sub = r[9]||"", shift = (r[5]||"").toLowerCase(), geo = (r[8]||"");
+      const sMatch = shiftOrder.find(s => shift.includes(s.toLowerCase())); if(sMatch) shO[sMatch]++;
+      const cMatch = countryOrder.find(c => geo.includes(c)); if(cMatch) geO[cMatch]++;
       
-      const sMatch = shiftOrder.find(s => shift.includes(s.toLowerCase())); 
-      if(sMatch) shO[sMatch]++;
-      
-      const cMatch = countryOrder.find(c => geo.includes(c)); 
-      if(cMatch) geO[cMatch]++;
-      
+      // Sub-department stats logic
       if (dept.includes('出款') || sub.includes('出款')) wdO[sub || "其他"] = (wdO[sub || "其他"] || 0) + 1;
-      else if (dept.includes('客服') || sub.includes('客服')) csO[sub || "其他"] = (csO[sub || "其他"] || 0) + 1;
-      else if (dept.includes('财务') || sub.includes('财务')) fnO[sub || "其他"] = (fnO[sub || "其他"] || 0) + 1;
+      else if (dept.includes('客服') || sub.includes('客服')) csO[sub || "其他"] = (csO[sub || "客服"] || 0) + 1;
+      else if (dept.includes('财务') || sub.includes('财务')) fnO[sub || "财务"] = (fnO[sub || "财务"] || 0) + 1;
     });
 
     const draw = (id, data, labelId, listId, sortRef = null) => {
       const ctx = document.getElementById(id).getContext('2d');
       if (charts[id]) charts[id].destroy();
-      
       let entries = Object.entries(data);
-      if (sortRef) {
-        entries.sort((a,b) => (sortRef.indexOf(a[0]) === -1 ? 99 : sortRef.indexOf(a[0])) - (sortRef.indexOf(b[0]) === -1 ? 99 : sortRef.indexOf(b[0])));
-      } else {
-        entries.sort((a,b) => b[1] - a[1]);
-      }
-
+      if (sortRef) entries.sort((a,b) => (sortRef.indexOf(a[0]) === -1 ? 99 : sortRef.indexOf(a[0])) - (sortRef.indexOf(b[0]) === -1 ? 99 : sortRef.indexOf(b[0])));
       const colors = entries.map((_, i) => palette[i % palette.length]);
       charts[id] = new Chart(ctx, {
         type: 'doughnut',
-        data: { datasets: [{ data: entries.map(e => e[1]), backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] },
-        options: { plugins: { legend: { display: false } }, cutout: '78%', responsive: true, maintainAspectRatio: true }
+        data: { datasets: [{ data: entries.map(e => e[1]), backgroundColor: colors, borderWidth: 0 }] },
+        options: { plugins: { legend: { display: false } }, cutout: '78%' }
       });
-
       document.getElementById(labelId).innerText = entries.reduce((a,b) => a + b[1], 0);
-      document.getElementById(listId).innerHTML = entries.map(([n,v], i) => `
-        <div class="stat-row">
-          <div class="indicator"><span class="dot" style="background:${colors[i]}"></span><span>${n}</span></div>
-          <span class="badge" style="background:${colors[i]}">${v}</span>
-        </div>`).join('');
+      document.getElementById(listId).innerHTML = entries.map(([n,v], i) => `<div class="stat-row"><div class="indicator"><span class="dot" style="background:${colors[i]}"></span><span>${n}</span></div><span class="badge" style="background:${colors[i]}">${v}</span></div>`).join('');
     };
-
-    draw('cWD', wdO, 'tWD', 'lWD');
-    draw('cCS', csO, 'tCS', 'lCS');
-    draw('cFN', fnO, 'tFN', 'lFN');
-    draw('cGEO', geO, 'tGEO', 'lGEO', countryOrder);
+    draw('cWD', wdO, 'tWD', 'lWD'); draw('cCS', csO, 'tCS', 'lCS');
+    draw('cFN', fnO, 'tFN', 'lFN'); draw('cGEO', geO, 'tGEO', 'lGEO', countryOrder);
     draw('cSH', shO, 'tSH', 'lSH', shiftOrder);
   }
 
   function renderTable() {
     const tbody = document.getElementById('tbody');
     const pageData = filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-    
     tbody.innerHTML = pageData.map(r => {
-      const dept = r[1] || "";
-      const sub = r[9] || "";
-      let cls = (dept.includes('出款') || sub.includes('出款')) ? 'tag-wd' : (dept.includes('客服') || sub.includes('客服')) ? 'tag-cs' : (dept.includes('财务') || sub.includes('财务')) ? 'tag-fn' : '';
-      
-      return `<tr>
-        <td><b style="color:var(--primary)">${r[0]}</b></td>
-        <td><span class="${cls}">${r[1]}</span></td>
-        <td>${r[9]||'-'}</td>
-        <td style="opacity:0.6; font-family:monospace;">#${r[2]}</td>
-        <td style="font-weight:800; color:var(--primary)">${r[3]}</td>
-        <td><span style="color:var(--accent)">${r[5]}</span></td>
-        <td><span class="strict-date">${superFormatDate(r[6])}</span></td>
-        <td style="color:var(--country)">${r[8]}</td>
-      </tr>`;
+      let cls = (r[1].includes('出款') || r[9]?.includes('出款')) ? 'tag-wd' : (r[1].includes('客服') || r[9]?.includes('客服')) ? 'tag-cs' : (r[1].includes('财务') || r[9]?.includes('财务')) ? 'tag-fn' : '';
+      return `<tr><td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]||'-'}</td><td style="opacity:0.5">#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td>${r[5]}</td><td><span class="strict-date">${superFormatDate(r[6])}</span></td><td style="color:var(--country)">${r[8]}</td></tr>`;
     }).join('');
-
     const totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
     document.getElementById('pageNumber').innerText = `第 ${currentPage} 页 / 共 ${totalPages} 页`;
     document.getElementById('prevBtn').disabled = currentPage === 1;
@@ -290,12 +236,7 @@
     let d = (!isNaN(v) && v.length > 4) ? new Date((v - 25569) * 86400 * 1000) : new Date(v.replace(/-/g, '/'));
     return !isNaN(d.getTime()) ? `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}` : v;
   }
-
-  function changePage(dir) {
-    currentPage += dir;
-    renderTable();
-  }
-
+  function changePage(dir) { currentPage += dir; renderTable(); }
   load();
 </script>
 </body>
