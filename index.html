@@ -95,9 +95,9 @@
   let db = []; let filtered = []; let charts = {};
   let currentPage = 1; const rowsPerPage = 10;
 
-  // 严格排序规则 (Day > Mid > Night | Indonesia > Myanmar > Cambodia > Philippines)
+  // 严格排序规则 (Day > Mid > Night | 印尼 > 缅甸 > 柬埔寨 > 菲律宾)
   const shiftOrder = ["Day", "Mid", "Night"];
-  const countryOrder = ["Indonesia", "Myanmar", "Cambodia", "Philippines"];
+  const countryOrder = ["印尼", "缅甸", "柬埔寨", "菲律宾"];
 
   function superFormatDate(val) {
     if (!val || val.trim() === "" || val === "-") return "-";
