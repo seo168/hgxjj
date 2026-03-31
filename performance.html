@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexus | Performance</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root { --primary: #0f172a; --accent: #2563eb; --border: #e2e8f0; --bg: #f8fafc; --text-main: #1e293b; --text-muted: #64748b; --success: #10b981; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); }
+    nav { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0.8rem 5%; display: flex; justify-content: space-between; align-items: center; }
+    .amt-clock { background: var(--primary); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
+    .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
+    
+    .nav-menu { display: flex; gap: 12px; margin-bottom: 1.5rem; padding: 10px; background: white; border-radius: 20px; border: 1px solid var(--border); }
+    .menu-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; border-radius: 15px; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-decoration: none; background: #f8fafc; transition: 0.3s; }
+    .menu-btn.active { background: var(--primary); color: white; }
+
+    .perf-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .card { background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid var(--border); }
+    .table-container { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+    th { background: #f8fafc; padding: 1rem; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
+    
+    .score-badge { padding: 4px 12px; border-radius: 8px; font-weight: 800; }
+    .high { background: #dcfce7; color: #15803d; }
+    .mid { background: #fef9c3; color: #a16207; }
+    .low { background: #fee2e2; color: #b91c1c; }
+  </style>
+</head>
+<body>
+<nav>
+  <div style="font-weight: 900;"><i class="fas fa-chart-line"></i> NEXUS PERFORMANCE</div>
+  <div class="amt-clock" id="clock">00:00:00 AMT</div>
+</nav>
+<div class="container">
+  <div class="nav-menu">
+    <a href="index.html" class="menu-btn"><i class="fas fa-th-large"></i> OVERVIEW</a>
+    <a href="#" class="menu-btn active"><i class="fas fa-chart-line"></i> PERFORMANCE</a>
+    <a href="absent.html" class="menu-btn"><i class="fas fa-user-clock"></i> ABSENT RECORD</a>
+  </div>
+
+  <div class="perf-grid">
+    <div class="card">
+      <h3 style="font-size:0.8rem; margin-bottom:15px">TEAM GROWTH TREND</h3>
+      <canvas id="perfChart" height="100"></canvas>
+    </div>
+    <div class="card" style="text-align:center">
+      <h3 style="font-size:0.8rem; margin-bottom:15px">AVERAGE SCORE</h3>
+      <div style="font-size: 3rem; font-weight: 900; color: var(--accent);">88.4</div>
+      <p style="font-size:0.7rem; color:var(--text-muted)">Points Achievement Rate</p>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr><th>RANK</th><th>NAME</th><th>TEAM</th><th>KPI SCORE</th><th>ACHIEVEMENT</th><th>STATUS</th></tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td>1</td><td>Angelica G. Milaran</td><td>出款</td><td>98.5</td><td>105%</td><td><span class="score-badge high">EXCELLENT</span></td></tr>
+        <tr><td>2</td><td>Rafael J. Sartorio</td><td>客服</td><td>92.0</td><td>100%</td><td><span class="score-badge high">GOOD</span></td></tr>
+        <tr><td>3</td><td>Angie Evilla jr</td><td>财务</td><td>75.4</td><td>85%</td><td><span class="score-badge mid">AVERAGE</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+  const ctx = document.getElementById('perfChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [{
+        label: 'Performance Trend',
+        data: [65, 78, 72, 85, 88, 92],
+        borderColor: '#2563eb',
+        tension: 0.4,
+        fill: true,
+        backgroundColor: 'rgba(37, 99, 235, 0.1)'
+      }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+  });
+</script>
+</body>
+</html>
