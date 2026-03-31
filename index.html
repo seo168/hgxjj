@@ -169,11 +169,13 @@
 </div>
 
 <script>
+  // CONFIGURATION
   const BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
   const GID_MASTER = "0"; 
-  const GID_PERFORMANCE = "1680695165"; 
+  const GID_PERF_GENERAL = "1680695165"; 
+  const GID_PERF_WITHDRAW = "1054251920"; // GID Sheet Baru Anda
 
-  let dbMaster = [], dbPerf = [], filtered = [], charts = {};
+  let dbMaster = [], dbPerfGen = [], dbPerfWD = [], filtered = [], charts = {};
   let mainPage = 1; const mainRows = 10;
   const palette = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];
 
@@ -194,12 +196,15 @@
 
   async function loadData() {
     try {
-      const [r1, r2] = await Promise.all([
+      const [r1, r2, r3] = await Promise.all([
         fetch(`${BASE_URL}&gid=${GID_MASTER}&t=${Date.now()}`),
-        fetch(`${BASE_URL}&gid=${GID_PERFORMANCE}&t=${Date.now()}`)
+        fetch(`${BASE_URL}&gid=${GID_PERF_GENERAL}&t=${Date.now()}`),
+        fetch(`${BASE_URL}&gid=${GID_PERF_WITHDRAW}&t=${Date.now()}`)
       ]);
       dbMaster = smartParse(await r1.text()).slice(1).filter(d => d[3]);
-      dbPerf = smartParse(await r2.text()).slice(1);
+      dbPerfGen = smartParse(await r2.text()).slice(1);
+      dbPerfWD = smartParse(await r3.text()).slice(1);
+
       initFilters();
       runFilters();
       setInterval(() => {
@@ -242,9 +247,11 @@
 
   function openDetail(idx) {
     const r = filtered[idx];
-    const rawID = String(r[2]).trim().toLowerCase(); // Ambil ID dari Master
+    const rawID = String(r[2]).trim().toLowerCase();
+    const group = (r[1] || "").toLowerCase();
+    const team = (r[9] || "").toLowerCase();
     
-    // Perhitungan Masa Kerja (Join Date ada di Kolom Index 6 di Master)
+    // 1. Hitung Tenure
     const joinDate = parseDate(r[6]);
     let tenure = "-", totalDays = "0 Hari";
     if (joinDate) {
@@ -260,19 +267,42 @@
       tenure = `${y} Thn, ${m} Bln, ${d} Hari`;
     }
 
-    // CARI DATA PERFORMANCE (Index 0 di Sheet Performance adalah ID)
-    const p = dbPerf.find(x => String(x[0]).trim().toLowerCase() === rawID);
+    // 2. Pilih Sumber Data Performance secara otomatis
+    let p = null;
+    let isWithdrawal = group.includes('出款') || team.includes('出款');
 
+    if (isWithdrawal) {
+      p = dbPerfWD.find(x => String(x[0]).trim().toLowerCase() === rawID);
+    } else {
+      p = dbPerfGen.find(x => String(x[0]).trim().toLowerCase() === rawID);
+    }
+
+    // 3. Update Modal
     document.getElementById('mName').innerText = r[3];
     document.getElementById('mID').innerText = "#" + r[2];
     document.getElementById('mTenure').innerText = tenure;
     document.getElementById('mWorkDays').innerText = totalDays;
     
-    // Isi data jika ditemukan, jika tidak isi 0
-    document.getElementById('mAvg').innerText = p ? (p[1] || "0") : "0";
-    document.getElementById('mTotalOrder').innerText = p ? (p[2] || "0") : "0";
-    document.getElementById('mMistake').innerText = p ? (p[3] || "0") : "0";
-    document.getElementById('mMentor').innerText = p ? (p[4] || "No Mentor") : "No Mentor";
+    if (p) {
+        // Jika data WD, kolomnya: A:ID, B:Nama, C:Mentor, D:Total Order, E:Avg
+        if (isWithdrawal) {
+            document.getElementById('mAvg').innerText = p[4] || "0";
+            document.getElementById('mTotalOrder').innerText = p[3] || "0";
+            document.getElementById('mMistake').innerText = "0"; // Sesuaikan jika ada kolom mistake
+            document.getElementById('mMentor').innerText = p[2] || "No Mentor";
+        } else {
+            // Data General: A:ID, B:Avg, C:Order, D:Mistake, E:Mentor
+            document.getElementById('mAvg').innerText = p[1] || "0";
+            document.getElementById('mTotalOrder').innerText = p[2] || "0";
+            document.getElementById('mMistake').innerText = p[3] || "0";
+            document.getElementById('mMentor').innerText = p[4] || "No Mentor";
+        }
+    } else {
+        document.getElementById('mAvg').innerText = "0";
+        document.getElementById('mTotalOrder').innerText = "0";
+        document.getElementById('mMistake').innerText = "0";
+        document.getElementById('mMentor').innerText = "No Data";
+    }
 
     document.getElementById('modalOverlay').style.display = 'flex';
   }
