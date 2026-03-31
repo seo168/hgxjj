@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus v6.8 | Ultimate Navigation</title>
+  <title>Nexus v6.8 | Staff Directory</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -51,9 +51,19 @@
     th { background: #f8fafc; padding: 1rem; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); border-bottom: 1px solid var(--border); text-transform: uppercase; }
     td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
     
-    /* Clickable Row */
-    .clickable-row { cursor: pointer; transition: 0.2s; }
-    .clickable-row:hover { background: #f1f5f9; }
+    /* Clickable ID Badge */
+    .id-link { 
+      background: #eff6ff; 
+      color: #2563eb; 
+      padding: 4px 12px; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-weight: 800; 
+      text-decoration: none;
+      display: inline-block;
+      transition: 0.2s;
+    }
+    .id-link:hover { background: #2563eb; color: white; }
 
     .tag-wd { background: #ecfdf5; color: #065f46; padding: 3px 10px; border-radius: 6px; }
     .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 3px 10px; border-radius: 6px; }
@@ -65,7 +75,7 @@
 
     /* Modal Styling */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px); }
-    .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 24px; padding: 2rem; position: relative; animation: slideUp 0.3s ease; }
+    .modal-content { background: white; width: 95%; max-width: 500px; border-radius: 24px; padding: 2rem; position: relative; animation: slideUp 0.3s ease; }
     @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
     .close-modal { cursor: pointer; font-size: 1.2rem; color: var(--text-muted); }
@@ -73,7 +83,7 @@
     .detail-item { background: #f8fafc; padding: 12px 18px; border-radius: 15px; border: 1px solid var(--border); }
     .detail-label { font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
     .detail-val { font-size: 0.9rem; font-weight: 700; color: var(--primary); }
-    .work-tenure { background: var(--primary); color: white; }
+    .work-tenure { background: var(--primary); color: white; border: none; }
     .work-tenure .detail-label { color: rgba(255,255,255,0.6); }
     .work-tenure .detail-val { color: white; }
   </style>
@@ -114,7 +124,7 @@
     </div>
     <div class="table-container">
       <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);">
-        <span><i class="fas fa-list"></i> STAFF DIRECTORY (Click row for details)</span>
+        <span><i class="fas fa-list"></i> STAFF DIRECTORY</span>
         <div style="display: flex; align-items: center; gap: 10px;">
             <button class="page-btn-small" onclick="changeMainPage(-1)"><i class="fas fa-chevron-left"></i></button>
             <span id="infoMain" style="font-size: 0.75rem;">Page 1</span>
@@ -151,6 +161,7 @@
       </div>
       <div style="overflow-x: auto;"><table><thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead><tbody id="tbodyWD"></tbody></table></div>
     </div>
+    
     <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--cs);">
         <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
           <span>客服 / 风控 (CS / RISK)</span>
@@ -162,6 +173,7 @@
         </div>
         <div style="overflow-x: auto;"><table><thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead><tbody id="tbodyCS"></tbody></table></div>
     </div>
+    
     <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--finance);">
         <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
           <span>财务部 (FINANCE)</span>
@@ -189,7 +201,7 @@
       </div>
       <div class="detail-item">
         <div class="detail-label">Performance Information</div>
-        <div class="detail-val" id="mPerf">Normal</div>
+        <div class="detail-val" id="mPerf">Optimal</div>
       </div>
       <div class="detail-item">
         <div class="detail-label">Employment Status</div>
@@ -276,39 +288,52 @@
     return `${years} Years, ${months} Months, ${days} Days`;
   }
 
-  function openDetail(idx) {
-    const r = filtered[idx];
+  function openDetail(rowIdx) {
+    const r = filtered[rowIdx];
     document.getElementById('mName').innerText = r[3];
     document.getElementById('mDept').innerText = `${r[1]} | ${r[9]}`;
     document.getElementById('mTenure').innerText = calculateTenure(r[6]);
-    document.getElementById('mPerf').innerText = "Optimal Performance Level";
     document.getElementById('modalOverlay').style.display = 'flex';
   }
 
   function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
-  function renderRow(r, realIdx) {
+  function renderRow(r, actualIdx) {
     const b = r[1]||"", j = r[9]||"";
     let cls = (b.includes('出款') || j.includes('出款')) ? 'tag-wd' : (b.includes('客服') || j.includes('客服') || b.includes('风控')) ? 'tag-cs' : (b.includes('财务') || j.includes('财务')) ? 'tag-fn' : '';
-    return `<tr class="clickable-row" onclick="openDetail(${realIdx})"><td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]}</td><td style="opacity:0.5">#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td>${r[5]}</td><td><span class="date-badge">${formatDate(r[6])}</span></td><td>${r[8]}</td></tr>`;
+    return `<tr>
+      <td><b>${r[0]}</b></td>
+      <td><span class="${cls}">${r[1]}</span></td>
+      <td>${r[9]}</td>
+      <td><span class="id-link" onclick="openDetail(${actualIdx})">#${r[2]}</span></td>
+      <td style="font-weight:800">${r[3]}</td>
+      <td>${r[5]}</td>
+      <td><span class="date-badge">${formatDate(r[6])}</span></td>
+      <td>${r[8]}</td>
+    </tr>`;
   }
 
   function updateUI() {
     const sort = document.getElementById('sortOrder').value;
-    let sorted = [...filtered].sort((a,b) => sort==='asc' ? (a[2]-b[2]) : (b[2]-a[2]));
+    // We sort the global filtered array for consistent indexing
+    filtered.sort((a,b) => sort==='asc' ? (a[2]-b[2]) : (b[2]-a[2]));
 
-    const totalMain = Math.ceil(sorted.length / mainRows) || 1;
+    const totalMain = Math.ceil(filtered.length / mainRows) || 1;
     if (mainPage < 1) mainPage = 1; if (mainPage > totalMain) mainPage = totalMain;
     const start = (mainPage - 1) * mainRows;
-    document.getElementById('tbody').innerHTML = sorted.slice(start, start + mainRows).map((r, i) => renderRow(r, start + i)).join('');
+    document.getElementById('tbody').innerHTML = filtered.slice(start, start + mainRows).map((r, i) => renderRow(r, start + i)).join('');
     document.getElementById('infoMain').innerText = `Page ${mainPage} / ${totalMain}`;
 
     const renderST = (t, k, tid, info) => {
-        const d = sorted.filter(r => k.some(key => (r[1]||"").includes(key) || (r[9]||"").includes(key)));
+        const d = filtered.filter(r => k.some(key => (r[1]||"").includes(key) || (r[9]||"").includes(key)));
         const total = Math.ceil(d.length / subRows) || 1;
         if (subPages[t] < 1) subPages[t] = 1; if (subPages[t] > total) subPages[t] = total;
         const st = (subPages[t]-1)*subRows;
-        document.getElementById(tid).innerHTML = d.slice(st, st+subRows).map(r => renderRow(r, 0)).join('');
+        // In sub-tables, we find the index from the original filtered array to keep modal link working
+        document.getElementById(tid).innerHTML = d.slice(st, st+subRows).map(r => {
+           const origIdx = filtered.indexOf(r);
+           return renderRow(r, origIdx);
+        }).join('');
         document.getElementById(info).innerText = `Page ${subPages[t]} / ${total}`;
     };
     renderST('WD', ['出款'], 'tbodyWD', 'infoWD');
