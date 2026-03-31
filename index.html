@@ -436,13 +436,13 @@
         (keyword === '客服' && (r[1]||"").includes('风控'))
     );
 
-    // Tampilkan SEMUA data dalam satu list (Scrollable)
+    // Tampilkan data
     body.innerHTML = deptData.map((r) => {
         const staffID = clean(r[2]);
         const p = dbPerf.find(x => clean(x[2]) === staffID);
         const tot = p ? (p[39] || "0") : "0";
         const avg = p ? (p[40] || "0") : "0";
-        const originalIdx = filtered.indexOf(r);
+        const originalIdx = dbMaster.indexOf(r); // Mencari index asli di database
 
         return `
             <tr>
@@ -454,19 +454,6 @@
             </tr>`;
     }).join('');
 }
-
-    info.innerText = `Pg ${perfPages[type]} / ${totalP}`;
-  }
-
-  function changePerfPage(type, step) {
-    perfPages[type] += step;
-    updateUI();
-  }
-
-  function changeMainPage(s) { mainPage += s; updateUI(); }
-  function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
-  document.addEventListener('keydown', (e) => { if (e.key === "Escape") closeModal(); });
-
   loadData();
 </script>
 </body>
