@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus v6.7 | No Scrollbars</title>
+  <title>Nexus v6.8 | Navigation System</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,55 +20,49 @@
     .amt-clock { background: var(--primary); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
     .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
     
-    /* Stats Grid - CLEAN LOOK */
+    /* Stats Grid */
     .dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
     .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); min-height: 260px; overflow: hidden; }
     .chart-box { width: 85px; height: 85px; margin: 0 auto 15px; position: relative; }
     .chart-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.85rem; }
     .dept-title { font-size: 0.7rem; font-weight: 800; text-align: center; margin-bottom: 15px; text-transform: uppercase; }
 
-    /* Legend List - NO SCROLLBAR */
-    .stat-list { 
-      display: flex; 
-      flex-direction: column; 
-      gap: 5px; 
-      padding-top: 10px; 
-      border-top: 1px solid #f1f5f9;
-      overflow: hidden; /* Menghilangkan scrollbar */
+    /* NEW: Navigation Menu Buttons */
+    .nav-menu { display: flex; gap: 12px; margin-bottom: 1.5rem; padding: 10px; background: white; border-radius: 20px; border: 1px solid var(--border); }
+    .menu-btn { 
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 14px; border-radius: 15px; border: 1px solid transparent;
+      font-size: 0.75rem; font-weight: 800; color: var(--text-muted);
+      cursor: pointer; transition: 0.3s; background: #f8fafc; text-decoration: none;
     }
-    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 5px; font-size: 0.65rem; font-weight: 700; }
-    .indicator { display: flex; align-items: center; gap: 6px; }
-    .dot { width: 7px; height: 7px; border-radius: 50%; }
-    .count-badge { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; min-width: 25px; text-align: center; color: var(--primary); }
+    .menu-btn i { font-size: 1.1rem; }
+    .menu-btn:hover { background: #f1f5f9; border-color: var(--border); color: var(--primary); }
+    .menu-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); }
 
-    /* Filters */
+    /* Filters & Table remains the same as v6.7... */
     .filter-wrapper { background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 1rem; }
     .filter-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr; gap: 12px; }
     .filter-group label { display: block; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
     .filter-group select, .filter-group input { width: 100%; padding: 11px 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.75rem; font-weight: 600; outline: none; }
-
-    /* Table */
     .table-container { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
     table { width: 100%; border-collapse: collapse; min-width: 1200px; }
     th { background: #f8fafc; padding: 1rem; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); border-bottom: 1px solid var(--border); }
     td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
-    
     .tag-wd { background: #ecfdf5; color: #065f46; padding: 3px 10px; border-radius: 6px; }
-    .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 3px 10px; border-radius: 6px; }
-    .tag-fn { background: #fffbeb; color: #92400e; padding: 3px 10px; border-radius: 6px; }
     .date-badge { background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-family: monospace; font-size: 0.75rem; font-weight: 700; }
-
-    /* Pagination */
     .pagination-bar { padding: 1.2rem; background: #fff; border-top: 1px solid var(--border); display: flex; justify-content: center; align-items: center; gap: 20px; }
-    .page-btn { padding: 8px 20px; border: 1px solid var(--border); background: white; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 0.75rem; transition: 0.2s; }
-    .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-    .status-bar { padding: 8px 25px; text-align: right; font-size: 0.65rem; color: var(--text-muted); font-weight: 800; background: #f8fafc; }
+    .page-btn { padding: 8px 20px; border: 1px solid var(--border); background: white; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 0.75rem; }
+    .page-btn:disabled { opacity: 0.3; }
+    .stat-list { display: flex; flex-direction: column; gap: 5px; padding-top: 10px; border-top: 1px solid #f1f5f9; overflow: hidden; }
+    .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 5px; font-size: 0.65rem; font-weight: 700; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; }
+    .count-badge { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; min-width: 25px; text-align: center; }
   </style>
 </head>
 <body>
 
 <nav>
-  <div style="font-weight: 900;"><i class="fas fa-layer-group"></i> NEXUS v6.7</div>
+  <div style="font-weight: 900;"><i class="fas fa-layer-group"></i> NEXUS v6.8</div>
   <div class="amt-clock" id="clock">00:00:00 AMT</div>
 </nav>
 
@@ -101,6 +95,21 @@
     </div>
   </div>
 
+  <div class="nav-menu">
+    <a href="#" class="menu-btn active">
+      <i class="fas fa-th-large"></i> OVERVIEW
+    </a>
+    <a href="performance.html" class="menu-btn">
+      <i class="fas fa-chart-line"></i> PERFORMANCE
+    </a>
+    <a href="absent.html" class="menu-btn">
+      <i class="fas fa-user-clock"></i> ABSENT RECORD
+    </a>
+    <a href="salary.html" class="menu-btn">
+      <i class="fas fa-wallet"></i> SALARY SLIP
+    </a>
+  </div>
+
   <div class="filter-wrapper">
     <div class="filter-grid">
       <div class="filter-group"><label>Keyword</label><input type="text" id="searchName" placeholder="Search..."></div>
@@ -121,7 +130,6 @@
         <tbody id="tbody"></tbody>
       </table>
     </div>
-    <div class="status-bar" id="statusBar">Ready</div>
     <div class="pagination-bar">
       <button class="page-btn" id="prevBtn" onclick="changePage(-1)">PREV</button>
       <span id="pageInfo" style="font-weight: 800; font-size: 0.8rem;">Page 1</span>
@@ -131,6 +139,7 @@
 </div>
 
 <script>
+  // Script tetap sama seperti v6.7 (load data, charts, pagination)...
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
   let db = [], filtered = [], charts = {};
   let currentPage = 1;
@@ -154,6 +163,7 @@
     const getU = (idx) => [...new Set(db.map(r => r[idx]))].filter(v => v && v !== "-").sort();
     const fill = (id, vals) => {
       const s = document.getElementById(id);
+      if(!s) return;
       s.innerHTML = `<option value="">All Records</option>`;
       vals.forEach(v => s.innerHTML += `<option value="${v}">${v}</option>`);
     };
@@ -174,12 +184,7 @@
     const sg = document.getElementById('fGroup').value;
     const sc = document.getElementById('fCountry').value;
     const sp = document.getElementById('fPlatform').value;
-
-    filtered = db.filter(r => {
-      return (r.join(' ').toLowerCase().includes(sn)) &&
-             (!sf || r[5] === sf) && (!sg || r[1] === sg) &&
-             (!st || r[9] === st) && (!sc || r[8] === sc) && (!sp || r[0] === sp);
-    });
+    filtered = db.filter(r => (r.join(' ').toLowerCase().includes(sn)) && (!sf || r[5] === sf) && (!sg || r[1] === sg) && (!st || r[9] === st) && (!sc || r[8] === sc) && (!sp || r[0] === sp));
     updateUI();
   }
 
@@ -194,32 +199,21 @@
     syncCharts();
     const tbody = document.getElementById('tbody');
     const pageData = filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-
     tbody.innerHTML = pageData.map(r => {
       const b = r[1]||"", j = r[9]||"";
-      let cls = (b.includes('出款') || j.includes('出款')) ? 'tag-wd' : 
-                (b.includes('客服') || j.includes('客服')) ? 'tag-cs' : 
-                (b.includes('财务') || j.includes('财务')) ? 'tag-fn' : '';
-      return `<tr>
-        <td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]}</td>
-        <td style="opacity:0.5">#${r[2]}</td><td style="font-weight:800">${r[3]}</td>
-        <td>${r[5]}</td><td><span class="date-badge">${formatDate(r[6])}</span></td>
-        <td style="color:var(--country)">${r[8]}</td>
-      </tr>`;
+      let cls = (b.includes('出款') || j.includes('出款')) ? 'tag-wd' : (b.includes('客服') || j.includes('客服')) ? 'tag-cs' : (b.includes('财务') || j.includes('财务')) ? 'tag-fn' : '';
+      return `<tr><td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]}</td><td style="opacity:0.5">#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td>${r[5]}</td><td><span class="date-badge">${formatDate(r[6])}</span></td><td style="color:var(--country)">${r[8]}</td></tr>`;
     }).join('');
-
     const totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
     document.getElementById('pageInfo').innerText = `Page ${currentPage} / ${totalPages}`;
     document.getElementById('prevBtn').disabled = currentPage === 1;
     document.getElementById('nextBtn').disabled = currentPage >= totalPages;
-    document.getElementById('statusBar').innerText = `Total Found: ${filtered.length}`;
   }
 
   function changePage(step) { currentPage += step; updateUI(); }
 
   function syncCharts() {
     let datasets = { cWD: {}, cCS: {}, cFN: {}, cGEO: {}, cSH: {} };
-    
     filtered.forEach(r => {
       const b = r[1]||"", j = r[9]||"";
       if (b.includes('出款') || j.includes('出款')) datasets.cWD[b] = (datasets.cWD[b]||0)+1;
@@ -228,37 +222,18 @@
       if(r[8]) datasets.cGEO[r[8]] = (datasets.cGEO[r[8]]||0)+1;
       if(r[5]) datasets.cSH[r[5]] = (datasets.cSH[r[5]]||0)+1;
     });
-
     Object.keys(datasets).forEach(id => {
       const ctx = document.getElementById(id).getContext('2d');
       if (charts[id]) charts[id].destroy();
-      
       const entries = Object.entries(datasets[id]).sort((a,b)=>b[1]-a[1]);
       const dataValues = entries.map(e => e[1]);
       const colors = entries.map((_, i) => palette[i % palette.length]);
-
-      charts[id] = new Chart(ctx, {
-        type: 'doughnut',
-        data: { datasets: [{ data: dataValues, backgroundColor: colors, borderWidth: 0 }] },
-        options: { plugins: { legend: { display: false } }, cutout: '75%', animation: false }
-      });
-
+      charts[id] = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: dataValues, backgroundColor: colors, borderWidth: 0 }] }, options: { plugins: { legend: { display: false } }, cutout: '75%', animation: false } });
       document.getElementById('t' + id.slice(1)).innerText = dataValues.reduce((a, b) => a + b, 0);
-      
-      // Render Legend List (Limit to top 4 to prevent overflow)
       const listEl = document.getElementById('list_' + id);
-      listEl.innerHTML = entries.slice(0, 4).map(([name, val], i) => `
-        <div class="stat-row">
-          <div class="indicator">
-            <span class="dot" style="background:${colors[i]}"></span>
-            <span>${name}</span>
-          </div>
-          <span class="count-badge">${val}</span>
-        </div>
-      `).join('');
+      listEl.innerHTML = entries.slice(0, 4).map(([name, val], i) => `<div class="stat-row"><div class="indicator"><span class="dot" style="background:${colors[i]}"></span><span>${name}</span></div><span class="count-badge">${val}</span></div>`).join('');
     });
   }
-
   load();
 </script>
 </body>
