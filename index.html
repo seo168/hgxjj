@@ -22,29 +22,24 @@
     
     .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
     
-    /* Stats Grid */
     .dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-    .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); min-height: 280px; transition: 0.3s; }
+    .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); min-height: 280px; }
     .chart-box { width: 85px; height: 85px; margin: 0 auto 15px; position: relative; }
     .chart-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.85rem; }
     .dept-title { font-size: 0.7rem; font-weight: 800; text-align: center; margin-bottom: 15px; text-transform: uppercase; }
 
-    /* Remarks Styling */
     .stat-list { display: flex; flex-direction: column; gap: 6px; padding-top: 10px; border-top: 1px solid #f1f5f9; }
     .stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; font-weight: 700; }
-    .indicator { display: flex; align-items: center; gap: 6px; color: var(--text-muted); }
-    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .indicator { display: flex; align-items: center; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
     .remark-text { color: var(--text-main); max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    /* Navigation & Tabs */
     .nav-menu { display: flex; gap: 12px; margin-bottom: 1.5rem; padding: 10px; background: white; border-radius: 20px; border: 1px solid var(--border); }
-    .menu-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; border-radius: 15px; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); cursor: pointer; transition: 0.3s; background: #f8fafc; border: none; outline: none; }
-    .menu-btn:hover { background: #f1f5f9; color: var(--primary); }
-    .menu-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); }
+    .menu-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; border-radius: 15px; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); cursor: pointer; transition: 0.3s; background: #f8fafc; border: none; }
+    .menu-btn.active { background: var(--primary); color: white; }
 
     .page-content { display: none; }
-    .page-content.active { display: block; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .page-content.active { display: block; }
 
     .filter-wrapper { background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 1rem; }
     .filter-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr; gap: 12px; }
@@ -52,18 +47,35 @@
     .filter-group select, .filter-group input { width: 100%; padding: 11px 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.75rem; font-weight: 600; outline: none; }
 
     .table-container { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
-    table { width: 100%; border-collapse: collapse; min-width: 1200px; }
-    th { background: #f8fafc; padding: 1rem; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+    th { background: #f8fafc; padding: 1rem; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); border-bottom: 1px solid var(--border); text-transform: uppercase; }
     td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
     
+    /* Clickable Row */
+    .clickable-row { cursor: pointer; transition: 0.2s; }
+    .clickable-row:hover { background: #f1f5f9; }
+
     .tag-wd { background: #ecfdf5; color: #065f46; padding: 3px 10px; border-radius: 6px; }
     .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 3px 10px; border-radius: 6px; }
     .tag-fn { background: #fffbeb; color: #92400e; padding: 3px 10px; border-radius: 6px; }
-    .date-badge { background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-family: monospace; font-size: 0.75rem; font-weight: 700; }
+    .date-badge { background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-family: monospace; }
     
-    .page-btn-small { padding: 4px 10px; border: 1px solid var(--border); background: white; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: 800; transition: 0.2s; }
-    .page-btn-small:hover { background: var(--primary); color: white; }
-    .count-badge { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: var(--primary); }
+    .page-btn-small { padding: 4px 10px; border: 1px solid var(--border); background: white; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: 800; }
+    .count-badge { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
+
+    /* Modal Styling */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px); }
+    .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 24px; padding: 2rem; position: relative; animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .close-modal { cursor: pointer; font-size: 1.2rem; color: var(--text-muted); }
+    .detail-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+    .detail-item { background: #f8fafc; padding: 12px 18px; border-radius: 15px; border: 1px solid var(--border); }
+    .detail-label { font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+    .detail-val { font-size: 0.9rem; font-weight: 700; color: var(--primary); }
+    .work-tenure { background: var(--primary); color: white; }
+    .work-tenure .detail-label { color: rgba(255,255,255,0.6); }
+    .work-tenure .detail-val { color: white; }
   </style>
 </head>
 <body>
@@ -100,10 +112,9 @@
         <div class="filter-group"><label>Platform</label><select id="fPlatform"></select></div>
       </div>
     </div>
-
     <div class="table-container">
       <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);">
-        <span><i class="fas fa-list"></i> ALL RECORDS</span>
+        <span><i class="fas fa-list"></i> STAFF DIRECTORY (Click row for details)</span>
         <div style="display: flex; align-items: center; gap: 10px;">
             <button class="page-btn-small" onclick="changeMainPage(-1)"><i class="fas fa-chevron-left"></i></button>
             <span id="infoMain" style="font-size: 0.75rem;">Page 1</span>
@@ -123,75 +134,80 @@
 
   <div id="performance" class="page-content">
     <div class="filter-wrapper" style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
-      <span style="font-weight: 800; font-size: 0.8rem; color: var(--primary);"><i class="fas fa-sort-amount-up"></i> SORT DATA BY ID</span>
+      <span style="font-weight: 800; font-size: 0.8rem;"><i class="fas fa-sort-amount-up"></i> SORT BY ID</span>
       <select id="sortOrder" onchange="updateUI()" style="padding: 8px 15px; border-radius: 10px; border: 1px solid var(--border); font-weight: 700; font-size: 0.75rem;">
-        <option value="asc">Low to High (ID)</option>
-        <option value="desc">High to Low (ID)</option>
+        <option value="asc">ID: Low to High</option>
+        <option value="desc">ID: High to Low</option>
       </select>
     </div>
-
-    <div id="performance-tables">
-      <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--withdraw);">
-        <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
-          <span><i class="fas fa-money-bill-wave"></i> 出款部 (WITHDRAW)</span>
-          <div style="display: flex; align-items: center; gap: 10px;">
-              <button class="page-btn-small" onclick="changeSubPage('WD', -1)"><i class="fas fa-chevron-left"></i></button>
-              <span id="infoWD" style="font-size: 0.75rem;">Page 1</span>
-              <button class="page-btn-small" onclick="changeSubPage('WD', 1)"><i class="fas fa-chevron-right"></i></button>
-          </div>
-        </div>
-        <div style="overflow-x: auto;">
-          <table><thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead><tbody id="tbodyWD"></tbody></table>
+    <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--withdraw);">
+      <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
+        <span>出款部 (WITHDRAW)</span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button class="page-btn-small" onclick="changeSubPage('WD', -1)"><i class="fas fa-chevron-left"></i></button>
+          <span id="infoWD">Page 1</span>
+          <button class="page-btn-small" onclick="changeSubPage('WD', 1)"><i class="fas fa-chevron-right"></i></button>
         </div>
       </div>
-      <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--cs);">
+      <div style="overflow-x: auto;"><table><thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead><tbody id="tbodyWD"></tbody></table></div>
+    </div>
+    <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--cs);">
         <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
-          <span><i class="fas fa-user-shield"></i> 客服 / 风控 (CS / RISK)</span>
+          <span>客服 / 风控 (CS / RISK)</span>
           <div style="display: flex; align-items: center; gap: 10px;">
-              <button class="page-btn-small" onclick="changeSubPage('CS', -1)"><i class="fas fa-chevron-left"></i></button>
-              <span id="infoCS" style="font-size: 0.75rem;">Page 1</span>
-              <button class="page-btn-small" onclick="changeSubPage('CS', 1)"><i class="fas fa-chevron-right"></i></button>
+            <button class="page-btn-small" onclick="changeSubPage('CS', -1)"><i class="fas fa-chevron-left"></i></button>
+            <span id="infoCS">Page 1</span>
+            <button class="page-btn-small" onclick="changeSubPage('CS', 1)"><i class="fas fa-chevron-right"></i></button>
           </div>
         </div>
-        <div style="overflow-x: auto;">
-          <table><thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead><tbody id="tbodyCS"></tbody></table>
-        </div>
-      </div>
-      <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--finance);">
+        <div style="overflow-x: auto;"><table><thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead><tbody id="tbodyCS"></tbody></table></div>
+    </div>
+    <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--finance);">
         <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
-          <span><i class="fas fa-file-invoice-dollar"></i> 财务部 (FINANCE)</span>
+          <span>财务部 (FINANCE)</span>
           <div style="display: flex; align-items: center; gap: 10px;">
-              <button class="page-btn-small" onclick="changeSubPage('FN', -1)"><i class="fas fa-chevron-left"></i></button>
-              <span id="infoFN" style="font-size: 0.75rem;">Page 1</span>
-              <button class="page-btn-small" onclick="changeSubPage('FN', 1)"><i class="fas fa-chevron-right"></i></button>
+            <button class="page-btn-small" onclick="changeSubPage('FN', -1)"><i class="fas fa-chevron-left"></i></button>
+            <span id="infoFN">Page 1</span>
+            <button class="page-btn-small" onclick="changeSubPage('FN', 1)"><i class="fas fa-chevron-right"></i></button>
           </div>
         </div>
-        <div style="overflow-x: auto;">
-          <table><thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead><tbody id="tbodyFN"></tbody></table>
-        </div>
-      </div>
+        <div style="overflow-x: auto;"><table><thead><tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr></thead><tbody id="tbodyFN"></tbody></table></div>
     </div>
   </div>
-  
-  <div id="absent" class="page-content">
-    <div class="table-container" style="padding: 40px; text-align: center;"><h3>Absent Record Content</h3></div>
-  </div>
+</div>
 
-  <div id="salary" class="page-content">
-    <div class="table-container" style="padding: 40px; text-align: center;"><h3>Salary Slip Content</h3></div>
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h2 id="mName" style="font-weight: 900; color: var(--primary);">Staff Detail</h2>
+      <i class="fas fa-times close-modal" onclick="closeModal()"></i>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-item work-tenure">
+        <div class="detail-label"><i class="fas fa-hourglass-half"></i> Total Working Time</div>
+        <div class="detail-val" id="mTenure">-</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Performance Information</div>
+        <div class="detail-val" id="mPerf">Normal</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Employment Status</div>
+        <div class="detail-val" style="color: var(--withdraw)"><i class="fas fa-check-circle"></i> ACTIVE</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Department / Team</div>
+        <div class="detail-val" id="mDept">-</div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
   let db = [], filtered = [], charts = {};
-  
-  // State Pagination
-  let mainPage = 1;
-  const mainRows = 10;
-  let subPages = { WD: 1, CS: 1, FN: 1 };
-  const subRows = 5;
-
+  let mainPage = 1; const mainRows = 10;
+  let subPages = { WD: 1, CS: 1, FN: 1 }; const subRows = 5;
   const palette = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];
 
   function showPage(pageId) {
@@ -211,21 +227,17 @@
       setInterval(() => {
         document.getElementById('clock').innerText = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"})).toLocaleTimeString('en-GB') + " AMT";
       }, 1000);
-    } catch (e) { console.error("Load Error:", e); }
+    } catch (e) { console.error(e); }
   }
 
   function initFilters() {
     const getU = (idx) => [...new Set(db.map(r => r[idx]))].filter(v => v && v !== "-").sort();
     const fill = (id, vals) => {
       const s = document.getElementById(id);
-      s.innerHTML = `<option value="">All Records</option>`;
+      s.innerHTML = `<option value="">All</option>`;
       vals.forEach(v => s.innerHTML += `<option value="${v}">${v}</option>`);
     };
-    fill('fPlatform', getU(0));
-    fill('fGroup', getU(1));
-    fill('fTeam', getU(9));
-    fill('fShift', getU(5));
-    fill('fCountry', getU(8));
+    fill('fPlatform', getU(0)); fill('fGroup', getU(1)); fill('fTeam', getU(9)); fill('fShift', getU(5)); fill('fCountry', getU(8));
     ['searchName', 'fShift', 'fTeam', 'fGroup', 'fCountry', 'fPlatform'].forEach(id => {
       document.getElementById(id).addEventListener('input', () => { mainPage = 1; runFilters(); });
     });
@@ -238,52 +250,70 @@
     const sg = document.getElementById('fGroup').value;
     const sc = document.getElementById('fCountry').value;
     const sp = document.getElementById('fPlatform').value;
-    
     filtered = db.filter(r => (r.join(' ').toLowerCase().includes(sn)) && (!sf || r[5] === sf) && (!sg || r[1] === sg) && (!st || r[9] === st) && (!sc || r[8] === sc) && (!sp || r[0] === sp));
     updateUI();
   }
 
-  function changeMainPage(step) { mainPage += step; updateUI(); }
-  function changeSubPage(type, step) { subPages[type] += step; updateUI(); }
+  function changeMainPage(s) { mainPage += s; updateUI(); }
+  function changeSubPage(t, s) { subPages[t] += s; updateUI(); }
 
   function formatDate(v) {
     if (!v || v === "-") return "-";
     let d = (!isNaN(v) && v.length > 4) ? new Date((v - 25569) * 86400 * 1000) : new Date(v.replace(/-/g, '/'));
-    if (isNaN(d.getTime())) return v;
-    return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
+    return isNaN(d.getTime()) ? v : `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
   }
 
-  function renderRow(r) {
+  function calculateTenure(dateStr) {
+    if (!dateStr || dateStr === "-") return "-";
+    let join = (!isNaN(dateStr) && dateStr.length > 4) ? new Date((dateStr - 25569) * 86400 * 1000) : new Date(dateStr.replace(/-/g, '/'));
+    if (isNaN(join.getTime())) return "-";
+    let now = new Date();
+    let years = now.getFullYear() - join.getFullYear();
+    let months = now.getMonth() - join.getMonth();
+    let days = now.getDate() - join.getDate();
+    if (days < 0) { months--; days += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
+    if (months < 0) { years--; months += 12; }
+    return `${years} Years, ${months} Months, ${days} Days`;
+  }
+
+  function openDetail(idx) {
+    const r = filtered[idx];
+    document.getElementById('mName').innerText = r[3];
+    document.getElementById('mDept').innerText = `${r[1]} | ${r[9]}`;
+    document.getElementById('mTenure').innerText = calculateTenure(r[6]);
+    document.getElementById('mPerf').innerText = "Optimal Performance Level";
+    document.getElementById('modalOverlay').style.display = 'flex';
+  }
+
+  function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
+
+  function renderRow(r, realIdx) {
     const b = r[1]||"", j = r[9]||"";
     let cls = (b.includes('出款') || j.includes('出款')) ? 'tag-wd' : (b.includes('客服') || j.includes('客服') || b.includes('风控')) ? 'tag-cs' : (b.includes('财务') || j.includes('财务')) ? 'tag-fn' : '';
-    return `<tr><td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]}</td><td style="opacity:0.5">#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td>${r[5]}</td><td><span class="date-badge">${formatDate(r[6])}</span></td><td style="color:var(--country)">${r[8]}</td></tr>`;
+    return `<tr class="clickable-row" onclick="openDetail(${realIdx})"><td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]}</td><td style="opacity:0.5">#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td>${r[5]}</td><td><span class="date-badge">${formatDate(r[6])}</span></td><td>${r[8]}</td></tr>`;
   }
 
   function updateUI() {
-    const sortType = document.getElementById('sortOrder') ? document.getElementById('sortOrder').value : 'asc';
-    let sortedData = [...filtered].sort((a, b) => {
-        let idA = parseInt(a[2]) || 0; let idB = parseInt(b[2]) || 0;
-        return sortType === 'asc' ? idA - idB : idB - idA;
-    });
+    const sort = document.getElementById('sortOrder').value;
+    let sorted = [...filtered].sort((a,b) => sort==='asc' ? (a[2]-b[2]) : (b[2]-a[2]));
 
-    const totalMainPages = Math.ceil(sortedData.length / mainRows) || 1;
-    if (mainPage < 1) mainPage = 1; if (mainPage > totalMainPages) mainPage = totalMainPages;
-    const startMain = (mainPage - 1) * mainRows;
-    document.getElementById('tbody').innerHTML = sortedData.slice(startMain, startMain + mainRows).map(r => renderRow(r)).join('');
-    document.getElementById('infoMain').innerText = `Page ${mainPage} / ${totalMainPages}`;
+    const totalMain = Math.ceil(sorted.length / mainRows) || 1;
+    if (mainPage < 1) mainPage = 1; if (mainPage > totalMain) mainPage = totalMain;
+    const start = (mainPage - 1) * mainRows;
+    document.getElementById('tbody').innerHTML = sorted.slice(start, start + mainRows).map((r, i) => renderRow(r, start + i)).join('');
+    document.getElementById('infoMain').innerText = `Page ${mainPage} / ${totalMain}`;
 
-    const renderSubTable = (type, keywords, tbodyId, infoId) => {
-        const data = sortedData.filter(r => keywords.some(k => (r[1]||"").includes(k) || (r[9]||"").includes(k)));
-        const totalPages = Math.ceil(data.length / subRows) || 1;
-        if (subPages[type] < 1) subPages[type] = 1; if (subPages[type] > totalPages) subPages[type] = totalPages;
-        const start = (subPages[type] - 1) * subRows;
-        document.getElementById(tbodyId).innerHTML = data.slice(start, start + subRows).map(r => renderRow(r)).join('');
-        document.getElementById(infoId).innerText = `Page ${subPages[type]} / ${totalPages}`;
+    const renderST = (t, k, tid, info) => {
+        const d = sorted.filter(r => k.some(key => (r[1]||"").includes(key) || (r[9]||"").includes(key)));
+        const total = Math.ceil(d.length / subRows) || 1;
+        if (subPages[t] < 1) subPages[t] = 1; if (subPages[t] > total) subPages[t] = total;
+        const st = (subPages[t]-1)*subRows;
+        document.getElementById(tid).innerHTML = d.slice(st, st+subRows).map(r => renderRow(r, 0)).join('');
+        document.getElementById(info).innerText = `Page ${subPages[t]} / ${total}`;
     };
-
-    renderSubTable('WD', ['出款'], 'tbodyWD', 'infoWD');
-    renderSubTable('CS', ['客服', '风控'], 'tbodyCS', 'infoCS');
-    renderSubTable('FN', ['财务'], 'tbodyFN', 'infoFN');
+    renderST('WD', ['出款'], 'tbodyWD', 'infoWD');
+    renderST('CS', ['客服','风控'], 'tbodyCS', 'infoCS');
+    renderST('FN', ['财务'], 'tbodyFN', 'infoFN');
     syncCharts();
   }
 
@@ -297,25 +327,15 @@
       if(r[8]) ds.cGEO[r[8]] = (ds.cGEO[r[8]]||0)+1;
       if(r[5]) ds.cSH[r[5]] = (ds.cSH[r[5]]||0)+1;
     });
-
     Object.keys(ds).forEach(id => {
       const entries = Object.entries(ds[id]).sort((a,b)=>b[1]-a[1]);
       const vals = entries.map(e => e[1]);
       const colors = entries.map((_, i) => palette[i % palette.length]);
       const ctx = document.getElementById(id).getContext('2d');
       if (charts[id]) charts[id].destroy();
-      charts[id] = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] }, options: { plugins: { legend: { display: false } }, cutout: '75%', animation: false } });
+      charts[id] = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] }, options: { plugins: { legend: false }, cutout: '75%', animation: false } });
       document.getElementById('t' + id.slice(1)).innerText = vals.reduce((a, b) => a + b, 0);
-      
-      // Update Stat List with REMARKS
-      document.getElementById('list_' + id).innerHTML = entries.slice(0, 4).map(([n, v], i) => `
-        <div class="stat-row">
-          <div class="indicator">
-            <span class="dot" style="background:${colors[i]}"></span>
-            <span class="remark-text">${n}</span>
-          </div>
-          <span class="count-badge">${v}</span>
-        </div>`).join('');
+      document.getElementById('list_' + id).innerHTML = entries.slice(0, 4).map(([n, v], i) => `<div class="stat-row"><div class="indicator"><span class="dot" style="background:${colors[i]}"></span><span class="remark-text">${n}</span></div><span class="count-badge">${v}</span></div>`).join('');
     });
   }
   load();
