@@ -111,11 +111,52 @@
   </div>
 
   <div id="performance" class="page-content">
-    <div class="table-container" style="padding: 40px; text-align: center;">
-      <h3>Performance Page (Data Identical to Overview)</h3>
-      <p>Halaman ini sekarang menggunakan data yang sama tanpa reload.</p>
+  
+  <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--withdraw);">
+    <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between;">
+      <span><i class="fas fa-money-bill-wave"></i> 出款部明细 (WITHDRAW)</span>
+      <span id="countWD" class="count-badge">0 Records</span>
+    </div>
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr>
+        </thead>
+        <tbody id="tbodyWD"></tbody>
+      </table>
     </div>
   </div>
+
+  <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--cs);">
+    <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between;">
+      <span><i class="fas fa-user-shield"></i> 客服 / 风控部明细 (CS / RISK)</span>
+      <span id="countCS" class="count-badge">0 Records</span>
+    </div>
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr>
+        </thead>
+        <tbody id="tbodyCS"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-container" style="margin-bottom: 2rem; border-top: 4px solid var(--finance);">
+    <div style="padding: 1rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between;">
+      <span><i class="fas fa-file-invoice-dollar"></i> 财务部明细 (FINANCE)</span>
+      <span id="countFN" class="count-badge">0 Records</span>
+    </div>
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr><th>平台</th><th>组别(B)</th><th>团队(J)</th><th>ID</th><th>姓名</th><th>班次</th><th>入职日期</th><th>国家</th></tr>
+        </thead>
+        <tbody id="tbodyFN"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
   
   <div id="absent" class="page-content">
     <div class="table-container" style="padding: 40px; text-align: center;"><h3>Absent Record Content</h3></div>
