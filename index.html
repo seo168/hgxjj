@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus Master v3.6 | Smart Date Detection</title>
+  <title>Nexus Master v3.7 | Monthly View</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -35,18 +35,18 @@
     .tag-wd { background: #ecfdf5; color: #065f46; padding: 3px 10px; border-radius: 6px; display: inline-block; }
     .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 3px 10px; border-radius: 6px; display: inline-block; }
     .tag-fn { background: #fffbeb; color: #92400e; padding: 3px 10px; border-radius: 6px; display: inline-block; }
-    .date-pill { background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 5px; font-family: monospace; font-size: 0.75rem; }
+    .month-pill { background: #eff6ff; color: #1e40af; padding: 3px 12px; border-radius: 20px; font-weight: 800; font-size: 0.75rem; border: 1px solid #dbeafe; }
   </style>
 </head>
 <body>
 
 <nav>
-  <div style="font-weight: 900; color: var(--primary); font-size: 1.1rem;"><i class="fas fa-calendar-check" style="color:var(--accent)"></i> NEXUS<span>CORE v3.6</span></div>
+  <div style="font-weight: 900; color: var(--primary); font-size: 1.1rem;"><i class="fas fa-calendar-alt" style="color:var(--accent)"></i> NEXUS<span>MONTHLY v3.7</span></div>
   <div class="amt-clock" id="clock">00:00:00 AMT</div>
 </nav>
 
 <div class="container">
-  <div class="dept-grid" id="statsArea">
+  <div class="dept-grid">
     <div class="dept-card"><div style="color:var(--withdraw)" class="dept-title">出款 (Withdraw)</div><div class="chart-box"><canvas id="cWD"></canvas><div class="chart-val" id="tWD">0</div></div><div class="stat-list" id="lWD"></div></div>
     <div class="dept-card"><div style="color:var(--cs)" class="dept-title">客服 (Service)</div><div class="chart-box"><canvas id="cCS"></canvas><div class="chart-val" id="tCS">0</div></div><div class="stat-list" id="lCS"></div></div>
     <div class="dept-card"><div style="color:var(--finance)" class="dept-title">财务 (Finance)</div><div class="chart-box"><canvas id="cFN"></canvas><div class="chart-val" id="tFN">0</div></div><div class="stat-list" id="lFN"></div></div>
@@ -56,14 +56,14 @@
 
   <div class="table-container">
     <div class="table-header">
-      <h3 style="font-weight: 800; font-size: 0.9rem;">Auto-Formatting Database</h3>
-      <input type="text" id="search" class="search-input" placeholder="Search Data...">
+      <h3 style="font-weight: 800; font-size: 0.9rem;">Monthly Organized Personnel</h3>
+      <input type="text" id="search" class="search-input" placeholder="Cari nama, ID, atau bulan...">
     </div>
     <div style="overflow-x: auto;">
       <table>
         <thead>
           <tr>
-            <th>Platform</th><th>Dept</th><th>Bagian (J)</th><th>ID</th><th>Nama</th><th>Shift</th><th>Tgl Masuk (G)</th><th>Negara</th>
+            <th>Platform</th><th>Dept</th><th>Bagian (J)</th><th>ID</th><th>Nama</th><th>Shift</th><th>Bulan Masuk</th><th>Negara</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -76,26 +76,23 @@
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
   let db = []; let filtered = []; let charts = {};
 
-  // --- FUNGSI DETEKSI TANGGAL OTOMATIS ---
-  function autoFormatDate(val) {
+  // --- FUNGSI HANYA BULAN & TAHUN ---
+  function getMonthYear(val) {
     if (!val || val.trim() === "" || val === "-") return "-";
     
     let d = new Date(val);
     
-    // Jika input adalah angka murni (Serial Excel), ubah ke tanggal
+    // Deteksi Angka Serial Excel (40000+)
     if (!isNaN(val) && val > 40000) {
       d = new Date((val - 25569) * 86400 * 1000);
     }
 
-    // Jika format valid, kembalikan DD-MM-YYYY
     if (!isNaN(d.getTime())) {
-      const day = String(d.getDate()).padStart(2, '0');
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const year = d.getFullYear();
-      return `${day}-${month}-${year}`;
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      return `${months[d.getMonth()]} ${d.getFullYear()}`;
     }
     
-    return val; // Jika gagal deteksi, tampilkan apa adanya
+    return val; // Jika format teks aneh, tampilkan aslinya
   }
 
   async function load() {
@@ -176,7 +173,7 @@
         <td style="opacity:0.5">#${r[2]}</td>
         <td style="font-weight:800">${r[3]}</td>
         <td style="color:${r[5].toLowerCase().includes('mid')?'var(--finance)':'inherit'}">${r[5]}</td>
-        <td><span class="date-pill">${autoFormatDate(r[6])}</span></td>
+        <td><span class="month-pill">${getMonthYear(r[6])}</span></td>
         <td style="color:var(--country)">${r[8]}</td>
       </tr>`;
     }).join('');
