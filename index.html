@@ -128,20 +128,38 @@
       </div>
     </div>
   </div>
+
+  <div id="performance" class="page-content">
+    <div class="filter-wrapper">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-chart-line"></i> PERFORMANCE MONITORING</h3>
+        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">Data From: AN (Total) & AO (Average)</div>
+      </div>
+    </div>
+    <div class="table-container">
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Total Order (AN)</th>
+              <th>Daily Avg (AO)</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-perf"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div>
-        <h2 id="mName" style="font-weight: 900; color: var(--primary);">Name</h2>
-        <span id="mID" style="color: var(--accent); font-weight: 800;">#ID</span>
-      </div>
-      <i class="fas fa-times-circle" 
-         style="cursor:pointer; font-size:1.5rem; color:var(--text-muted)" 
-         onclick="closeModal()"></i>
-      </div>
-        
         <h2 id="mName" style="font-weight: 900; color: var(--primary);">Name</h2>
         <span id="mID" style="color: var(--accent); font-weight: 800;">#ID</span>
       </div>
@@ -176,34 +194,6 @@
   </div>
 </div>
 
-<div id="performance" class="page-content">
-  <div class="filter-wrapper">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-chart-line"></i> PERFORMANCE MONITORING</h3>
-      <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">Data From: AN (Total) & AO (Average)</div>
-    </div>
-  </div>
-
-  <div class="table-container">
-    <div style="overflow-x: auto;">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Total Order (AN)</th>
-            <th>Daily Avg (AO)</th>
-            <th>Performance Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-perf">
-          </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
 <script>
   const URL_MASTER = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?gid=0&output=csv";
   const URL_PERF = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQlA6btKuVajZNe2XPoc3b9BAhbeqFYzAS97f2f8mawUCB4-NOHXryGY_b-4WyZ_A/pub?gid=0&output=csv";
@@ -214,19 +204,15 @@
 
   const clean = (s) => String(s || "").trim().toUpperCase();
 
-  // 1. FUNGSI NAVIGASI (DIPERBAIKI)
   function showPage(pageId) {
     document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
-    
     const targetPage = document.getElementById(pageId);
     const targetBtn = document.getElementById('btn-' + pageId);
-    
     if(targetPage) targetPage.classList.add('active');
     if(targetBtn) targetBtn.classList.add('active');
   }
 
-  // 2. LOAD DATA
   async function loadData() {
     try {
       const [resM, resP] = await Promise.all([
@@ -235,10 +221,8 @@
       ]);
       dbMaster = smartParse(await resM.text()).slice(1).filter(r => r[2]);
       dbPerf = smartParse(await resP.text()).slice(1);
-      
       initFilters();
       runFilters();
-      
       setInterval(() => {
         document.getElementById('clock').innerText = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"})).toLocaleTimeString('en-GB') + " AMT";
       }, 1000);
@@ -251,33 +235,36 @@
     );
   }
 
-  // 3. LOGIKA PERFORMANCE (DIPERBAIKI)
   function openDetail(idx) {
     const staff = filtered[idx];
     const targetID = clean(staff[2]); 
-    
-    // Cari ID di Kolom C (Index 2) pada Sheet Performance
     const p = dbPerf.find(row => clean(row[2]) === targetID);
 
     document.getElementById('mName').innerText = staff[3];
     document.getElementById('mID').innerText = "#" + staff[2];
 
     if (p) {
-      // Sesuai instruksi Anda: AN (39) dan AO (40)
       document.getElementById('mTotalOrder').innerText = p[39] || "0"; 
       document.getElementById('mAvg').innerText = p[40] || "0";        
-      document.getElementById('mMentor').innerText = p[3] || "ID Terdeteksi"; // Mengambil kolom D sebagai mentor sementara
+      document.getElementById('mMentor').innerText = p[3] || "Data Terhubung";
       document.getElementById('mMistake').innerText = "0";
     } else {
-      document.getElementById('mTotalOrder').innerText = "Not Found";
-      document.getElementById('mAvg').innerText = "Not Found";
-      document.getElementById('mMentor').innerText = "ID " + targetID + " tidak ada di Sheet Performance";
+      document.getElementById('mTotalOrder').innerText = "0";
+      document.getElementById('mAvg').innerText = "0";
+      document.getElementById('mMentor').innerText = "ID tidak ditemukan di sheet Performance";
+    }
+
+    // Hitung Masa Kerja
+    const joinDate = new Date(staff[6]);
+    if(!isNaN(joinDate)){
+        const diff = Math.ceil(Math.abs(new Date() - joinDate) / (1000 * 60 * 60 * 24));
+        document.getElementById('mTenure').innerText = diff + " Hari (" + staff[6] + ")";
+        document.getElementById('mWorkDays').innerText = diff + " Hari";
     }
 
     document.getElementById('modalOverlay').style.display = 'flex';
   }
 
-  // 4. STATISTIK / GRAFIK (DIKEMBALIKAN)
   function syncCharts() {
     let ds = { cWD: {}, cCS: {}, cFN: {}, cGEO: {}, cSH: {} };
     filtered.forEach(r => {
@@ -295,7 +282,6 @@
       const colors = entries.map((_, i) => palette[i % palette.length]);
       const canvas = document.getElementById(id);
       if(!canvas) return;
-      
       const ctx = canvas.getContext('2d');
       if (charts[id]) charts[id].destroy();
       charts[id] = new Chart(ctx, { 
@@ -303,9 +289,7 @@
         data: { datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] }, 
         options: { plugins: { legend: false }, cutout: '75%', animation: false } 
       });
-
-      const totalVal = vals.reduce((a, b) => a + b, 0);
-      document.getElementById('t' + id.slice(1)).innerText = totalVal;
+      document.getElementById('t' + id.slice(1)).innerText = vals.reduce((a, b) => a + b, 0);
       document.getElementById('list_' + id).innerHTML = entries.slice(0, 4).map(([n, v], i) => `
         <div class="stat-row">
           <div class="indicator"><span class="dot" style="background:${colors[i]}"></span><span class="remark-text">${n}</span></div>
@@ -334,12 +318,7 @@
     const sg = document.getElementById('fGroup').value;
     const sc = document.getElementById('fCountry').value;
     const sp = document.getElementById('fPlatform').value;
-
-    filtered = dbMaster.filter(r => 
-      (r.join(' ').toLowerCase().includes(sn)) && 
-      (!sf || r[5] === sf) && (!sg || r[1] === sg) && 
-      (!st || r[9] === st) && (!sc || r[8] === sc) && (!sp || r[0] === sp)
-    );
+    filtered = dbMaster.filter(r => (r.join(' ').toLowerCase().includes(sn)) && (!sf || r[5] === sf) && (!sg || r[1] === sg) && (!st || r[9] === st) && (!sc || r[8] === sc) && (!sp || r[0] === sp));
     updateUI();
   }
 
@@ -347,65 +326,36 @@
     const total = Math.ceil(filtered.length / mainRows) || 1;
     if (mainPage < 1) mainPage = 1; if (mainPage > total) mainPage = total;
     const start = (mainPage - 1) * mainRows;
-    const currentData = filtered.slice(start, start + mainRows);
+    const current = filtered.slice(start, start + mainRows);
 
-    // ISI TABEL OVERVIEW (Sudah ada di kode sebelumnya)
-    document.getElementById('tbody').innerHTML = currentData.map((r, i) => {
+    // Update Overview
+    document.getElementById('tbody').innerHTML = current.map((r, i) => {
         const b = r[1]||"", j = r[9]||"";
         let cls = (b.includes('出款') || j.includes('出款')) ? 'tag-wd' : (b.includes('客服') || j.includes('客服')) ? 'tag-cs' : 'tag-fn';
-        return `<tr>
-          <td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]}</td>
-          <td><span class="id-link" onclick="openDetail(${start + i})">#${r[2]}</span></td>
-          <td style="font-weight:800">${r[3]}</td><td>${r[5]}</td>
-          <td><span class="date-badge">${r[6]}</span></td><td>${r[8]}</td>
-        </tr>`;
+        return `<tr><td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]}</td><td><span class="id-link" onclick="openDetail(${start + i})">#${r[2]}</span></td><td style="font-weight:800">${r[3]}</td><td>${r[5]}</td><td><span class="date-badge">${r[6]}</span></td><td>${r[8]}</td></tr>`;
     }).join('');
 
-    // --- TAMBAHKAN LOGIKA BARU DI SINI UNTUK TABEL PERFORMANCE ---
-    const perfBody = document.getElementById('tbody-perf');
-    if(perfBody) {
-      perfBody.innerHTML = currentData.map((r, i) => {
-        const staffID = clean(r[2]);
-        const p = dbPerf.find(row => clean(row[2]) === staffID); // Cari di C (index 2)
-        
-        const totalOrder = p ? (p[39] || "0") : "-"; // AN (39)
-        const avgDaily = p ? (p[40] || "0") : "-";    // AO (40)
-        
-        // Indikator simpel berdasarkan angka
-        let status = '<span class="tag-cs">Normal</span>';
-        if(parseFloat(avgDaily) > 50) status = '<span class="tag-wd">High</span>';
-        if(parseFloat(avgDaily) < 10 && p) status = '<span class="tag-fn">Low</span>';
-
-        return `<tr>
-          <td><span class="id-link" onclick="openDetail(${start + i})">#${r[2]}</span></td>
-          <td style="text-align:left; font-weight:700;">${r[3]}</td>
-          <td>${totalOrder}</td>
-          <td style="color:var(--accent); font-weight:800;">${avgDaily}</td>
-          <td>${status}</td>
-          <td><button class="menu-btn" style="padding:5px 10px; font-size:0.6rem" onclick="openDetail(${start + i})">VIEW</button></td>
-        </tr>`;
-      }).join('');
+    // Update Performance Page
+    const pBody = document.getElementById('tbody-perf');
+    if(pBody) {
+        pBody.innerHTML = current.map((r, i) => {
+            const p = dbPerf.find(x => clean(x[2]) === clean(r[2]));
+            const tot = p ? (p[39] || "0") : "0";
+            const avg = p ? (p[40] || "0") : "0";
+            return `<tr><td><span class="id-link" onclick="openDetail(${start + i})">#${r[2]}</span></td><td style="text-align:left">${r[3]}</td><td>${tot}</td><td style="color:var(--accent)">${avg}</td><td><span class="tag-wd">Active</span></td><td><button class="id-link" style="border:none" onclick="openDetail(${start + i})">View</button></td></tr>`;
+        }).join('');
     }
 
     document.getElementById('infoMain').innerText = `Page ${mainPage} / ${total}`;
     syncCharts();
   }
 
+  function changeMainPage(s) { mainPage += s; updateUI(); }
+  function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
+
+  document.addEventListener('keydown', (e) => { if (e.key === "Escape") closeModal(); });
+
   loadData();
-
-document.addEventListener('keydown', function(event) {
-  if (event.key === "Escape") { 
-    closeModal();
-  }
-});
-
-function closeModal() {
-  const modal = document.getElementById('modalOverlay');
-  if (modal) {
-    modal.style.display = 'none';
-  }
-}
-  
 </script>
 </body>
 </html>
