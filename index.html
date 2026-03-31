@@ -137,6 +137,14 @@
         <h2 id="mName" style="font-weight: 900; color: var(--primary);">Name</h2>
         <span id="mID" style="color: var(--accent); font-weight: 800;">#ID</span>
       </div>
+      <i class="fas fa-times-circle" 
+         style="cursor:pointer; font-size:1.5rem; color:var(--text-muted)" 
+         onclick="closeModal()"></i>
+      </div>
+        
+        <h2 id="mName" style="font-weight: 900; color: var(--primary);">Name</h2>
+        <span id="mID" style="color: var(--accent); font-weight: 800;">#ID</span>
+      </div>
       <i class="fas fa-times-circle" style="cursor:pointer; font-size:1.5rem; color:var(--text-muted)" onclick="closeModal()"></i>
     </div>
     <div class="perf-grid">
@@ -384,6 +392,20 @@
   }
 
   loadData();
+
+document.addEventListener('keydown', function(event) {
+  if (event.key === "Escape") { 
+    closeModal();
+  }
+});
+
+function closeModal() {
+  const modal = document.getElementById('modalOverlay');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+  
 </script>
 </body>
 </html>
