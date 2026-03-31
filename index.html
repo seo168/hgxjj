@@ -130,29 +130,57 @@
   </div>
 
   <div id="performance" class="page-content">
-    <div class="filter-wrapper">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-chart-line"></i> PERFORMANCE MONITORING</h3>
-        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">Data From: AN (Total) & AO (Average)</div>
-      </div>
+  <div class="filter-wrapper">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-chart-line"></i> PERFORMANCE BY DEPARTMENT</h3>
+      <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">Live Data: AN (Total) & AO (Avg)</div>
     </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+    
     <div class="table-container">
-      <div style="overflow-x: auto;">
+      <div style="padding: 1rem; background: var(--withdraw); color: white; font-weight: 800; font-size: 0.8rem;">
+        <i class="fas fa-money-bill-wave"></i> WITHDRAW (出款)
+      </div>
+      <div style="overflow-x: auto; max-height: 500px;">
         <table>
           <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Total Order (AN)</th>
-              <th>Daily Avg (AO)</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
+            <tr><th>Name</th><th>Total</th><th>Avg</th></tr>
           </thead>
-          <tbody id="tbody-perf"></tbody>
+          <tbody id="tbody-perf-wd"></tbody>
         </table>
       </div>
     </div>
+
+    <div class="table-container">
+      <div style="padding: 1rem; background: var(--cs); color: white; font-weight: 800; font-size: 0.8rem;">
+        <i class="fas fa-headset"></i> CUSTOMER SERVICE (客服)
+      </div>
+      <div style="overflow-x: auto; max-height: 500px;">
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Total</th><th>Avg</th></tr>
+          </thead>
+          <tbody id="tbody-perf-cs"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <div style="padding: 1rem; background: var(--finance); color: white; font-weight: 800; font-size: 0.8rem;">
+        <i class="fas fa-calculator"></i> FINANCE (财务)
+      </div>
+      <div style="overflow-x: auto; max-height: 500px;">
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Total</th><th>Avg</th></tr>
+          </thead>
+          <tbody id="tbody-perf-fn"></tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </div>
 
