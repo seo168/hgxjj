@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus Master v3.9 | Pagination & Strict Dates</title>
+  <title>Nexus Master v4.1 | Custom Ordered Layout</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -21,60 +21,61 @@
     .amt-clock { background: var(--primary); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
 
     .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
-    
     .dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
     .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     
     .chart-box { width: 85px; height: 85px; margin: 0 auto 10px; position: relative; }
     .chart-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 0.8rem; }
-    
-    .dept-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; color: var(--text-muted); }
     .stat-list { max-height: 100px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
     .stat-row { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 4px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.7rem; font-weight: 700; width: 100%; }
     .badge { padding: 1px 7px; border-radius: 8px; color: white; font-size: 0.6rem; min-width: 25px; }
 
+    /* Fix Table Layout agar tidak goyang saat next page */
     .table-container { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
     .table-header { padding: 1.2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
     .search-input { padding: 10px 18px; border-radius: 10px; border: 1px solid var(--border); width: 300px; outline: none; font-weight: 600; text-align: center; }
     
-    table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 1200px; }
     th { background: #f8fafc; padding: 1rem; text-align: center; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
-    td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; vertical-align: middle; }
+    td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; vertical-align: middle; height: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Kolom widths */
+    th:nth-child(1) { width: 100px; } /* Platform */
+    th:nth-child(4) { width: 100px; } /* ID */
+    th:nth-child(6) { width: 120px; } /* Shift */
+    th:nth-child(7) { width: 150px; } /* Tgl */
 
     .tag-wd { background: #ecfdf5; color: #065f46; padding: 3px 10px; border-radius: 6px; display: inline-block; }
     .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 3px 10px; border-radius: 6px; display: inline-block; }
     .tag-fn { background: #fffbeb; color: #92400e; padding: 3px 10px; border-radius: 6px; display: inline-block; }
-    
-    .strict-date { background: #f1f5f9; color: #334155; padding: 4px 12px; border-radius: 6px; font-family: 'Courier New', monospace; font-weight: 800; font-size: 0.75rem; border: 1px solid #e2e8f0; min-width: 110px; display: inline-block; }
+    .strict-date { background: #f1f5f9; color: #334155; padding: 4px 12px; border-radius: 6px; font-family: monospace; font-weight: 800; font-size: 0.75rem; border: 1px solid #e2e8f0; }
 
-    /* Pagination Styling */
     .pagination-bar { padding: 1rem; background: #f8fafc; display: flex; justify-content: center; align-items: center; gap: 20px; border-top: 1px solid var(--border); }
     .page-btn { padding: 8px 16px; border: 1px solid var(--border); background: white; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; font-size: 0.75rem; }
     .page-btn:hover:not(:disabled) { background: var(--primary); color: white; }
     .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .page-info { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); }
   </style>
 </head>
 <body>
 
 <nav>
-  <div style="font-weight: 900; color: var(--primary); font-size: 1.1rem;"><i class="fas fa-layer-group" style="color:var(--accent)"></i> NEXUS<span>PAGINATE v3.9</span></div>
+  <div style="font-weight: 900; color: var(--primary); font-size: 1.1rem;"><i class="fas fa-sort-amount-down" style="color:var(--accent)"></i> NEXUS<span>ORDERED v4.1</span></div>
   <div class="amt-clock" id="clock">00:00:00 AMT</div>
 </nav>
 
 <div class="container">
   <div class="dept-grid">
-    <div class="dept-card"><div style="color:var(--withdraw)" class="dept-title">出款 (Withdraw)</div><div class="chart-box"><canvas id="cWD"></canvas><div class="chart-val" id="tWD">0</div></div><div class="stat-list" id="lWD"></div></div>
-    <div class="dept-card"><div style="color:var(--cs)" class="dept-title">客服 (Service)</div><div class="chart-box"><canvas id="cCS"></canvas><div class="chart-val" id="tCS">0</div></div><div class="stat-list" id="lCS"></div></div>
-    <div class="dept-card"><div style="color:var(--finance)" class="dept-title">财务 (Finance)</div><div class="chart-box"><canvas id="cFN"></canvas><div class="chart-val" id="tFN">0</div></div><div class="stat-list" id="lFN"></div></div>
-    <div class="dept-card"><div style="color:var(--country)" class="dept-title">国家 (Country)</div><div class="chart-box"><canvas id="cGEO"></canvas><div class="chart-val" id="tGEO">0</div></div><div class="stat-list" id="lGEO"></div></div>
-    <div class="dept-card"><div style="color:var(--accent)" class="dept-title">Shift Info</div><div class="chart-box"><canvas id="cSH"></canvas><div class="chart-val" id="tSH">0</div></div><div class="stat-list" id="lSH"></div></div>
+    <div class="dept-card"><div style="color:var(--withdraw)" class="dept-title">Withdraw</div><div class="chart-box"><canvas id="cWD"></canvas><div class="chart-val" id="tWD">0</div></div><div class="stat-list" id="lWD"></div></div>
+    <div class="dept-card"><div style="color:var(--cs)" class="dept-title">Service</div><div class="chart-box"><canvas id="cCS"></canvas><div class="chart-val" id="tCS">0</div></div><div class="stat-list" id="lCS"></div></div>
+    <div class="dept-card"><div style="color:var(--finance)" class="dept-title">Finance</div><div class="chart-box"><canvas id="cFN"></canvas><div class="chart-val" id="tFN">0</div></div><div class="stat-list" id="lFN"></div></div>
+    <div class="dept-card"><div style="color:var(--country)" class="dept-title">Country</div><div class="chart-box"><canvas id="cGEO"></canvas><div class="chart-val" id="tGEO">0</div></div><div class="stat-list" id="lGEO"></div></div>
+    <div class="dept-card"><div style="color:var(--accent)" class="dept-title">Shift Summary</div><div class="chart-box"><canvas id="cSH"></canvas><div class="chart-val" id="tSH">0</div></div><div class="stat-list" id="lSH"></div></div>
   </div>
 
   <div class="table-container">
     <div class="table-header">
-      <h3 style="font-weight: 800; font-size: 0.9rem;">Personnel Database (10 Rows/Page)</h3>
-      <input type="text" id="search" class="search-input" placeholder="Search name, ID, dept...">
+      <h3 style="font-weight: 800; font-size: 0.9rem;">Organized Staff List</h3>
+      <input type="text" id="search" class="search-input" placeholder="Search data...">
     </div>
     <div style="overflow-x: auto;">
       <table>
@@ -86,7 +87,6 @@
         <tbody id="tbody"></tbody>
       </table>
     </div>
-    
     <div class="pagination-bar">
       <button class="page-btn" id="prevBtn" onclick="changePage(-1)"><i class="fas fa-chevron-left"></i> PREV</button>
       <span class="page-info" id="pageNumber">PAGE 1 OF 1</span>
@@ -98,62 +98,58 @@
 <script>
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?output=csv";
   let db = []; let filtered = []; let charts = {};
-  let currentPage = 1;
-  const rowsPerPage = 10;
+  let currentPage = 1; const rowsPerPage = 10;
+
+  // Prioritas Sorting
+  const shiftOrder = { "day": 1, "mid": 2, "night": 3 };
+  const countryOrder = { "indonesia": 1, "myanmar": 2, "cambodia": 3, "philippines": 4 };
 
   function superFormatDate(val) {
     if (!val || val.trim() === "" || val === "-") return "-";
-    let d;
-    if (!isNaN(val) && val.length >= 5) { d = new Date((val - 25569) * 86400 * 1000); }
-    else { d = new Date(val.replace(/-/g, '/')); }
-    if (!isNaN(d.getTime())) {
-      return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth()+1).padStart(2, '0')}-${d.getFullYear()}`;
-    }
-    return val;
+    let d = (!isNaN(val) && val.length >= 5) ? new Date((val - 25569) * 86400 * 1000) : new Date(val.replace(/-/g, '/'));
+    return !isNaN(d.getTime()) ? `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth()+1).padStart(2, '0')}-${d.getFullYear()}` : val;
   }
 
   async function load() {
     try {
       const r = await fetch(`${CSV_URL}&t=${Date.now()}`);
       const t = await r.text();
-      db = t.split(/\r?\n/).slice(1).map(l => l.split(',').map(c => c.trim())).filter(d => d[3]);
-      filtered = [...db];
-      setInterval(syncTime, 1000); syncCharts(); renderTable();
-    } catch (e) { console.error(e); }
-  }
+      // Parsing & Sorting Data
+      db = t.split(/\r?\n/).slice(1)
+            .map(l => l.split(',').map(c => c.trim()))
+            .filter(d => d[3])
+            .sort((a, b) => {
+              // 1. Sort by Shift
+              const sA = shiftOrder[a[5].toLowerCase()] || 99;
+              const sB = shiftOrder[b[5].toLowerCase()] || 99;
+              if (sA !== sB) return sA - sB;
+              // 2. Sort by Country
+              const cA = countryOrder[a[8].toLowerCase()] || 99;
+              const cB = countryOrder[b[8].toLowerCase()] || 99;
+              return cA - cB;
+            });
 
-  function syncTime() {
-    const amt = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"}));
-    document.getElementById('clock').innerText = amt.toLocaleTimeString('en-GB') + " AMT";
+      filtered = [...db];
+      setInterval(() => {
+        const amt = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"}));
+        document.getElementById('clock').innerText = amt.toLocaleTimeString('en-GB') + " AMT";
+      }, 1000); 
+      syncCharts(); renderTable();
+    } catch (e) { console.error(e); }
   }
 
   function syncCharts() {
     let wdO = {}, csO = {}, fnO = {}, geO = {}, shO = { Day: 0, Night: 0, Mid: 0 };
-    let wdT = 0, csT = 0, fnT = 0;
-
     db.forEach(r => {
-      const dept = (r[1]||'').toLowerCase();
-      const sub = (r[9]||'Unassigned');
-      const shift = (r[5]||'').toLowerCase();
-      const geo = (r[8]||'Unknown');
-
-      if (shift.includes('day')) shO.Day++;
-      else if (shift.includes('night')) shO.Night++;
-      else if (shift.includes('mid')) shO.Mid++;
-
-      if (dept.includes('出款') || sub.includes('出款')) { wdT++; wdO[sub] = (wdO[sub] || 0) + 1; }
-      else if (dept.includes('客服') || sub.includes('客服')) { csT++; csO[sub] = (csO[sub] || 0) + 1; }
-      else if (dept.includes('财务') || sub.includes('财务')) { fnT++; fnO[sub] = (fnO[sub] || 0) + 1; }
+      const dept = r[1].toLowerCase(), sub = r[9] || 'Unassigned', shift = r[5].toLowerCase(), geo = r[8] || 'Unknown';
+      if (shift.includes('day')) shO.Day++; else if (shift.includes('night')) shO.Night++; else if (shift.includes('mid')) shO.Mid++;
+      if (dept.includes('出款') || sub.includes('出款')) wdO[sub] = (wdO[sub] || 0) + 1;
+      else if (dept.includes('客服') || sub.includes('客服')) csO[sub] = (csO[sub] || 0) + 1;
+      else if (dept.includes('财务') || sub.includes('财务')) fnO[sub] = (fnO[sub] || 0) + 1;
       geO[geo] = (geO[geo] || 0) + 1;
     });
 
-    document.getElementById('tWD').innerText = wdT;
-    document.getElementById('tCS').innerText = csT;
-    document.getElementById('tFN').innerText = fnT;
-    document.getElementById('tGEO').innerText = Object.keys(geO).length;
-    document.getElementById('tSH').innerText = db.length;
-
-    const draw = (id, data, colors) => {
+    const draw = (id, data, colors, labelId, listId) => {
       const ctx = document.getElementById(id).getContext('2d');
       if (charts[id]) charts[id].destroy();
       charts[id] = new Chart(ctx, {
@@ -161,39 +157,27 @@
         data: { labels: Object.keys(data), datasets: [{ data: Object.values(data), backgroundColor: colors, borderWidth: 0 }] },
         options: { plugins: { legend: { display: false } }, cutout: '78%', responsive: true }
       });
+      document.getElementById(labelId).innerText = Object.values(data).reduce((a,b)=>a+b,0);
+      document.getElementById(listId).innerHTML = Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([n,c]) => 
+        `<div class="stat-row"><span>${n}</span><span class="badge" style="background:${colors[0]}">${c}</span></div>`).join('');
     };
 
-    draw('cWD', wdO, ['#10b981', '#34d399', '#059669']);
-    draw('cCS', csO, ['#8b5cf6', '#a78bfa', '#c4b5fd']);
-    draw('cFN', fnO, ['#f59e0b', '#fbbf24', '#d97706']);
-    draw('cGEO', geO, ['#f43f5e', '#fb7185', '#fda4af']);
-    draw('cSH', shO, ['#2563eb', '#1e293b', '#64748b']);
-
-    const fillList = (id, obj, col) => {
-      document.getElementById(id).innerHTML = Object.entries(obj).sort((a,b)=>b[1]-a[1]).map(([n,c]) => 
-        `<div class="stat-row"><span>${n}</span><span class="badge" style="background:${col}">${c}</span></div>`).join('');
-    };
-    fillList('lWD', wdO, 'var(--withdraw)');
-    fillList('lCS', csO, 'var(--cs)');
-    fillList('lFN', fnO, 'var(--finance)');
-    fillList('lGEO', geO, 'var(--country)');
-    fillList('lSH', shO, 'var(--accent)');
+    draw('cWD', wdO, ['#10b981'], 'tWD', 'lWD');
+    draw('cCS', csO, ['#8b5cf6'], 'tCS', 'lCS');
+    draw('cFN', fnO, ['#f59e0b'], 'tFN', 'lFN');
+    draw('cGEO', geO, ['#f43f5e'], 'tGEO', 'lGEO');
+    draw('cSH', shO, ['#2563eb'], 'tSH', 'lSH');
   }
 
   function renderTable() {
     const tbody = document.getElementById('tbody');
     const start = (currentPage - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    const pageData = filtered.slice(start, end);
+    const pageData = filtered.slice(start, start + rowsPerPage);
 
     tbody.innerHTML = pageData.map(r => {
-      let cls = 'tag-gen';
-      if(r[1].includes('出款') || r[9].includes('出款')) cls = 'tag-wd';
-      else if(r[1].includes('客服') || r[9].includes('客服')) cls = 'tag-cs';
-      else if(r[1].includes('财务') || r[9].includes('财务')) cls = 'tag-fn';
-
+      let cls = (r[1].includes('出款') || r[9].includes('出款')) ? 'tag-wd' : (r[1].includes('客服') || r[9].includes('客服')) ? 'tag-cs' : (r[1].includes('财务') || r[9].includes('财务')) ? 'tag-fn' : '';
       return `<tr>
-        <td><b style="color:var(--accent)">${r[0]}</b></td>
+        <td><b>${r[0]}</b></td>
         <td><span class="${cls}">${r[1]}</span></td>
         <td>${r[9]||'-'}</td>
         <td style="opacity:0.5">#${r[2]}</td>
@@ -210,16 +194,12 @@
     document.getElementById('nextBtn').disabled = currentPage >= totalPages;
   }
 
-  function changePage(dir) {
-    currentPage += dir;
-    renderTable();
-  }
+  function changePage(dir) { currentPage += dir; renderTable(); }
 
   document.getElementById('search').addEventListener('input', (e) => {
     const q = e.target.value.toLowerCase();
     filtered = db.filter(r => r.some(c => c.toLowerCase().includes(q)));
-    currentPage = 1; 
-    renderTable();
+    currentPage = 1; renderTable();
   });
 
   load();
