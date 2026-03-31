@@ -8,14 +8,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root { --primary: #0f172a; --accent: #2563eb; --border: #e2e8f0; --bg: #f8fafc; --text-main: #1e293b; --text-muted: #64748b; }
+    :root { --primary: #0f172a; --accent: #2563eb; --border: #e2e8f0; --withdraw: #10b981; --cs: #8b5cf6; --finance: #f59e0b; --country: #f43f5e; --bg: #f8fafc; --text-main: #1e293b; --text-muted: #64748b; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); }
     nav { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0.8rem 5%; display: flex; justify-content: space-between; align-items: center; }
     .amt-clock { background: var(--primary); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; }
     .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
-    
-    /* Stats Grid - Identical to Overview */
     .dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
     .dept-card { background: white; padding: 1.2rem; border-radius: 20px; border: 1px solid var(--border); min-height: 260px; overflow: hidden; }
     .chart-box { width: 85px; height: 85px; margin: 0 auto 15px; position: relative; }
@@ -23,31 +21,47 @@
     .dept-title { font-size: 0.7rem; font-weight: 800; text-align: center; margin-bottom: 15px; text-transform: uppercase; }
     .stat-list { display: flex; flex-direction: column; gap: 5px; padding-top: 10px; border-top: 1px solid #f1f5f9; overflow: hidden; }
     .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 5px; font-size: 0.65rem; font-weight: 700; }
+    .indicator { display: flex; align-items: center; gap: 6px; }
     .dot { width: 7px; height: 7px; border-radius: 50%; }
     .count-badge { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; min-width: 25px; text-align: center; }
-
-    /* Nav Menu */
     .nav-menu { display: flex; gap: 12px; margin-bottom: 1.5rem; padding: 10px; background: white; border-radius: 20px; border: 1px solid var(--border); }
     .menu-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; border-radius: 15px; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-decoration: none; background: #f8fafc; transition: 0.3s; }
     .menu-btn.active { background: var(--primary); color: white; }
-
-    /* Table */
     .table-container { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
     table { width: 100%; border-collapse: collapse; min-width: 1200px; }
     th { background: #f8fafc; padding: 1rem; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); border-bottom: 1px solid var(--border); }
     td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
-    .score-high { color: #10b981; font-weight: 800; }
   </style>
 </head>
 <body>
 <nav><div style="font-weight: 900;"><i class="fas fa-chart-line"></i> NEXUS PERFORMANCE</div><div class="amt-clock" id="clock">00:00:00 AMT</div></nav>
 <div class="container">
   <div class="dept-grid">
-    <div class="dept-card"><div class="dept-title">Overall KPI</div><div class="chart-box"><canvas id="c1"></canvas><div class="chart-val">92%</div></div><div class="stat-list"><div class="stat-row">Target Achievement<span class="count-badge">92%</span></div></div></div>
-    <div class="dept-card"><div class="dept-title">Best Team</div><div class="chart-box"><canvas id="c2"></canvas><div class="chart-val">WD</div></div><div class="stat-list"><div class="stat-row">Top Score Team<span class="count-badge">98</span></div></div></div>
-    <div class="dept-card"><div class="dept-title">Errors</div><div class="chart-box"><canvas id="c3"></canvas><div class="chart-val">0.2%</div></div><div class="stat-list"><div class="stat-row">Accuracy Rate<span class="count-badge">99.8%</span></div></div></div>
-    <div class="dept-card"><div class="dept-title">Incentives</div><div class="chart-box"><canvas id="c4"></canvas><div class="chart-val">15M</div></div><div class="stat-list"><div class="stat-row">Total Bonus<span class="count-badge">Active</span></div></div></div>
-    <div class="dept-card"><div class="dept-title">Growth</div><div class="chart-box"><canvas id="c5"></canvas><div class="chart-val">+5%</div></div><div class="stat-list"><div class="stat-row">Monthly Growth<span class="count-badge">UP</span></div></div></div>
+    <div class="dept-card">
+      <div style="color:var(--withdraw)" class="dept-title">出款部汇总</div>
+      <div class="chart-box"><canvas id="cWD"></canvas><div class="chart-val" id="tWD">0</div></div>
+      <div class="stat-list" id="list_cWD"></div>
+    </div>
+    <div class="dept-card">
+      <div style="color:var(--cs)" class="dept-title">客服部汇总</div>
+      <div class="chart-box"><canvas id="cCS"></canvas><div class="chart-val" id="tCS">0</div></div>
+      <div class="stat-list" id="list_cCS"></div>
+    </div>
+    <div class="dept-card">
+      <div style="color:var(--finance)" class="dept-title">财务部汇总</div>
+      <div class="chart-box"><canvas id="cFN"></canvas><div class="chart-val" id="tFN">0</div></div>
+      <div class="stat-list" id="list_cFN"></div>
+    </div>
+    <div class="dept-card">
+      <div style="color:var(--country)" class="dept-title">国家汇总</div>
+      <div class="chart-box"><canvas id="cGEO"></canvas><div class="chart-val" id="tGEO">0</div></div>
+      <div class="stat-list" id="list_cGEO"></div>
+    </div>
+    <div class="dept-card">
+      <div style="color:var(--accent)" class="dept-title">班次汇总</div>
+      <div class="chart-box"><canvas id="cSH"></canvas><div class="chart-val" id="tSH">0</div></div>
+      <div class="stat-list" id="list_cSH"></div>
+    </div>
   </div>
 
   <div class="nav-menu">
@@ -60,9 +74,8 @@
   <div class="table-container">
     <table>
       <thead><tr><th>RANK</th><th>ID</th><th>NAME</th><th>TEAM</th><th>KPI SCORE</th><th>ACHIEVEMENT</th></tr></thead>
-      <tbody>
-        <tr><td>1</td><td>#WD001</td><td>Angelica G. Milaran</td><td>出款</td><td class="score-high">98.5</td><td>105%</td></tr>
-      </tbody>
+      <tbody id="tbody">
+        </tbody>
     </table>
   </div>
 </div>
