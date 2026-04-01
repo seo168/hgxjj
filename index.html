@@ -302,8 +302,8 @@
         <div class="perf-val" id="mMistake" style="color:var(--danger)">-</div>
       </div>
       <div class="perf-item">
-        <div class="perf-label"><i class="fas fa-calendar-check"></i> TOTAL HARI KERJA</div>
-        <div class="perf-val" id="mWorkDays">-</div>
+        <div class="perf-label"><i class="fas fa-user-circle"></i> ACCOUNT NAME</div>
+        <div class="perf-val" id="mAccountName">-</div>
       </div>
       <div class="perf-item full">
         <div class="perf-label"><i class="fas fa-user-tie"></i> NAMA MENTOR</div>
@@ -351,6 +351,7 @@
     );
   }
 
+  // UPDATE OPEN DETAIL UNTUK MENAMPILKAN ACCOUNT NAME
   function openDetail(idx) {
     const staff = filtered[idx];
     if(!staff) return;
@@ -359,6 +360,10 @@
 
     document.getElementById('mName').innerText = staff[3];
     document.getElementById('mID').innerText = "#" + staff[2];
+    
+    // Menampilkan Account Name (diambil dari kolom Team [index 9] atau Group [index 1])
+    document.getElementById('mAccountName').innerText = staff[9] || "-";
+
     if (p) {
       document.getElementById('mTotalOrder').innerText = p[39] || "0"; 
       document.getElementById('mAvg').innerText = p[40] || "0";        
@@ -369,7 +374,7 @@
     if(!isNaN(joinDate)){
         const diff = Math.ceil(Math.abs(new Date() - joinDate) / (1000 * 60 * 60 * 24));
         document.getElementById('mTenure').innerText = diff + " Hari (" + staff[6] + ")";
-        document.getElementById('mWorkDays').innerText = diff + " Hari";
+        // document.getElementById('mWorkDays').innerText = diff + " Hari"; // Baris ini tidak perlu lagi karena mWorkDays sudah diganti mAccountName
     }
     document.getElementById('modalOverlay').style.display = 'flex';
   }
