@@ -47,7 +47,7 @@
     td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
     
     .perf-table { table-layout: fixed; width: 100%; border-collapse: collapse; }
-    .perf-scroll-area { max-height: 350px; overflow-y: auto; overflow-x: hidden; border-top: 1px solid var(--border); }
+    .perf-scroll-area { max-height: 350px; overflow-y: auto; overflow-x: hidden; border-top: 1px solid var(--border); position: relative; }
     .perf-scroll-area::-webkit-scrollbar { width: 6px; }
     .perf-scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     
@@ -160,29 +160,32 @@
       width: 100%;
       min-width: 0;
       cursor: default;
+      overflow: visible !important;
+      z-index: 1;
     }
 
     .smart-tip::after {
       content: attr(data-full);
-      position: absolute;
-      left: 0;
-      bottom: calc(100% + 8px);
-      background: rgba(15, 23, 42, 0.96);
+      position: fixed;
+      left: var(--tip-left, 0px);
+      top: var(--tip-top, 0px);
+      background: rgba(15, 23, 42, 0.98);
       color: #fff;
-      padding: 8px 10px;
+      padding: 10px 12px;
       border-radius: 10px;
       font-size: 0.68rem;
       font-weight: 700;
-      line-height: 1.4;
+      line-height: 1.45;
       white-space: normal;
       width: max-content;
-      max-width: 260px;
-      box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+      min-width: 160px;
+      max-width: 320px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.22);
       opacity: 0;
       visibility: hidden;
-      transform: translateY(6px);
-      transition: 0.18s ease;
-      z-index: 40;
+      transform: translateY(-50%);
+      transition: opacity 0.18s ease, visibility 0.18s ease;
+      z-index: 999999 !important;
       pointer-events: none;
       text-transform: none;
     }
@@ -190,7 +193,10 @@
     .smart-tip:hover::after {
       opacity: 1;
       visibility: visible;
-      transform: translateY(0);
+    }
+
+    .smart-tip:hover {
+      z-index: 999999 !important;
     }
 
     .stat-list {
@@ -395,6 +401,7 @@
 
     setTimeout(() => {
       syncPerfHeaderWidths();
+      bindSmartTips();
     }, 50);
   }
 
@@ -414,9 +421,14 @@
 
       setTimeout(() => {
         syncPerfHeaderWidths();
+        bindSmartTips();
       }, 100);
 
-      window.addEventListener('resize', syncPerfHeaderWidths);
+      window.addEventListener('resize', () => {
+        syncPerfHeaderWidths();
+        bindSmartTips();
+      });
+      window.addEventListener('scroll', updateVisibleTooltips, true);
     } catch (e) { console.error("Koneksi gagal", e); }
   }
 
@@ -542,6 +554,7 @@
 
     setTimeout(() => {
       syncPerfHeaderWidths();
+      bindSmartTips();
     }, 50);
   }
 
@@ -693,6 +706,59 @@
         });
       });
     });
+  }
+
+  function bindSmartTips() {
+    document.querySelectorAll('.smart-tip').forEach(el => {
+      el.removeEventListener('mouseenter', handleTipEnter);
+      el.removeEventListener('mousemove', handleTipMove);
+      el.removeEventListener('mouseleave', handleTipLeave);
+      el.addEventListener('mouseenter', handleTipEnter);
+      el.addEventListener('mousemove', handleTipMove);
+      el.addEventListener('mouseleave', handleTipLeave);
+    });
+  }
+
+  function handleTipEnter(e) {
+    positionTooltip(e.currentTarget);
+  }
+
+  function handleTipMove(e) {
+    positionTooltip(e.currentTarget);
+  }
+
+  function handleTipLeave(e) {
+    e.currentTarget.style.removeProperty('--tip-left');
+    e.currentTarget.style.removeProperty('--tip-top');
+  }
+
+  function updateVisibleTooltips() {
+    document.querySelectorAll('.smart-tip:hover').forEach(el => positionTooltip(el));
+  }
+
+  function positionTooltip(el) {
+    const rect = el.getBoundingClientRect();
+    const margin = 14;
+    const tooltipWidth = 320;
+    const tooltipHeight = 56;
+
+    let left = rect.right + 12;
+    let top = rect.top + (rect.height / 2);
+
+    if (left + tooltipWidth > window.innerWidth - margin) {
+      left = Math.max(margin, rect.left - tooltipWidth - 12);
+    }
+
+    if (top + (tooltipHeight / 2) > window.innerHeight - margin) {
+      top = window.innerHeight - margin - (tooltipHeight / 2);
+    }
+
+    if (top - (tooltipHeight / 2) < margin) {
+      top = margin + (tooltipHeight / 2);
+    }
+
+    el.style.setProperty('--tip-left', `${left}px`);
+    el.style.setProperty('--tip-top', `${top}px`);
   }
 
   function hexToRgba(hex, alpha) {
