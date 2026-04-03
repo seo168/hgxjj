@@ -71,13 +71,6 @@
     .modal-content { background: white; width: 95%; max-width: 600px; border-radius: 32px; padding: 2.5rem; position: relative; }
     .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
     
-    .stat-list { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid #f1f5f9; }
-    .stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; font-weight: 700; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
-    .indicator { display: flex; align-items: center; }
-    .remark-text { color: var(--text-main); max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .count-badge { background: #f1f5f9; padding: 4px 8px; border-radius: 6px; }
-
     .perf-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
     .perf-item { background: #f8fafc; padding: 18px; border-radius: 20px; border: 1px solid var(--border); }
     .perf-item.highlight { background: var(--primary); border: none; }
@@ -92,7 +85,6 @@
     .tag-fn { background: #fffbeb; color: #92400e; padding: 4px 10px; border-radius: 8px; }
     .date-badge { background: #f1f5f9; padding: 4px 10px; border-radius: 8px; font-family: monospace; }
     .status-absent { color: var(--danger); font-weight: 800; background: #fee2e2; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; }
-    .salary-card { background: linear-gradient(135deg, #2563eb, #1e40af); color: white; padding: 2rem; border-radius: 24px; margin-bottom: 1.5rem; }
   </style>
 </head>
 <body>
@@ -174,7 +166,7 @@
       </div>
     </div>
   </div>
-
+  
   <div id="absent" class="page-content">
     <div class="filter-wrapper"><h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-calendar-alt"></i> ABSENCE TRACKER</h3></div>
     <div class="table-container">
@@ -185,12 +177,8 @@
 
   <div id="salary" class="page-content">
     <div class="filter-wrapper"><h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-money-bill-wave"></i> SALARY PREVIEW</h3></div>
-    <div class="salary-card">
-        <div style="font-size: 0.8rem; opacity: 0.8; font-weight: 600;">ESTIMASI TOTAL PAYOUT (FILTERED STAFF)</div>
-        <div style="font-size: 2.5rem; font-weight: 900;" id="total-payout">$ 0.00</div>
-    </div>
     <div class="table-container">
-        <table><thead><tr><th>Staff ID</th><th>Nama</th><th>Base Salary</th><th>Incentive</th><th>Total</th></tr></thead><tbody id="tbody-salary"></tbody></table>
+        <table><thead><tr><th>Staff ID</th><th>Nama</th><th>Base</th><th>Incentive</th><th>Total</th></tr></thead><tbody id="tbody-salary"></tbody></table>
     </div>
   </div>
 </div>
@@ -218,6 +206,9 @@
   let dbMaster = [], dbPerf = [], filtered = [], charts = {};
   let mainPage = 1; const mainRows = 10;
   const palette = ["#3b82f6", "#6B7280", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];
+  
+  // Fungsi pembersih ID: Mengambil angka saja agar #WD000283 cocok dengan 283 atau 000283
+  const cleanID = (s) => String(s || "").replace(/\D/g, ''); 
   const clean = (s) => String(s || "").trim().toUpperCase();
 
   function showPage(pageId) {
@@ -250,8 +241,8 @@
   function openDetail(masterIdx) {
     const staff = dbMaster[masterIdx];
     if(!staff) return;
-    const targetID = clean(staff[2]); 
-    const p = dbPerf.find(row => clean(row[0]) === targetID);
+    const targetIDNum = cleanID(staff[2]); 
+    const p = dbPerf.find(row => cleanID(row[0]) === targetIDNum);
 
     document.getElementById('mName').innerText = staff[3];
     document.getElementById('mID').innerText = "#" + staff[2];
@@ -261,6 +252,11 @@
       document.getElementById('mTotalOrder').innerText = p[3] || "0";
       document.getElementById('mAvg').innerText = p[4] || "0";
       document.getElementById('mAccountName').innerText = p[5] || "-";
+    } else {
+      document.getElementById('mMentor').innerText = "-";
+      document.getElementById('mTotalOrder').innerText = "0";
+      document.getElementById('mAvg').innerText = "0";
+      document.getElementById('mAccountName').innerText = "-";
     }
 
     const joinDate = new Date(staff[6]);
@@ -296,11 +292,14 @@
         options: { plugins: { legend: false }, cutout: '75%', animation: false } 
       });
       document.getElementById('t' + id.slice(1)).innerText = vals.reduce((a, b) => a + b, 0);
-      document.getElementById('list_' + id).innerHTML = entries.slice(0, 4).map(([n, v], i) => `
-        <div class="stat-row">
-          <div class="indicator"><span class="dot" style="background:${colors[i]}"></span><span class="remark-text">${n}</span></div>
-          <span class="count-badge">${v}</span>
-        </div>`).join('');
+      const list = document.getElementById('list_' + id);
+      if(list) {
+        list.innerHTML = entries.slice(0, 4).map(([n, v], i) => `
+          <div class="stat-row">
+            <div class="indicator"><span class="dot" style="background:${colors[i]}"></span><span class="remark-text">${n}</span></div>
+            <span class="count-badge">${v}</span>
+          </div>`).join('');
+      }
     });
   }
 
@@ -340,7 +339,6 @@
     }).join('');
     document.getElementById('infoMain').innerText = `Page ${mainPage} / ${total}`;
 
-    // Jalankan pembaruan tabel Performance secara otomatis
     updatePerfTable('WD', '出款');
     updatePerfTable('CS', '客服');
     updatePerfTable('FN', '财务');
@@ -366,11 +364,11 @@
         else if (shift.includes("MID") && (hour >= 12 && hour < 24)) isOnline = true;
         if (isOnline) onlineCount++;
 
-        const p = dbPerf.find(x => clean(x[0]) === clean(r[2]));
+        // Pencocokan ID dengan angka saja
+        const targetIDNum = cleanID(r[2]);
+        const p = dbPerf.find(x => cleanID(x[0]) === targetIDNum);
         const mIdx = dbMaster.indexOf(r);
 
-        // DATA MAPPING PERFORMANCE SESUAI URUTAN:
-        // p[0]: ID, p[1]: StaffName, p[2]: Mentor, p[3]: Total, p[4]: Avg, p[5]: Account
         return `<tr style="${isOnline ? 'background: rgba(34, 197, 94, 0.05);' : ''}">
             <td class="col-id"><span class="id-link" onclick="openDetail(${mIdx})">#${r[2]}</span></td>
             <td class="col-name" style="font-weight:800;">${isOnline ? '<i class="fas fa-circle" style="color:#22c55e; font-size:7px; margin-right:8px;"></i>' : ''}${r[3]}</td>
@@ -389,15 +387,12 @@
     if(absBody) absBody.innerHTML = filtered.slice(0, 15).map(r => `<tr><td>#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td><span class="status-absent">OFF DUTY</span></td><td>${r[5]}</td><td>${r[8]}</td></tr>`).join('');
     
     const salBody = document.getElementById('tbody-salary');
-    let gt = 0;
     if(salBody) {
         salBody.innerHTML = filtered.slice(0, 15).map(r => {
-            const p = dbPerf.find(x => clean(x[0]) === clean(r[2]));
+            const p = dbPerf.find(x => cleanID(x[0]) === cleanID(r[2]));
             const b = 500, bon = p ? (parseInt(p[3] || 0) * 0.05) : 0;
-            gt += (b + bon);
             return `<tr><td>#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td>$ ${b}</td><td>$ ${bon.toFixed(2)}</td><td style="font-weight:800">$ ${(b+bon).toFixed(2)}</td></tr>`;
         }).join('');
-        document.getElementById('total-payout').innerText = "$ " + gt.toLocaleString(undefined, {minimumFractionDigits: 2});
     }
   }
 
