@@ -218,6 +218,7 @@
       padding: 8px 10px;
       min-height: 42px;
       transition: none;
+      cursor: pointer;
     }
 
     .stat-row:hover {
@@ -267,6 +268,215 @@
     .dept-card .stat-row:nth-child(2) .count-badge { background: rgba(107,114,128,0.10); color: #4b5563; }
     .dept-card .stat-row:nth-child(3) .count-badge { background: rgba(245,158,11,0.12); color: #b45309; }
     .dept-card .stat-row:nth-child(4) .count-badge { background: rgba(239,68,68,0.10); color: #b91c1c; }
+
+    /* ===== tambahan popup statistik atas ===== */
+    .stat-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.62);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      backdrop-filter: blur(10px);
+      padding: 24px;
+    }
+
+    .stat-modal-content {
+      width: min(1100px, 96vw);
+      max-height: 90vh;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid rgba(226,232,240,0.9);
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(15,23,42,0.18);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-modal-top {
+      padding: 1.3rem 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%);
+    }
+
+    .stat-modal-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .stat-modal-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      flex: 0 0 14px;
+      box-shadow: 0 0 0 6px rgba(148, 163, 184, 0.12);
+    }
+
+    .stat-modal-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1.2;
+    }
+
+    .stat-modal-sub {
+      margin-top: 4px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .stat-modal-close {
+      border: none;
+      background: #f1f5f9;
+      color: var(--text-muted);
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 1rem;
+      flex: 0 0 42px;
+    }
+
+    .stat-modal-close:hover {
+      background: #e2e8f0;
+      color: var(--primary);
+    }
+
+    .stat-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      padding: 1rem 1.5rem 0.25rem;
+    }
+
+    .stat-summary-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 14px 16px;
+    }
+
+    .stat-summary-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    .stat-summary-value {
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .stat-modal-body {
+      padding: 1rem 1.5rem 1.5rem;
+      overflow: auto;
+    }
+
+    .stat-member-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stat-member-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 16px;
+      box-shadow: 0 6px 18px rgba(15,23,42,0.04);
+    }
+
+    .stat-member-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .stat-member-name {
+      font-size: 0.92rem;
+      font-weight: 900;
+      color: var(--primary);
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .stat-member-id {
+      background: #eff6ff;
+      color: #2563eb;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .stat-member-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat-member-item {
+      background: #f8fafc;
+      border: 1px solid #eef2f7;
+      border-radius: 16px;
+      padding: 10px 12px;
+      min-width: 0;
+    }
+
+    .stat-member-k {
+      font-size: 0.62rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .stat-member-v {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--text-main);
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .stat-empty {
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-weight: 800;
+    }
+
+    @media (max-width: 900px) {
+      .stat-summary-grid,
+      .stat-member-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -377,6 +587,43 @@
       <div class="perf-item"><div class="perf-label"><i class="fas fa-shopping-cart"></i> TOTAL ORDER</div><div class="perf-val" id="mTotalOrder">-</div></div>
       <div class="perf-item"><div class="perf-label"><i class="fas fa-user-circle"></i> ACCOUNT NAME</div><div class="perf-val" id="mAccountName">-</div></div>
       <div class="perf-item"><div class="perf-label"><i class="fas fa-user-tie"></i> NAMA MENTOR</div><div class="perf-val" id="mMentor">-</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- tambahan popup statistik atas -->
+<div class="stat-modal-overlay" id="statModalOverlay" onclick="closeStatModal()">
+  <div class="stat-modal-content" onclick="event.stopPropagation()">
+    <div class="stat-modal-top">
+      <div class="stat-modal-title-wrap">
+        <span class="stat-modal-dot" id="statModalDot"></span>
+        <div>
+          <div class="stat-modal-title" id="statModalTitle">Statistic Detail</div>
+          <div class="stat-modal-sub" id="statModalSub">Member Breakdown</div>
+        </div>
+      </div>
+      <button class="stat-modal-close" onclick="closeStatModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="stat-summary-grid">
+      <div class="stat-summary-card">
+        <div class="stat-summary-label">Total Staff</div>
+        <div class="stat-summary-value" id="statTotalStaff">0</div>
+      </div>
+      <div class="stat-summary-card">
+        <div class="stat-summary-label">Category</div>
+        <div class="stat-summary-value" id="statCategory">-</div>
+      </div>
+      <div class="stat-summary-card">
+        <div class="stat-summary-label">Top Platform</div>
+        <div class="stat-summary-value" id="statTopPlatform">-</div>
+      </div>
+      <div class="stat-summary-card">
+        <div class="stat-summary-label">Top Shift</div>
+        <div class="stat-summary-value" id="statTopShift">-</div>
+      </div>
+    </div>
+    <div class="stat-modal-body">
+      <div class="stat-member-grid" id="statMemberGrid"></div>
     </div>
   </div>
 </div>
@@ -496,7 +743,7 @@
       const list = document.getElementById('list_' + id);
       if(list) {
         list.innerHTML = entries.slice(0, 4).map(([n, v], i) => `
-          <div class="stat-row">
+          <div class="stat-row" onclick="openStatModal('${id}', '${encodeURIComponent(n)}', '${colors[i]}')">
             <div class="indicator">
               <span class="dot" style="background:${colors[i]}; box-shadow: 0 0 0 4px ${hexToRgba(colors[i], 0.12)}"></span>
               <span>
@@ -761,6 +1008,98 @@
     el.style.setProperty('--tip-top', `${top}px`);
   }
 
+  /* ===== fungsi tambahan popup statistik atas ===== */
+  function openStatModal(chartId, encodedLabel, color) {
+    const label = decodeURIComponent(encodedLabel || '');
+    const members = getStatMembers(chartId, label);
+
+    document.getElementById('statModalOverlay').style.display = 'flex';
+    document.getElementById('statModalDot').style.background = color || '#3b82f6';
+    document.getElementById('statModalDot').style.boxShadow = `0 0 0 6px ${hexToRgba(color || '#3b82f6', 0.15)}`;
+    document.getElementById('statModalTitle').innerText = label || 'Statistic Detail';
+    document.getElementById('statModalSub').innerText = getStatModalSub(chartId);
+    document.getElementById('statTotalStaff').innerText = members.length;
+    document.getElementById('statCategory').innerText = label || '-';
+    document.getElementById('statTopPlatform').innerText = getTopValue(members.map(x => x.platform)) || '-';
+    document.getElementById('statTopShift').innerText = getTopValue(members.map(x => x.shift)) || '-';
+
+    const grid = document.getElementById('statMemberGrid');
+    if (!members.length) {
+      grid.innerHTML = `<div class="stat-empty">Tidak ada data staff untuk kategori ini.</div>`;
+      return;
+    }
+
+    grid.innerHTML = members.map(m => `
+      <div class="stat-member-card">
+        <div class="stat-member-head">
+          <div class="stat-member-name">${esc(m.name)}</div>
+          <div class="stat-member-id">#${esc(m.id)}</div>
+        </div>
+        <div class="stat-member-meta">
+          <div class="stat-member-item">
+            <div class="stat-member-k">Platform</div>
+            <div class="stat-member-v">${esc(m.platform)}</div>
+          </div>
+          <div class="stat-member-item">
+            <div class="stat-member-k">Shift</div>
+            <div class="stat-member-v">${esc(m.shift)}</div>
+          </div>
+          <div class="stat-member-item">
+            <div class="stat-member-k">Group</div>
+            <div class="stat-member-v">${esc(m.group)}</div>
+          </div>
+          <div class="stat-member-item">
+            <div class="stat-member-k">Team</div>
+            <div class="stat-member-v">${esc(m.team)}</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function closeStatModal() {
+    document.getElementById('statModalOverlay').style.display = 'none';
+  }
+
+  function getStatModalSub(chartId) {
+    const map = {
+      cWD: 'Withdrawal Staff Breakdown',
+      cCS: 'CS & Risk Staff Breakdown',
+      cFN: 'Finance Staff Breakdown',
+      cGEO: 'Country Staff Breakdown',
+      cSH: 'Shift Staff Breakdown'
+    };
+    return map[chartId] || 'Member Breakdown';
+  }
+
+  function getStatMembers(chartId, label) {
+    return filtered.filter(r => {
+      const b = r[1] || '';
+      const j = r[9] || '';
+      if (chartId === 'cWD') return (b.includes('出款') || j.includes('出款')) && b === label;
+      if (chartId === 'cCS') return (b.includes('客服') || j.includes('客服') || b.includes('风控')) && b === label;
+      if (chartId === 'cFN') return (b.includes('财务') || j.includes('财务')) && b === label;
+      if (chartId === 'cGEO') return (r[8] || '') === label;
+      if (chartId === 'cSH') return (r[5] || '') === label;
+      return false;
+    }).map(r => ({
+      platform: r[0] || '-',
+      group: r[1] || '-',
+      team: r[9] || '-',
+      id: r[2] || '-',
+      name: r[3] || '-',
+      shift: r[5] || '-',
+      country: r[8] || '-'
+    }));
+  }
+
+  function getTopValue(arr) {
+    const map = {};
+    arr.filter(Boolean).forEach(v => map[v] = (map[v] || 0) + 1);
+    const sorted = Object.entries(map).sort((a,b) => b[1] - a[1]);
+    return sorted.length ? sorted[0][0] : '';
+  }
+
   function hexToRgba(hex, alpha) {
     const cleanHex = hex.replace('#', '');
     const bigint = parseInt(cleanHex.length === 3
@@ -773,7 +1112,12 @@
   }
 
   function changeMainPage(s) { mainPage += s; updateUI(); }
-  document.addEventListener('keydown', (e) => { if (e.key === "Escape") closeModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === "Escape") {
+      closeModal();
+      closeStatModal();
+    }
+  });
   loadData();
 </script>
 </body>
