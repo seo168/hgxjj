@@ -60,7 +60,7 @@
     .col-tot  { width: 10%; }
     .col-avg  { width: 10%; }
     .col-acc  { width: 10%; }
-    .col-act  { width: 12%; }
+    .col-act  { width: 12%;text-align:center !important;}
 
     .id-link { background: #eff6ff; color: #2563eb; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-weight: 800; transition: 0.2s; display: inline-block; }
     .id-link:hover { background: var(--accent); color: white; transform: scale(1.05); }
@@ -148,7 +148,7 @@
           <span>WITHDRAWAL (出款)</span>
           <div class="online-status-wrapper"><div class="pulse-dot"></div><span id="online-wd">0 Online</span></div>
         </div>
-        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-d1 perf-date-1">-</th><th class="col-d2 perf-date-2"></th><th class="col-d3 perf-date-3"></th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-acc">Account</th><th class="col-act">Action</th></tr></thead></table>
+        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-d1 perf-date-1">-</th><th class="col-d2 perf-date-2"></th><th class="col-d3 perf-date-3"></th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-acc">Account</th><th class="col-act"></th></tr></thead></table>
         <div class="perf-scroll-area"><table class="perf-table"><tbody id="tbody-perf-wd"></tbody></table></div>
       </div>
       <div class="table-container">
@@ -156,7 +156,7 @@
           <span>CUSTOMER SERVICE (客服)</span>
           <div class="online-status-wrapper"><div class="pulse-dot"></div><span id="online-cs">0 Online</span></div>
         </div>
-        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-d1 perf-date-1">-</th><th class="col-d2 perf-date-2"></th><th class="col-d3 perf-date-3"><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-acc">Account</th><th class="col-act">Action</th></tr></thead></table>
+        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-d1 perf-date-1">-</th><th class="col-d2 perf-date-2"></th><th class="col-d3 perf-date-3"><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-acc">Account</th><th class="col-act"></th></tr></thead></table>
         <div class="perf-scroll-area"><table class="perf-table"><tbody id="tbody-perf-cs"></tbody></table></div>
       </div>
       <div class="table-container">
@@ -164,7 +164,7 @@
           <span>FINANCE (财务)</span>
           <div class="online-status-wrapper"><div class="pulse-dot"></div><span id="online-fn">0 Online</span></div>
         </div>
-        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-d1 perf-date-1">-</th><th class="col-d2 perf-date-2"></th><th class="col-d3 perf-date-3"><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-acc">Account</th><th class="col-act">Action</th></tr></thead></table>
+        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-d1 perf-date-1">-</th><th class="col-d2 perf-date-2"></th><th class="col-d3 perf-date-3"><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-acc">Account</th><th class="col-act"></th></tr></thead></table>
         <div class="perf-scroll-area"><table class="perf-table"><tbody id="tbody-perf-fn"></tbody></table></div>
       </div>
     </div>
@@ -384,7 +384,7 @@
            <td class="col-tot">${p ? (p[3] || "0") : "0"}</td>
            <td class="col-avg" style="color:var(--accent); font-weight:800;">${p ? (p[4] || "0") : "0"}</td>
            <td class="col-acc">${p ? (p[5] || "-") : "-"}</td>
-           <td class="col-act"><button class="menu-btn" style="padding:5px 12px; font-size:0.6rem;" onclick="openDetail(${mIdx})">VIEW</button></td>
+           <td class="col-act"><div style="display:flex; justify-content:center;"><button class="menu-btn"style="padding:5px 12px; font-size:0.6rem;"onclick="openDetail(${mIdx})">VIEW</button></div></td>
        </tr>`;
     }).join('');
     document.getElementById(`online-${type.toLowerCase()}`).innerText = `${onlineCount} Online`;
