@@ -60,7 +60,7 @@
     .col-tot  { width: 10%; }
     .col-avg  { width: 10%; }
     .col-acc  { width: 10%; }
-    .col-act  { width: 12%;text-align:center !important;}
+    .col-act  { width: 12%; text-align:center !important; }
 
     .id-link { background: #eff6ff; color: #2563eb; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-weight: 800; transition: 0.2s; display: inline-block; }
     .id-link:hover { background: var(--accent); color: white; transform: scale(1.05); }
@@ -89,7 +89,7 @@
     .date-badge { background: #f1f5f9; padding: 4px 10px; border-radius: 8px; font-family: monospace; }
     .status-absent { color: var(--danger); font-weight: 800; background: #fee2e2; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; }
 
-    /* ===== perfect alignment addition ===== */
+    /* ===== perbaikan tambahan ===== */
     .perf-table th,
     .perf-table td {
       vertical-align: middle;
@@ -107,7 +107,9 @@
       scrollbar-gutter: stable;
     }
 
-    .perf-name-wrap {
+    .perf-name-wrap,
+    .perf-mentor-wrap,
+    .perf-acc-wrap {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -127,7 +129,9 @@
       visibility: hidden;
     }
 
-    .perf-name-text {
+    .perf-name-text,
+    .perf-mentor-text,
+    .perf-acc-text {
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -135,27 +139,128 @@
       display: block;
     }
 
-    .perf-header-table {
-      width: 100%;
-      table-layout: fixed;
-    }
-
+    .perf-header-table,
     .perf-body-table {
       width: 100%;
       table-layout: fixed;
     }
 
-    .perf-section-wrapper .table-container > table.perf-table th,
-    .perf-section-wrapper .table-container > table.perf-table td,
-    .perf-scroll-area table.perf-table th,
-    .perf-scroll-area table.perf-table td {
-      box-sizing: border-box;
-    }
-
     .col-name .perf-name-wrap,
-    td.col-name .perf-name-wrap {
+    td.col-name .perf-name-wrap,
+    .col-ment .perf-mentor-wrap,
+    td.col-ment .perf-mentor-wrap,
+    .col-acc .perf-acc-wrap,
+    td.col-acc .perf-acc-wrap {
       justify-content: flex-start;
     }
+
+    .smart-tip {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      min-width: 0;
+      cursor: default;
+    }
+
+    .smart-tip::after {
+      content: attr(data-full);
+      position: absolute;
+      left: 0;
+      bottom: calc(100% + 8px);
+      background: rgba(15, 23, 42, 0.96);
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      line-height: 1.4;
+      white-space: normal;
+      width: max-content;
+      max-width: 260px;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(6px);
+      transition: 0.18s ease;
+      z-index: 40;
+      pointer-events: none;
+      text-transform: none;
+    }
+
+    .smart-tip:hover::after {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .stat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-top: 8px;
+      padding: 2px 2px 0;
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid #edf2f7;
+      border-radius: 14px;
+      padding: 8px 10px;
+      min-height: 42px;
+      transition: 0.18s ease;
+    }
+
+    .stat-row:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+    }
+
+    .indicator {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex: 0 0 11px;
+      box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.10);
+    }
+
+    .remark-text {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+
+    .count-badge {
+      min-width: 34px;
+      text-align: center;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: var(--primary);
+      font-size: 0.68rem;
+      font-weight: 900;
+      border: 1px solid #e2e8f0;
+    }
+
+    .dept-card .stat-row:nth-child(1) .count-badge { background: rgba(59,130,246,0.10); color: #1d4ed8; }
+    .dept-card .stat-row:nth-child(2) .count-badge { background: rgba(107,114,128,0.10); color: #4b5563; }
+    .dept-card .stat-row:nth-child(3) .count-badge { background: rgba(245,158,11,0.12); color: #b45309; }
+    .dept-card .stat-row:nth-child(4) .count-badge { background: rgba(239,68,68,0.10); color: #b91c1c; }
   </style>
 </head>
 <body>
@@ -280,6 +385,7 @@
   
   const cleanID = (s) => String(s || "").replace(/\D/g, ''); 
   const clean = (s) => String(s || "").trim().toUpperCase();
+  const esc = (s) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
   function showPage(pageId) {
     document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
@@ -370,7 +476,8 @@
       if(!canvas) return;
       if (charts[id]) charts[id].destroy();
       charts[id] = new Chart(canvas.getContext('2d'), { 
-        type: 'doughnut', data: { datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] }, 
+        type: 'doughnut',
+        data: { datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] }, 
         options: { plugins: { legend: false }, cutout: '75%', animation: false } 
       });
       document.getElementById('t' + id.slice(1)).innerText = vals.reduce((a, b) => a + b, 0);
@@ -378,7 +485,12 @@
       if(list) {
         list.innerHTML = entries.slice(0, 4).map(([n, v], i) => `
           <div class="stat-row">
-            <div class="indicator"><span class="dot" style="background:${colors[i]}"></span><span class="remark-text">${n}</span></div>
+            <div class="indicator">
+              <span class="dot" style="background:${colors[i]}; box-shadow: 0 0 0 4px ${hexToRgba(colors[i], 0.12)}"></span>
+              <span class="smart-tip" data-full="${esc(n)}">
+                <span class="remark-text">${n}</span>
+              </span>
+            </div>
             <span class="count-badge">${v}</span>
           </div>`).join('');
       }
@@ -434,10 +546,35 @@
   }
 
   function renderPerfNameCell(name, isOnline) {
+    const text = name || '-';
     return `
       <div class="perf-name-wrap">
         <span class="perf-name-dot ${isOnline ? '' : 'hidden'}"></span>
-        <span class="perf-name-text">${name || '-'}</span>
+        <span class="smart-tip" data-full="${esc(text)}">
+          <span class="perf-name-text">${text}</span>
+        </span>
+      </div>
+    `;
+  }
+
+  function renderPerfMentorCell(name) {
+    const text = name || '-';
+    return `
+      <div class="perf-mentor-wrap">
+        <span class="smart-tip" data-full="${esc(text)}">
+          <span class="perf-mentor-text">${text}</span>
+        </span>
+      </div>
+    `;
+  }
+
+  function renderPerfAccCell(name) {
+    const text = name || '-';
+    return `
+      <div class="perf-acc-wrap">
+        <span class="smart-tip" data-full="${esc(text)}">
+          <span class="perf-acc-text">${text}</span>
+        </span>
       </div>
     `;
   }
@@ -466,13 +603,13 @@
         return `<tr style="${isOnline ? 'background: rgba(34, 197, 94, 0.05);' : ''}">
            <td class="col-id"><span class="id-link" onclick="openDetail(${mIdx})">#${r[2]}</span></td>
            <td class="col-name" style="font-weight:800;">${renderPerfNameCell(r[3], isOnline)}</td>
-           <td class="col-ment">${p ? (p[2] || "-") : "-"}</td>
+           <td class="col-ment">${renderPerfMentorCell(p ? (p[2] || "-") : "-")}</td>
            <td class="col-d1">-</td>
            <td class="col-d2">-</td>
            <td class="col-d3">-</td>
            <td class="col-tot">${p ? (p[3] || "0") : "0"}</td>
            <td class="col-avg" style="color:var(--accent); font-weight:800;">${p ? (p[4] || "0") : "0"}</td>
-           <td class="col-acc">${p ? (p[5] || "-") : "-"}</td>
+           <td class="col-acc">${renderPerfAccCell(p ? (p[5] || "-") : "-")}</td>
            <td class="col-act"><div style="display:flex; justify-content:center;"><button class="menu-btn" style="padding:5px 12px; font-size:0.6rem;" onclick="openDetail(${mIdx})">VIEW</button></div></td>
        </tr>`;
     }).join('');
@@ -543,9 +680,6 @@
 
       if (!firstRow) return;
 
-      const bodyCells = firstRow.querySelectorAll('td');
-      if (headCells.length !== bodyCells.length) return;
-
       const widths = Array.from(headCells).map(th => th.getBoundingClientRect().width);
 
       headCells.forEach((th, i) => {
@@ -559,6 +693,17 @@
         });
       });
     });
+  }
+
+  function hexToRgba(hex, alpha) {
+    const cleanHex = hex.replace('#', '');
+    const bigint = parseInt(cleanHex.length === 3
+      ? cleanHex.split('').map(c => c + c).join('')
+      : cleanHex, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
 
   function changeMainPage(s) { mainPage += s; updateUI(); }
