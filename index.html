@@ -131,6 +131,10 @@
     .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 4px 10px; border-radius: 8px; }
     .tag-fn { background: #fffbeb; color: #92400e; padding: 4px 10px; border-radius: 8px; }
     .date-badge { background: #f1f5f9; padding: 4px 10px; border-radius: 8px; font-family: monospace; }
+
+    /* New styles for Absence & Salary */
+    .status-absent { color: var(--danger); font-weight: 800; background: #fee2e2; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; }
+    .salary-card { background: linear-gradient(135deg, #2563eb, #1e40af); color: white; padding: 2rem; border-radius: 24px; margin-bottom: 1.5rem; }
   </style>
 </head>
 <body>
@@ -192,7 +196,6 @@
     <div class="filter-wrapper">
         <h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-chart-line"></i> PERFORMANCE LIVE MONITORING</h3>
     </div>
-
     <div class="perf-section-wrapper" style="display: flex; flex-direction: column; gap: 2rem;">
       <div class="table-container">
         <div style="padding: 1rem 1.2rem; background: var(--withdraw); color: white; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
@@ -204,120 +207,85 @@
         </div>
         <table class="perf-table">
           <thead>
-            <tr>
-              <th class="col-id">ID Staff</th>
-              <th class="col-name">Nama Staff</th>
-              <th class="col-ment">Nama Mentor</th>
-              <th class="col-tot">Total</th>
-              <th class="col-avg">Avg</th>
-              <th class="col-act">Action</th>
-            </tr>
+            <tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-act">Action</th></tr>
           </thead>
         </table>
-        <div class="perf-scroll-area">
-          <table class="perf-table">
-            <tbody id="tbody-perf-wd"></tbody>
-          </table>
-        </div>
+        <div class="perf-scroll-area"><table class="perf-table"><tbody id="tbody-perf-wd"></tbody></table></div>
       </div>
-
       <div class="table-container">
         <div style="padding: 1rem 1.2rem; background: var(--cs); color: white; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
           <span><i class="fas fa-headset"></i> CUSTOMER SERVICE (客服)</span>
-          <div class="online-status-wrapper">
-            <div class="pulse-dot"></div>
-            <span id="online-cs">0 Online</span>
-          </div>
+          <div class="online-status-wrapper"><div class="pulse-dot"></div><span id="online-cs">0 Online</span></div>
         </div>
-        <table class="perf-table">
-          <thead>
-            <tr>
-              <th class="col-id">ID Staff</th>
-              <th class="col-name">Nama Staff</th>
-              <th class="col-ment">Nama Mentor</th>
-              <th class="col-tot">Total</th>
-              <th class="col-avg">Avg</th>
-              <th class="col-act">Action</th>
-            </tr>
-          </thead>
-        </table>
-        <div class="perf-scroll-area">
-          <table class="perf-table">
-            <tbody id="tbody-perf-cs"></tbody>
-          </table>
-        </div>
+        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-act">Action</th></tr></thead></table>
+        <div class="perf-scroll-area"><table class="perf-table"><tbody id="tbody-perf-cs"></tbody></table></div>
       </div>
-
       <div class="table-container">
         <div style="padding: 1rem 1.2rem; background: var(--finance); color: white; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
           <span><i class="fas fa-calculator"></i> FINANCE (财务)</span>
-          <div class="online-status-wrapper">
-            <div class="pulse-dot"></div>
-            <span id="online-fn">0 Online</span>
-          </div>
+          <div class="online-status-wrapper"><div class="pulse-dot"></div><span id="online-fn">0 Online</span></div>
         </div>
-        <table class="perf-table">
-          <thead>
-            <tr>
-              <th class="col-id">ID Staff</th>
-              <th class="col-name">Nama Staff</th>
-              <th class="col-ment">Nama Mentor</th>
-              <th class="col-tot">Total</th>
-              <th class="col-avg">Avg</th>
-              <th class="col-act">Action</th>
-            </tr>
-          </thead>
-        </table>
-        <div class="perf-scroll-area">
-          <table class="perf-table">
-            <tbody id="tbody-perf-fn"></tbody>
-          </table>
-        </div>
+        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-act">Action</th></tr></thead></table>
+        <div class="perf-scroll-area"><table class="perf-table"><tbody id="tbody-perf-fn"></tbody></table></div>
       </div>
     </div>
   </div>
+
+  <div id="absent" class="page-content">
+    <div class="filter-wrapper">
+        <h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-calendar-alt"></i> ABSENCE TRACKER</h3>
+    </div>
+    <div class="table-container">
+      <div style="padding: 1.2rem; background: #f8fafc; font-weight: 800;">REKAP ABSENSI HARIAN</div>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Nama</th><th>Status</th><th>Shift</th><th>Country</th></tr>
+          </thead>
+          <tbody id="tbody-absent"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="salary" class="page-content">
+    <div class="filter-wrapper">
+        <h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-money-bill-wave"></i> SALARY PREVIEW</h3>
+    </div>
+    <div class="salary-card">
+        <div style="font-size: 0.8rem; opacity: 0.8; font-weight: 600;">ESTIMASI TOTAL PAYOUT (FILTERED STAFF)</div>
+        <div style="font-size: 2.5rem; font-weight: 900;" id="total-payout">$ 0.00</div>
+    </div>
+    <div class="table-container">
+        <table>
+          <thead>
+            <tr><th>Staff ID</th><th>Nama</th><th>Base Salary</th><th>Incentive</th><th>Total</th></tr>
+          </thead>
+          <tbody id="tbody-salary"></tbody>
+        </table>
+    </div>
+  </div>
+
 </div>
 
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
-      <div>
-        <h2 id="mName" style="font-weight: 900; color: var(--primary);">Name</h2>
-        <span id="mID" style="color: var(--accent); font-weight: 800;">#ID</span>
-      </div>
+      <div><h2 id="mName" style="font-weight: 900; color: var(--primary);">Name</h2><span id="mID" style="color: var(--accent); font-weight: 800;">#ID</span></div>
       <i class="fas fa-times-circle" style="cursor:pointer; font-size:1.5rem; color:var(--text-muted)" onclick="closeModal()"></i>
     </div>
     <div class="perf-grid">
-      <div class="perf-item highlight full">
-        <div class="perf-label"><i class="fas fa-hourglass-half"></i> MASA KERJA</div>
-        <div class="perf-val" id="mTenure">-</div>
-      </div>
-      <div class="perf-item">
-        <div class="perf-label"><i class="fas fa-chart-line"></i> AVG HARIAN</div>
-        <div class="perf-val" id="mAvg">-</div>
-      </div>
-      <div class="perf-item">
-        <div class="perf-label"><i class="fas fa-shopping-cart"></i> TOTAL ORDER</div>
-        <div class="perf-val" id="mTotalOrder">-</div>
-      </div>
-      <div class="perf-item">
-        <div class="perf-label"><i class="fas fa-exclamation-triangle"></i> MISTAKE</div>
-        <div class="perf-val" id="mMistake" style="color:var(--danger)">-</div>
-      </div>
-      <div class="perf-item">
-        <div class="perf-label"><i class="fas fa-user-circle"></i> ACCOUNT NAME</div>
-        <div class="perf-val" id="mAccountName">-</div>
-      </div>
-      <div class="perf-item full">
-        <div class="perf-label"><i class="fas fa-user-tie"></i> NAMA MENTOR</div>
-        <div class="perf-val" id="mMentor">-</div>
-      </div>
+      <div class="perf-item highlight full"><div class="perf-label"><i class="fas fa-hourglass-half"></i> MASA KERJA</div><div class="perf-val" id="mTenure">-</div></div>
+      <div class="perf-item"><div class="perf-label"><i class="fas fa-chart-line"></i> AVG HARIAN</div><div class="perf-val" id="mAvg">-</div></div>
+      <div class="perf-item"><div class="perf-label"><i class="fas fa-shopping-cart"></i> TOTAL ORDER</div><div class="perf-val" id="mTotalOrder">-</div></div>
+      <div class="perf-item"><div class="perf-label"><i class="fas fa-exclamation-triangle"></i> MISTAKE</div><div class="perf-val" id="mMistake" style="color:var(--danger)">-</div></div>
+      <div class="perf-item"><div class="perf-label"><i class="fas fa-user-circle"></i> ACCOUNT NAME</div><div class="perf-val" id="mAccountName">-</div></div>
+      <div class="perf-item full"><div class="perf-label"><i class="fas fa-user-tie"></i> NAMA MENTOR</div><div class="perf-val" id="mMentor">-</div></div>
     </div>
   </div>
 </div>
 
 <script>
-  // LINK GOOGLE SHEETS ANDA
   const URL_MASTER = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTWdis5deT7Foc0n9WvjY45n-Yl5oujgHKUKo8yncqAiMfxi42VZEh3OezV3BSozJsY_b9jexKArco/pub?gid=0&output=csv";
   const URL_PERF = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQlA6btKuVajZNe2XPoc3b9BAhbeqFYzAS97f2f8mawUCB4-NOHXryGY_b-4WyZ_A/pub?gid=0&output=csv";
 
@@ -359,16 +327,16 @@
     const staff = filtered[idx];
     if(!staff) return;
     const targetID = clean(staff[2]); 
-    const p = dbPerf.find(row => clean(row[0]) === targetID); // ID Staff ada di index 0
+    const p = dbPerf.find(row => clean(row[0]) === targetID);
 
     document.getElementById('mName').innerText = staff[3];
     document.getElementById('mID').innerText = "#" + staff[2];
     
     if (p) {
-      document.getElementById('mTotalOrder').innerText = p[3] || "0"; // Total Order index 3
-      document.getElementById('mAvg').innerText = p[4] || "0";        // Average index 4
-      document.getElementById('mAccountName').innerText = p[5] || "-"; // Account index 5
-      document.getElementById('mMentor').innerText = p[2] || "-";     // Mentor index 2
+      document.getElementById('mTotalOrder').innerText = p[3] || "0";
+      document.getElementById('mAvg').innerText = p[4] || "0";        
+      document.getElementById('mAccountName').innerText = p[5] || "-";
+      document.getElementById('mMentor').innerText = p[2] || "-";     
       document.getElementById('mMistake').innerText = "0";
     }
 
@@ -439,6 +407,29 @@
     updateUI();
   }
 
+  // Update Addition: Handles Absence and Salary table updates
+  function updateExtraPages() {
+    const absBody = document.getElementById('tbody-absent');
+    if(absBody) {
+        absBody.innerHTML = filtered.slice(0, 15).map(r => `
+            <tr><td>#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td><span class="status-absent">OFF DUTY</span></td><td>${r[5]}</td><td>${r[8]}</td></tr>
+        `).join('');
+    }
+
+    const salBody = document.getElementById('tbody-salary');
+    let grandTotal = 0;
+    if(salBody) {
+        salBody.innerHTML = filtered.slice(0, 15).map(r => {
+            const p = dbPerf.find(x => clean(x[0]) === clean(r[2]));
+            const base = 500;
+            const bonus = p ? (parseInt(p[3] || 0) * 0.05) : 0;
+            grandTotal += (base + bonus);
+            return `<tr><td>#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td>$ ${base}</td><td style="color:var(--accent)">$ ${bonus.toFixed(2)}</td><td style="font-weight:800">$ ${(base + bonus).toFixed(2)}</td></tr>`;
+        }).join('');
+        document.getElementById('total-payout').innerText = "$ " + grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2});
+    }
+  }
+
   function updateUI() {
     const total = Math.ceil(filtered.length / mainRows) || 1;
     if (mainPage < 1) mainPage = 1; if (mainPage > total) mainPage = total;
@@ -456,21 +447,15 @@
     updatePerfTable('CS', '客服');
     updatePerfTable('FN', '财务');
     syncCharts();
+    updateExtraPages(); // Added to refresh new pages
   }
 
   function updatePerfTable(type, keyword) {
     const body = document.getElementById(`tbody-perf-${type.toLowerCase()}`);
     if(!body) return;
-
     const now = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"}));
     const hour = now.getHours();
-
-    const deptData = filtered.filter(r => 
-        (r[1]||"").includes(keyword) || 
-        (r[9]||"").includes(keyword) || 
-        (keyword === '客服' && (r[1]||"").includes('风控'))
-    );
-
+    const deptData = filtered.filter(r => (r[1]||"").includes(keyword) || (r[9]||"").includes(keyword) || (keyword === '客服' && (r[1]||"").includes('风控')));
     let onlineCount = 0;
 
     body.innerHTML = deptData.map((r) => {
@@ -479,35 +464,21 @@
         if (shift.includes("DAY") && (hour >= 8 && hour < 20)) isOnline = true;
         else if (shift.includes("NIGHT") && (hour >= 20 || hour < 8)) isOnline = true;
         else if (shift.includes("MID") && (hour >= 12 && hour < 24)) isOnline = true;
-
         if (isOnline) onlineCount++;
 
         const staffID = clean(r[2]);
-        const p = dbPerf.find(x => clean(x[0]) === staffID); // ID di index 0
-        const ment = p ? (p[2] || "-") : "-"; // Mentor index 2
-        const tot = p ? (p[3] || "0") : "0";  // Total index 3
-        const avg = p ? (p[4] || "0") : "0";  // Average index 4
-        
+        const p = dbPerf.find(x => clean(x[0]) === staffID);
         const originalIdx = dbMaster.indexOf(r); 
 
-        return `
-            <tr style="${isOnline ? 'background: rgba(34, 197, 94, 0.05);' : ''}">
-                <td class="col-id"><span class="id-link" onclick="openDetail(${originalIdx})">#${r[2]}</span></td>
-                <td class="col-name" style="font-weight:800; color:var(--primary);">
-                    ${isOnline ? '<i class="fas fa-circle" style="color:#22c55e; font-size:7px; margin-right:8px; vertical-align:middle;"></i>' : ''}
-                    ${r[3]}
-                </td>
-                <td class="col-ment">${ment}</td>
-                <td class="col-tot" style="font-weight:700">${tot}</td>
-                <td class="col-avg" style="color:var(--accent); font-weight:800;">${avg}</td>
-                <td class="col-act">
-                    <button class="menu-btn" 
-                            style="padding:5px 12px; font-size:0.6rem; min-width:65px; margin:0 auto; display:block;" 
-                            onclick="openDetail(${originalIdx})">VIEW</button>
-                </td>
-            </tr>`;
+        return `<tr style="${isOnline ? 'background: rgba(34, 197, 94, 0.05);' : ''}">
+            <td class="col-id"><span class="id-link" onclick="openDetail(${originalIdx})">#${r[2]}</span></td>
+            <td class="col-name" style="font-weight:800; color:var(--primary);">${isOnline ? '<i class="fas fa-circle" style="color:#22c55e; font-size:7px; margin-right:8px; vertical-align:middle;"></i>' : ''}${r[3]}</td>
+            <td class="col-ment">${p ? (p[2] || "-") : "-"}</td>
+            <td class="col-tot" style="font-weight:700">${p ? (p[3] || "0") : "0"}</td>
+            <td class="col-avg" style="color:var(--accent); font-weight:800;">${p ? (p[4] || "0") : "0"}</td>
+            <td class="col-act"><button class="menu-btn" style="padding:5px 12px; font-size:0.6rem; min-width:65px; margin:0 auto; display:block;" onclick="openDetail(${originalIdx})">VIEW</button></td>
+        </tr>`;
     }).join('');
-
     const badge = document.getElementById(`online-${type.toLowerCase()}`);
     if(badge) badge.innerText = `${onlineCount} Online`;
   }
