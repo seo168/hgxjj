@@ -88,6 +88,74 @@
     .tag-fn { background: #fffbeb; color: #92400e; padding: 4px 10px; border-radius: 8px; }
     .date-badge { background: #f1f5f9; padding: 4px 10px; border-radius: 8px; font-family: monospace; }
     .status-absent { color: var(--danger); font-weight: 800; background: #fee2e2; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; }
+
+    /* ===== perfect alignment addition ===== */
+    .perf-table th,
+    .perf-table td {
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .perf-scroll-area .perf-table {
+      table-layout: fixed;
+      width: 100%;
+    }
+
+    .perf-scroll-area {
+      scrollbar-gutter: stable;
+    }
+
+    .perf-name-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .perf-name-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      flex: 0 0 8px;
+    }
+
+    .perf-name-dot.hidden {
+      visibility: hidden;
+    }
+
+    .perf-name-text {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: block;
+    }
+
+    .perf-header-table {
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .perf-body-table {
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .perf-section-wrapper .table-container > table.perf-table th,
+    .perf-section-wrapper .table-container > table.perf-table td,
+    .perf-scroll-area table.perf-table th,
+    .perf-scroll-area table.perf-table td {
+      box-sizing: border-box;
+    }
+
+    .col-name .perf-name-wrap,
+    td.col-name .perf-name-wrap {
+      justify-content: flex-start;
+    }
   </style>
 </head>
 <body>
@@ -156,7 +224,7 @@
           <span>CUSTOMER SERVICE (客服)</span>
           <div class="online-status-wrapper"><div class="pulse-dot"></div><span id="online-cs">0 Online</span></div>
         </div>
-        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-d1 perf-date-1">-</th><th class="col-d2 perf-date-2"></th><th class="col-d3 perf-date-3"><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-acc">Account</th><th class="col-act"></th></tr></thead></table>
+        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-d1 perf-date-1">-</th><th class="col-d2 perf-date-2"></th><th class="col-d3 perf-date-3"></th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-acc">Account</th><th class="col-act"></th></tr></thead></table>
         <div class="perf-scroll-area"><table class="perf-table"><tbody id="tbody-perf-cs"></tbody></table></div>
       </div>
       <div class="table-container">
@@ -164,7 +232,7 @@
           <span>FINANCE (财务)</span>
           <div class="online-status-wrapper"><div class="pulse-dot"></div><span id="online-fn">0 Online</span></div>
         </div>
-        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-d1 perf-date-1">-</th><th class="col-d2 perf-date-2"></th><th class="col-d3 perf-date-3"><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-acc">Account</th><th class="col-act"></th></tr></thead></table>
+        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-d1 perf-date-1">-</th><th class="col-d2 perf-date-2"></th><th class="col-d3 perf-date-3"></th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-acc">Account</th><th class="col-act"></th></tr></thead></table>
         <div class="perf-scroll-area"><table class="perf-table"><tbody id="tbody-perf-fn"></tbody></table></div>
       </div>
     </div>
@@ -210,7 +278,6 @@
   let mainPage = 1; const mainRows = 10;
   const palette = ["#3b82f6", "#6B7280", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];
   
-  // Fungsi pembersih ID: Mengambil angka saja agar #WD000283 cocok dengan 283 atau 000283
   const cleanID = (s) => String(s || "").replace(/\D/g, ''); 
   const clean = (s) => String(s || "").trim().toUpperCase();
 
@@ -219,6 +286,10 @@
     document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
     document.getElementById('btn-' + pageId).classList.add('active');
+
+    setTimeout(() => {
+      syncPerfHeaderWidths();
+    }, 50);
   }
 
   async function loadData() {
@@ -234,6 +305,12 @@
       setInterval(() => {
         document.getElementById('clock').innerText = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"})).toLocaleTimeString('en-GB') + " AMT";
       }, 1000);
+
+      setTimeout(() => {
+        syncPerfHeaderWidths();
+      }, 100);
+
+      window.addEventListener('resize', syncPerfHeaderWidths);
     } catch (e) { console.error("Koneksi gagal", e); }
   }
 
@@ -350,6 +427,19 @@
     
     syncCharts();
     updateExtraPages();
+
+    setTimeout(() => {
+      syncPerfHeaderWidths();
+    }, 50);
+  }
+
+  function renderPerfNameCell(name, isOnline) {
+    return `
+      <div class="perf-name-wrap">
+        <span class="perf-name-dot ${isOnline ? '' : 'hidden'}"></span>
+        <span class="perf-name-text">${name || '-'}</span>
+      </div>
+    `;
   }
 
   function updatePerfTable(type, keyword) {
@@ -369,14 +459,13 @@
         else if (shift.includes("MID") && (hour >= 12 && hour < 24)) isOnline = true;
         if (isOnline) onlineCount++;
 
-        // Pencocokan ID dengan angka saja
         const targetIDNum = cleanID(r[2]);
         const p = dbPerf.find(x => cleanID(x[0]) === targetIDNum);
         const mIdx = dbMaster.indexOf(r);
 
         return `<tr style="${isOnline ? 'background: rgba(34, 197, 94, 0.05);' : ''}">
            <td class="col-id"><span class="id-link" onclick="openDetail(${mIdx})">#${r[2]}</span></td>
-           <td class="col-name" style="font-weight:800;">${isOnline ? '<i class="fas fa-circle" style="color:#22c55e; font-size:7px; margin-right:8px;"></i>' : ''}${r[3]}</td>
+           <td class="col-name" style="font-weight:800;">${renderPerfNameCell(r[3], isOnline)}</td>
            <td class="col-ment">${p ? (p[2] || "-") : "-"}</td>
            <td class="col-d1">-</td>
            <td class="col-d2">-</td>
@@ -384,7 +473,7 @@
            <td class="col-tot">${p ? (p[3] || "0") : "0"}</td>
            <td class="col-avg" style="color:var(--accent); font-weight:800;">${p ? (p[4] || "0") : "0"}</td>
            <td class="col-acc">${p ? (p[5] || "-") : "-"}</td>
-           <td class="col-act"><div style="display:flex; justify-content:center;"><button class="menu-btn"style="padding:5px 12px; font-size:0.6rem;"onclick="openDetail(${mIdx})">VIEW</button></div></td>
+           <td class="col-act"><div style="display:flex; justify-content:center;"><button class="menu-btn" style="padding:5px 12px; font-size:0.6rem;" onclick="openDetail(${mIdx})">VIEW</button></div></td>
        </tr>`;
     }).join('');
     document.getElementById(`online-${type.toLowerCase()}`).innerText = `${onlineCount} Online`;
@@ -405,30 +494,72 @@
   }
 
   function getLast3Dates() {
-  const today = new Date();
-  const format = (d) => {
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${mm}/${dd}`;
-  };
+    const today = new Date();
+    const format = (d) => {
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${mm}/${dd}`;
+    };
 
-  const d1 = new Date(today);
-  d1.setDate(today.getDate() - 2);
+    const d1 = new Date(today);
+    d1.setDate(today.getDate() - 2);
 
-  const d2 = new Date(today);
-  d2.setDate(today.getDate() - 1);
+    const d2 = new Date(today);
+    d2.setDate(today.getDate() - 1);
 
-  const d3 = new Date(today);
+    const d3 = new Date(today);
 
-  return [format(d1), format(d2), format(d3)];
-}
+    return [format(d1), format(d2), format(d3)];
+  }
 
-function setPerfDateHeaders() {
-  const [d1, d2, d3] = getLast3Dates();
-  document.querySelectorAll('.perf-date-1').forEach(el => el.innerText = d1);
-  document.querySelectorAll('.perf-date-2').forEach(el => el.innerText = d2);
-  document.querySelectorAll('.perf-date-3').forEach(el => el.innerText = d3);
-}
+  function setPerfDateHeaders() {
+    const [d1, d2, d3] = getLast3Dates();
+    document.querySelectorAll('.perf-date-1').forEach(el => el.innerText = d1);
+    document.querySelectorAll('.perf-date-2').forEach(el => el.innerText = d2);
+    document.querySelectorAll('.perf-date-3').forEach(el => el.innerText = d3);
+  }
+
+  function getScrollbarWidth(el) {
+    return el.offsetWidth - el.clientWidth;
+  }
+
+  function syncPerfHeaderWidths() {
+    document.querySelectorAll('.perf-section-wrapper .table-container').forEach(container => {
+      const headerTable = container.querySelector(':scope > table.perf-table');
+      const scrollArea = container.querySelector('.perf-scroll-area');
+      const bodyTable = scrollArea ? scrollArea.querySelector('table.perf-table') : null;
+
+      if (!headerTable || !scrollArea || !bodyTable) return;
+
+      headerTable.classList.add('perf-header-table');
+      bodyTable.classList.add('perf-body-table');
+
+      const scrollbarWidth = getScrollbarWidth(scrollArea);
+      headerTable.style.width = `calc(100% - ${scrollbarWidth}px)`;
+      bodyTable.style.width = `100%`;
+
+      const headCells = headerTable.querySelectorAll('thead th');
+      const firstRow = bodyTable.querySelector('tbody tr');
+
+      if (!firstRow) return;
+
+      const bodyCells = firstRow.querySelectorAll('td');
+      if (headCells.length !== bodyCells.length) return;
+
+      const widths = Array.from(headCells).map(th => th.getBoundingClientRect().width);
+
+      headCells.forEach((th, i) => {
+        th.style.width = `${widths[i]}px`;
+      });
+
+      bodyTable.querySelectorAll('tbody tr').forEach(row => {
+        const rowCells = row.querySelectorAll('td');
+        rowCells.forEach((td, i) => {
+          if (widths[i]) td.style.width = `${widths[i]}px`;
+        });
+      });
+    });
+  }
 
   function changeMainPage(s) { mainPage += s; updateUI(); }
   document.addEventListener('keydown', (e) => { if (e.key === "Escape") closeModal(); });
