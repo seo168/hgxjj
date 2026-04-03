@@ -46,66 +46,25 @@
     th { background: #f8fafc; padding: 1.2rem 1rem; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); border-bottom: 1px solid var(--border); text-transform: uppercase; text-align: center; }
     td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; text-align: center; }
     
-    /* Performance Scroll Specific */
-    .perf-table { 
-        table-layout: fixed; 
-        width: 100%; 
-        border-collapse: collapse; 
-    }
-    .perf-scroll-area { 
-        max-height: 350px; 
-        overflow-y: auto; 
-        overflow-x: hidden; 
-        border-top: 1px solid var(--border); 
-    }
+    .perf-table { table-layout: fixed; width: 100%; border-collapse: collapse; }
+    .perf-scroll-area { max-height: 350px; overflow-y: auto; overflow-x: hidden; border-top: 1px solid var(--border); }
     .perf-scroll-area::-webkit-scrollbar { width: 6px; }
     .perf-scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     
-    .col-id   { width: 15%; text-align: center !important; }
+    .col-id   { width: 15%; }
     .col-name { width: 25%; text-align: left !important; padding-left: 15px !important; }
-    .col-ment { width: 20%; text-align: center !important; }
-    .col-tot  { width: 12%; text-align: center !important; }
-    .col-avg  { width: 12%; text-align: center !important; }
-    .col-act  { width: 16%; text-align: center !important; }
-
-    .perf-table th, .perf-table td {
-        padding: 12px 5px;
-        box-sizing: border-box;
-    }
+    .col-ment { width: 20%; }
+    .col-tot  { width: 12%; }
+    .col-avg  { width: 12%; }
+    .col-act  { width: 16%; }
 
     .id-link { background: #eff6ff; color: #2563eb; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-weight: 800; transition: 0.2s; display: inline-block; }
     .id-link:hover { background: var(--accent); color: white; transform: scale(1.05); }
 
-    .online-status-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(255, 255, 255, 0.15);
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    .pulse-dot {
-        width: 8px;
-        height: 8px;
-        background-color: #22c55e;
-        border-radius: 50%;
-        position: relative;
-    }
-    .pulse-dot::after {
-        content: "";
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background-color: #22c55e;
-        border-radius: 50%;
-        animation: pulse-animation 1.5s infinite;
-    }
-    @keyframes pulse-animation {
-        0% { transform: scale(1); opacity: 0.8; }
-        100% { transform: scale(2.5); opacity: 0; }
-    }
+    .online-status-wrapper { display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.15); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
+    .pulse-dot { width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; position: relative; }
+    .pulse-dot::after { content: ""; position: absolute; width: 100%; height: 100%; background-color: #22c55e; border-radius: 50%; animation: pulse-animation 1.5s infinite; }
+    @keyframes pulse-animation { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(2.5); opacity: 0; } }
 
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(8px); }
     .modal-content { background: white; width: 95%; max-width: 600px; border-radius: 32px; padding: 2.5rem; position: relative; }
@@ -117,7 +76,7 @@
     .indicator { display: flex; align-items: center; }
     .remark-text { color: var(--text-main); max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .count-badge { background: #f1f5f9; padding: 4px 8px; border-radius: 6px; }
-    
+
     .perf-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
     .perf-item { background: #f8fafc; padding: 18px; border-radius: 20px; border: 1px solid var(--border); }
     .perf-item.highlight { background: var(--primary); border: none; }
@@ -131,8 +90,6 @@
     .tag-cs { background: #f5f3ff; color: #5b21b6; padding: 4px 10px; border-radius: 8px; }
     .tag-fn { background: #fffbeb; color: #92400e; padding: 4px 10px; border-radius: 8px; }
     .date-badge { background: #f1f5f9; padding: 4px 10px; border-radius: 8px; font-family: monospace; }
-
-    /* New styles for Absence & Salary */
     .status-absent { color: var(--danger); font-weight: 800; background: #fee2e2; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; }
     .salary-card { background: linear-gradient(135deg, #2563eb, #1e40af); color: white; padding: 2rem; border-radius: 24px; margin-bottom: 1.5rem; }
   </style>
@@ -171,7 +128,6 @@
         <div class="filter-group"><label>Platform</label><select id="fPlatform"></select></div>
       </div>
     </div>
-
     <div class="table-container">
       <div style="padding: 1.2rem; background: #f8fafc; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
         <span><i class="fas fa-list-ul"></i> STAFF OVERVIEW</span>
@@ -181,40 +137,27 @@
             <button class="menu-btn" style="padding: 5px 15px;" onclick="changeMainPage(1)"><i class="fas fa-chevron-right"></i></button>
         </div>
       </div>
-      <div style="overflow-x: auto;">
-        <table>
-          <thead>
-            <tr><th>Platform</th><th>Group</th><th>Team</th><th>ID</th><th>Name</th><th>Shift</th><th>Join Date</th><th>Country</th></tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
+      <table>
+        <thead><tr><th>Platform</th><th>Group</th><th>Team</th><th>ID</th><th>Name</th><th>Shift</th><th>Join Date</th><th>Country</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
     </div>
   </div>
 
   <div id="performance" class="page-content">
-    <div class="filter-wrapper">
-        <h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-chart-line"></i> PERFORMANCE LIVE MONITORING</h3>
-    </div>
+    <div class="filter-wrapper"><h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-chart-line"></i> PERFORMANCE LIVE MONITORING</h3></div>
     <div class="perf-section-wrapper" style="display: flex; flex-direction: column; gap: 2rem;">
       <div class="table-container">
         <div style="padding: 1rem 1.2rem; background: var(--withdraw); color: white; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
-          <span><i class="fas fa-money-bill-wave"></i> WITHDRAWAL (出款)</span>
-          <div class="online-status-wrapper">
-            <div class="pulse-dot"></div>
-            <span id="online-wd">0 Online</span>
-          </div>
+          <span>WITHDRAWAL (出款)</span>
+          <div class="online-status-wrapper"><div class="pulse-dot"></div><span id="online-wd">0 Online</span></div>
         </div>
-        <table class="perf-table">
-          <thead>
-            <tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-act">Action</th></tr>
-          </thead>
-        </table>
+        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-act">Action</th></tr></thead></table>
         <div class="perf-scroll-area"><table class="perf-table"><tbody id="tbody-perf-wd"></tbody></table></div>
       </div>
       <div class="table-container">
         <div style="padding: 1rem 1.2rem; background: var(--cs); color: white; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
-          <span><i class="fas fa-headset"></i> CUSTOMER SERVICE (客服)</span>
+          <span>CUSTOMER SERVICE (客服)</span>
           <div class="online-status-wrapper"><div class="pulse-dot"></div><span id="online-cs">0 Online</span></div>
         </div>
         <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-act">Action</th></tr></thead></table>
@@ -222,7 +165,7 @@
       </div>
       <div class="table-container">
         <div style="padding: 1rem 1.2rem; background: var(--finance); color: white; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
-          <span><i class="fas fa-calculator"></i> FINANCE (财务)</span>
+          <span>FINANCE (财务)</span>
           <div class="online-status-wrapper"><div class="pulse-dot"></div><span id="online-fn">0 Online</span></div>
         </div>
         <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-act">Action</th></tr></thead></table>
@@ -232,40 +175,23 @@
   </div>
 
   <div id="absent" class="page-content">
-    <div class="filter-wrapper">
-        <h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-calendar-alt"></i> ABSENCE TRACKER</h3>
-    </div>
+    <div class="filter-wrapper"><h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-calendar-alt"></i> ABSENCE TRACKER</h3></div>
     <div class="table-container">
       <div style="padding: 1.2rem; background: #f8fafc; font-weight: 800;">REKAP ABSENSI HARIAN</div>
-      <div style="overflow-x: auto;">
-        <table>
-          <thead>
-            <tr><th>ID</th><th>Nama</th><th>Status</th><th>Shift</th><th>Country</th></tr>
-          </thead>
-          <tbody id="tbody-absent"></tbody>
-        </table>
-      </div>
+      <table><thead><tr><th>ID</th><th>Nama</th><th>Status</th><th>Shift</th><th>Country</th></tr></thead><tbody id="tbody-absent"></tbody></table>
     </div>
   </div>
 
   <div id="salary" class="page-content">
-    <div class="filter-wrapper">
-        <h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-money-bill-wave"></i> SALARY PREVIEW</h3>
-    </div>
+    <div class="filter-wrapper"><h3 style="font-weight: 800; color: var(--primary);"><i class="fas fa-money-bill-wave"></i> SALARY PREVIEW</h3></div>
     <div class="salary-card">
         <div style="font-size: 0.8rem; opacity: 0.8; font-weight: 600;">ESTIMASI TOTAL PAYOUT (FILTERED STAFF)</div>
         <div style="font-size: 2.5rem; font-weight: 900;" id="total-payout">$ 0.00</div>
     </div>
     <div class="table-container">
-        <table>
-          <thead>
-            <tr><th>Staff ID</th><th>Nama</th><th>Base Salary</th><th>Incentive</th><th>Total</th></tr>
-          </thead>
-          <tbody id="tbody-salary"></tbody>
-        </table>
+        <table><thead><tr><th>Staff ID</th><th>Nama</th><th>Base Salary</th><th>Incentive</th><th>Total</th></tr></thead><tbody id="tbody-salary"></tbody></table>
     </div>
   </div>
-
 </div>
 
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
@@ -278,7 +204,7 @@
       <div class="perf-item highlight full"><div class="perf-label"><i class="fas fa-hourglass-half"></i> MASA KERJA</div><div class="perf-val" id="mTenure">-</div></div>
       <div class="perf-item"><div class="perf-label"><i class="fas fa-chart-line"></i> AVG HARIAN</div><div class="perf-val" id="mAvg">-</div></div>
       <div class="perf-item"><div class="perf-label"><i class="fas fa-shopping-cart"></i> TOTAL ORDER</div><div class="perf-val" id="mTotalOrder">-</div></div>
-      <div class="perf-item"><div class="perf-label"><i class="fas fa-exclamation-triangle"></i> MISTAKE</div><div class="perf-val" id="mMistake" style="color:var(--danger)">-</div></div>
+      <div class="perf-item"><div class="perf-label"><i class="fas fa-exclamation-triangle"></i> MISTAKE</div><div class="perf-val" id="mMistake" style="color:var(--danger)">0</div></div>
       <div class="perf-item"><div class="perf-label"><i class="fas fa-user-circle"></i> ACCOUNT NAME</div><div class="perf-val" id="mAccountName">-</div></div>
       <div class="perf-item full"><div class="perf-label"><i class="fas fa-user-tie"></i> NAMA MENTOR</div><div class="perf-val" id="mMentor">-</div></div>
     </div>
@@ -304,13 +230,11 @@
   async function loadData() {
     try {
       const [resM, resP] = await Promise.all([
-        fetch(`${URL_MASTER}&t=${Date.now()}`),
-        fetch(`${URL_PERF}&t=${Date.now()}`)
+        fetch(`${URL_MASTER}&t=${Date.now()}`), fetch(`${URL_PERF}&t=${Date.now()}`)
       ]);
       dbMaster = smartParse(await resM.text()).slice(1).filter(r => r[2]);
       dbPerf = smartParse(await resP.text()).slice(1);
-      initFilters();
-      runFilters();
+      initFilters(); runFilters();
       setInterval(() => {
         document.getElementById('clock').innerText = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"})).toLocaleTimeString('en-GB') + " AMT";
       }, 1000);
@@ -323,8 +247,8 @@
     );
   }
 
-  function openDetail(idx) {
-    const staff = filtered[idx];
+  function openDetail(masterIdx) {
+    const staff = dbMaster[masterIdx];
     if(!staff) return;
     const targetID = clean(staff[2]); 
     const p = dbPerf.find(row => clean(row[0]) === targetID);
@@ -332,12 +256,12 @@
     document.getElementById('mName').innerText = staff[3];
     document.getElementById('mID').innerText = "#" + staff[2];
     
+    // Mapping GSheet Performance: 0:ID, 1:Mentor, 2:Total, 3:Avg, 4:AccName
     if (p) {
-      document.getElementById('mTotalOrder').innerText = p[3] || "0";
-      document.getElementById('mAvg').innerText = p[4] || "0";        
-      document.getElementById('mAccountName').innerText = p[5] || "-";
-      document.getElementById('mMentor').innerText = p[2] || "-";     
-      document.getElementById('mMistake').innerText = "0";
+      document.getElementById('mMentor').innerText = p[1] || "-";
+      document.getElementById('mTotalOrder').innerText = p[2] || "0";
+      document.getElementById('mAvg').innerText = p[3] || "0";
+      document.getElementById('mAccountName').innerText = p[4] || "-";
     }
 
     const joinDate = new Date(staff[6]);
@@ -367,11 +291,9 @@
       const colors = entries.map((_, i) => palette[i % palette.length]);
       const canvas = document.getElementById(id);
       if(!canvas) return;
-      const ctx = canvas.getContext('2d');
       if (charts[id]) charts[id].destroy();
-      charts[id] = new Chart(ctx, { 
-        type: 'doughnut', 
-        data: { datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] }, 
+      charts[id] = new Chart(canvas.getContext('2d'), { 
+        type: 'doughnut', data: { datasets: [{ data: vals, backgroundColor: colors, borderWidth: 0 }] }, 
         options: { plugins: { legend: false }, cutout: '75%', animation: false } 
       });
       document.getElementById('t' + id.slice(1)).innerText = vals.reduce((a, b) => a + b, 0);
@@ -389,8 +311,7 @@
       const s = document.getElementById(id);
       if(s) s.innerHTML = `<option value="">All</option>` + v.map(x => `<option value="${x}">${x}</option>`).join('');
     };
-    fill('fPlatform', getU(0)); fill('fGroup', getU(1)); fill('fTeam', getU(9)); 
-    fill('fShift', getU(5)); fill('fCountry', getU(8));
+    fill('fPlatform', getU(0)); fill('fGroup', getU(1)); fill('fTeam', getU(9)); fill('fShift', getU(5)); fill('fCountry', getU(8));
     ['searchName', 'fShift', 'fTeam', 'fGroup', 'fCountry', 'fPlatform'].forEach(id => {
       document.getElementById(id).addEventListener('input', () => { mainPage = 1; runFilters(); });
     });
@@ -407,29 +328,6 @@
     updateUI();
   }
 
-  // Update Addition: Handles Absence and Salary table updates
-  function updateExtraPages() {
-    const absBody = document.getElementById('tbody-absent');
-    if(absBody) {
-        absBody.innerHTML = filtered.slice(0, 15).map(r => `
-            <tr><td>#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td><span class="status-absent">OFF DUTY</span></td><td>${r[5]}</td><td>${r[8]}</td></tr>
-        `).join('');
-    }
-
-    const salBody = document.getElementById('tbody-salary');
-    let grandTotal = 0;
-    if(salBody) {
-        salBody.innerHTML = filtered.slice(0, 15).map(r => {
-            const p = dbPerf.find(x => clean(x[0]) === clean(r[2]));
-            const base = 500;
-            const bonus = p ? (parseInt(p[3] || 0) * 0.05) : 0;
-            grandTotal += (base + bonus);
-            return `<tr><td>#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td>$ ${base}</td><td style="color:var(--accent)">$ ${bonus.toFixed(2)}</td><td style="font-weight:800">$ ${(base + bonus).toFixed(2)}</td></tr>`;
-        }).join('');
-        document.getElementById('total-payout').innerText = "$ " + grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2});
-    }
-  }
-
   function updateUI() {
     const total = Math.ceil(filtered.length / mainRows) || 1;
     if (mainPage < 1) mainPage = 1; if (mainPage > total) mainPage = total;
@@ -439,7 +337,7 @@
     document.getElementById('tbody').innerHTML = current.map((r, i) => {
         const b = r[1]||"", j = r[9]||"";
         let cls = (b.includes('出款') || j.includes('出款')) ? 'tag-wd' : (b.includes('客服') || j.includes('客服')) ? 'tag-cs' : 'tag-fn';
-        return `<tr><td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]}</td><td><span class="id-link" onclick="openDetail(${start + i})">#${r[2]}</span></td><td style="font-weight:800">${r[3]}</td><td>${r[5]}</td><td><span class="date-badge">${r[6]}</span></td><td>${r[8]}</td></tr>`;
+        return `<tr><td><b>${r[0]}</b></td><td><span class="${cls}">${r[1]}</span></td><td>${r[9]}</td><td><span class="id-link" onclick="openDetail(${dbMaster.indexOf(r)})">#${r[2]}</span></td><td style="font-weight:800">${r[3]}</td><td>${r[5]}</td><td><span class="date-badge">${r[6]}</span></td><td>${r[8]}</td></tr>`;
     }).join('');
     document.getElementById('infoMain').innerText = `Page ${mainPage} / ${total}`;
 
@@ -447,7 +345,7 @@
     updatePerfTable('CS', '客服');
     updatePerfTable('FN', '财务');
     syncCharts();
-    updateExtraPages(); // Added to refresh new pages
+    updateExtraPages();
   }
 
   function updatePerfTable(type, keyword) {
@@ -466,21 +364,36 @@
         else if (shift.includes("MID") && (hour >= 12 && hour < 24)) isOnline = true;
         if (isOnline) onlineCount++;
 
-        const staffID = clean(r[2]);
-        const p = dbPerf.find(x => clean(x[0]) === staffID);
-        const originalIdx = dbMaster.indexOf(r); 
+        const p = dbPerf.find(x => clean(x[0]) === clean(r[2]));
+        const mIdx = dbMaster.indexOf(r);
 
         return `<tr style="${isOnline ? 'background: rgba(34, 197, 94, 0.05);' : ''}">
-            <td class="col-id"><span class="id-link" onclick="openDetail(${originalIdx})">#${r[2]}</span></td>
-            <td class="col-name" style="font-weight:800; color:var(--primary);">${isOnline ? '<i class="fas fa-circle" style="color:#22c55e; font-size:7px; margin-right:8px; vertical-align:middle;"></i>' : ''}${r[3]}</td>
-            <td class="col-ment">${p ? (p[2] || "-") : "-"}</td>
-            <td class="col-tot" style="font-weight:700">${p ? (p[3] || "0") : "0"}</td>
-            <td class="col-avg" style="color:var(--accent); font-weight:800;">${p ? (p[4] || "0") : "0"}</td>
-            <td class="col-act"><button class="menu-btn" style="padding:5px 12px; font-size:0.6rem; min-width:65px; margin:0 auto; display:block;" onclick="openDetail(${originalIdx})">VIEW</button></td>
+            <td class="col-id"><span class="id-link" onclick="openDetail(${mIdx})">#${r[2]}</span></td>
+            <td class="col-name" style="font-weight:800;">${isOnline ? '<i class="fas fa-circle" style="color:#22c55e; font-size:7px; margin-right:8px;"></i>' : ''}${r[3]}</td>
+            <td class="col-ment">${p ? (p[1] || "-") : "-"}</td>
+            <td class="col-tot">${p ? (p[2] || "0") : "0"}</td>
+            <td class="col-avg" style="color:var(--accent); font-weight:800;">${p ? (p[3] || "0") : "0"}</td>
+            <td class="col-act"><button class="menu-btn" style="padding:5px 12px; font-size:0.6rem;" onclick="openDetail(${mIdx})">VIEW</button></td>
         </tr>`;
     }).join('');
-    const badge = document.getElementById(`online-${type.toLowerCase()}`);
-    if(badge) badge.innerText = `${onlineCount} Online`;
+    document.getElementById(`online-${type.toLowerCase()}`).innerText = `${onlineCount} Online`;
+  }
+
+  function updateExtraPages() {
+    const absBody = document.getElementById('tbody-absent');
+    if(absBody) absBody.innerHTML = filtered.slice(0, 15).map(r => `<tr><td>#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td><span class="status-absent">OFF DUTY</span></td><td>${r[5]}</td><td>${r[8]}</td></tr>`).join('');
+    
+    const salBody = document.getElementById('tbody-salary');
+    let gt = 0;
+    if(salBody) {
+        salBody.innerHTML = filtered.slice(0, 15).map(r => {
+            const p = dbPerf.find(x => clean(x[0]) === clean(r[2]));
+            const b = 500, bon = p ? (parseInt(p[2] || 0) * 0.05) : 0;
+            gt += (b + bon);
+            return `<tr><td>#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td>$ ${b}</td><td>$ ${bon.toFixed(2)}</td><td style="font-weight:800">$ ${(b+bon).toFixed(2)}</td></tr>`;
+        }).join('');
+        document.getElementById('total-payout').innerText = "$ " + gt.toLocaleString(undefined, {minimumFractionDigits: 2});
+    }
   }
 
   function changeMainPage(s) { mainPage += s; updateUI(); }
