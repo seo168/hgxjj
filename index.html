@@ -51,11 +51,13 @@
     .perf-scroll-area::-webkit-scrollbar { width: 6px; }
     .perf-scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     
+    /* URUTAN SESUAI PERMINTAAN */
     .col-id   { width: 15%; }
     .col-name { width: 25%; text-align: left !important; padding-left: 15px !important; }
     .col-ment { width: 20%; }
     .col-tot  { width: 12%; }
     .col-avg  { width: 12%; }
+    .col-acc  { width: 12%; } /* Menambahkan kolom account */
     .col-act  { width: 16%; }
 
     .id-link { background: #eff6ff; color: #2563eb; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-weight: 800; transition: 0.2s; display: inline-block; }
@@ -152,7 +154,7 @@
           <span>WITHDRAWAL (出款)</span>
           <div class="online-status-wrapper"><div class="pulse-dot"></div><span id="online-wd">0 Online</span></div>
         </div>
-        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-act">Action</th></tr></thead></table>
+        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-acc">Account</th><th class="col-act">Action</th></tr></thead></table>
         <div class="perf-scroll-area"><table class="perf-table"><tbody id="tbody-perf-wd"></tbody></table></div>
       </div>
       <div class="table-container">
@@ -160,7 +162,7 @@
           <span>CUSTOMER SERVICE (客服)</span>
           <div class="online-status-wrapper"><div class="pulse-dot"></div><span id="online-cs">0 Online</span></div>
         </div>
-        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-act">Action</th></tr></thead></table>
+        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-acc">Account</th><th class="col-act">Action</th></tr></thead></table>
         <div class="perf-scroll-area"><table class="perf-table"><tbody id="tbody-perf-cs"></tbody></table></div>
       </div>
       <div class="table-container">
@@ -168,7 +170,7 @@
           <span>FINANCE (财务)</span>
           <div class="online-status-wrapper"><div class="pulse-dot"></div><span id="online-fn">0 Online</span></div>
         </div>
-        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-act">Action</th></tr></thead></table>
+        <table class="perf-table"><thead><tr><th class="col-id">ID Staff</th><th class="col-name">Nama Staff</th><th class="col-ment">Nama Mentor</th><th class="col-tot">Total</th><th class="col-avg">Avg</th><th class="col-acc">Account</th><th class="col-act">Action</th></tr></thead></table>
         <div class="perf-scroll-area"><table class="perf-table"><tbody id="tbody-perf-fn"></tbody></table></div>
       </div>
     </div>
@@ -204,9 +206,8 @@
       <div class="perf-item highlight full"><div class="perf-label"><i class="fas fa-hourglass-half"></i> MASA KERJA</div><div class="perf-val" id="mTenure">-</div></div>
       <div class="perf-item"><div class="perf-label"><i class="fas fa-chart-line"></i> AVG HARIAN</div><div class="perf-val" id="mAvg">-</div></div>
       <div class="perf-item"><div class="perf-label"><i class="fas fa-shopping-cart"></i> TOTAL ORDER</div><div class="perf-val" id="mTotalOrder">-</div></div>
-      <div class="perf-item"><div class="perf-label"><i class="fas fa-exclamation-triangle"></i> MISTAKE</div><div class="perf-val" id="mMistake" style="color:var(--danger)">0</div></div>
       <div class="perf-item"><div class="perf-label"><i class="fas fa-user-circle"></i> ACCOUNT NAME</div><div class="perf-val" id="mAccountName">-</div></div>
-      <div class="perf-item full"><div class="perf-label"><i class="fas fa-user-tie"></i> NAMA MENTOR</div><div class="perf-val" id="mMentor">-</div></div>
+      <div class="perf-item"><div class="perf-label"><i class="fas fa-user-tie"></i> NAMA MENTOR</div><div class="perf-val" id="mMentor">-</div></div>
     </div>
   </div>
 </div>
@@ -247,6 +248,7 @@
     );
   }
 
+  // FIXED MAPPING UNTUK MODAL DETAIL
   function openDetail(masterIdx) {
     const staff = dbMaster[masterIdx];
     if(!staff) return;
@@ -256,12 +258,13 @@
     document.getElementById('mName').innerText = staff[3];
     document.getElementById('mID').innerText = "#" + staff[2];
     
-    // Mapping GSheet Performance: 0:ID, 1:Mentor, 2:Total, 3:Avg, 4:AccName
+    // PEMETAAN GOOGLE SHEETS PERFORMANCE:
+    // 0:ID, 1:StaffName, 2:Mentor, 3:Total, 4:Avg, 5:AccName
     if (p) {
-      document.getElementById('mMentor').innerText = p[1] || "-";
-      document.getElementById('mTotalOrder').innerText = p[2] || "0";
-      document.getElementById('mAvg').innerText = p[3] || "0";
-      document.getElementById('mAccountName').innerText = p[4] || "-";
+      document.getElementById('mMentor').innerText = p[2] || "-";
+      document.getElementById('mTotalOrder').innerText = p[3] || "0";
+      document.getElementById('mAvg').innerText = p[4] || "0";
+      document.getElementById('mAccountName').innerText = p[5] || "-";
     }
 
     const joinDate = new Date(staff[6]);
@@ -348,6 +351,7 @@
     updateExtraPages();
   }
 
+  // FIXED MAPPING UNTUK TABEL PERFORMANCE
   function updatePerfTable(type, keyword) {
     const body = document.getElementById(`tbody-perf-${type.toLowerCase()}`);
     if(!body) return;
@@ -367,12 +371,15 @@
         const p = dbPerf.find(x => clean(x[0]) === clean(r[2]));
         const mIdx = dbMaster.indexOf(r);
 
+        // DATA MAPPING PERFORMANCE SESUAI URUTAN BARU:
+        // p[0]: ID, p[1]: StaffName, p[2]: Mentor, p[3]: Total, p[4]: Avg, p[5]: Account
         return `<tr style="${isOnline ? 'background: rgba(34, 197, 94, 0.05);' : ''}">
             <td class="col-id"><span class="id-link" onclick="openDetail(${mIdx})">#${r[2]}</span></td>
             <td class="col-name" style="font-weight:800;">${isOnline ? '<i class="fas fa-circle" style="color:#22c55e; font-size:7px; margin-right:8px;"></i>' : ''}${r[3]}</td>
-            <td class="col-ment">${p ? (p[1] || "-") : "-"}</td>
-            <td class="col-tot">${p ? (p[2] || "0") : "0"}</td>
-            <td class="col-avg" style="color:var(--accent); font-weight:800;">${p ? (p[3] || "0") : "0"}</td>
+            <td class="col-ment">${p ? (p[2] || "-") : "-"}</td>
+            <td class="col-tot">${p ? (p[3] || "0") : "0"}</td>
+            <td class="col-avg" style="color:var(--accent); font-weight:800;">${p ? (p[4] || "0") : "0"}</td>
+            <td class="col-acc">${p ? (p[5] || "-") : "-"}</td>
             <td class="col-act"><button class="menu-btn" style="padding:5px 12px; font-size:0.6rem;" onclick="openDetail(${mIdx})">VIEW</button></td>
         </tr>`;
     }).join('');
@@ -388,7 +395,7 @@
     if(salBody) {
         salBody.innerHTML = filtered.slice(0, 15).map(r => {
             const p = dbPerf.find(x => clean(x[0]) === clean(r[2]));
-            const b = 500, bon = p ? (parseInt(p[2] || 0) * 0.05) : 0;
+            const b = 500, bon = p ? (parseInt(p[3] || 0) * 0.05) : 0;
             gt += (b + bon);
             return `<tr><td>#${r[2]}</td><td style="font-weight:800">${r[3]}</td><td>$ ${b}</td><td>$ ${bon.toFixed(2)}</td><td style="font-weight:800">$ ${(b+bon).toFixed(2)}</td></tr>`;
         }).join('');
