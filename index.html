@@ -604,9 +604,9 @@
     body.innerHTML = deptData.map((r) => {
         const shift = clean(r[5]);
         let isOnline = false;
-        if (shift.includes("DAY") && (hour >= 8 && hour < 20)) isOnline = true;
-        else if (shift.includes("NIGHT") && (hour >= 20 || hour < 8)) isOnline = true;
-        else if (shift.includes("MID") && (hour >= 12 && hour < 24)) isOnline = true;
+        if (shift.includes("白班") && (hour >= 8 && hour < 20)) isOnline = true;
+        else if (shift.includes("夜班") && (hour >= 20 || hour < 8)) isOnline = true;
+        else if (shift.includes("中班") && (hour >= 12 && hour < 24)) isOnline = true;
         if (isOnline) onlineCount++;
 
         const targetIDNum = cleanID(r[2]);
