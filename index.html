@@ -51,13 +51,12 @@
     .perf-scroll-area::-webkit-scrollbar { width: 6px; }
     .perf-scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     
-    /* URUTAN SESUAI PERMINTAAN */
     .col-id   { width: 15%; }
     .col-name { width: 25%; text-align: left !important; padding-left: 15px !important; }
     .col-ment { width: 20%; }
     .col-tot  { width: 12%; }
     .col-avg  { width: 12%; }
-    .col-acc  { width: 12%; } /* Menambahkan kolom account */
+    .col-acc  { width: 12%; }
     .col-act  { width: 16%; }
 
     .id-link { background: #eff6ff; color: #2563eb; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-weight: 800; transition: 0.2s; display: inline-block; }
@@ -248,7 +247,6 @@
     );
   }
 
-  // FIXED MAPPING UNTUK MODAL DETAIL
   function openDetail(masterIdx) {
     const staff = dbMaster[masterIdx];
     if(!staff) return;
@@ -258,8 +256,6 @@
     document.getElementById('mName').innerText = staff[3];
     document.getElementById('mID').innerText = "#" + staff[2];
     
-    // PEMETAAN GOOGLE SHEETS PERFORMANCE:
-    // 0:ID, 1:StaffName, 2:Mentor, 3:Total, 4:Avg, 5:AccName
     if (p) {
       document.getElementById('mMentor').innerText = p[2] || "-";
       document.getElementById('mTotalOrder').innerText = p[3] || "0";
@@ -344,19 +340,21 @@
     }).join('');
     document.getElementById('infoMain').innerText = `Page ${mainPage} / ${total}`;
 
+    // Jalankan pembaruan tabel Performance secara otomatis
     updatePerfTable('WD', '出款');
     updatePerfTable('CS', '客服');
     updatePerfTable('FN', '财务');
+    
     syncCharts();
     updateExtraPages();
   }
 
-  // FIXED MAPPING UNTUK TABEL PERFORMANCE
   function updatePerfTable(type, keyword) {
     const body = document.getElementById(`tbody-perf-${type.toLowerCase()}`);
     if(!body) return;
     const now = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"}));
     const hour = now.getHours();
+    
     const deptData = filtered.filter(r => (r[1]||"").includes(keyword) || (r[9]||"").includes(keyword) || (keyword === '客服' && (r[1]||"").includes('风控')));
     let onlineCount = 0;
 
@@ -371,7 +369,7 @@
         const p = dbPerf.find(x => clean(x[0]) === clean(r[2]));
         const mIdx = dbMaster.indexOf(r);
 
-        // DATA MAPPING PERFORMANCE SESUAI URUTAN BARU:
+        // DATA MAPPING PERFORMANCE SESUAI URUTAN:
         // p[0]: ID, p[1]: StaffName, p[2]: Mentor, p[3]: Total, p[4]: Avg, p[5]: Account
         return `<tr style="${isOnline ? 'background: rgba(34, 197, 94, 0.05);' : ''}">
             <td class="col-id"><span class="id-link" onclick="openDetail(${mIdx})">#${r[2]}</span></td>
