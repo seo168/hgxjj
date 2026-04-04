@@ -89,7 +89,6 @@
     .date-badge { background: #f1f5f9; padding: 4px 10px; border-radius: 8px; font-family: monospace; }
     .status-absent { color: var(--danger); font-weight: 800; background: #fee2e2; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; }
 
-    /* ===== perbaikan tambahan ===== */
     .perf-table th,
     .perf-table td {
       vertical-align: middle;
@@ -269,7 +268,6 @@
     .dept-card .stat-row:nth-child(3) .count-badge { background: rgba(245,158,11,0.12); color: #b45309; }
     .dept-card .stat-row:nth-child(4) .count-badge { background: rgba(239,68,68,0.10); color: #b91c1c; }
 
-    /* ===== tambahan popup statistik atas ===== */
     .stat-modal-overlay {
       position: fixed;
       inset: 0;
@@ -591,7 +589,6 @@
   </div>
 </div>
 
-<!-- tambahan popup statistik atas -->
 <div class="stat-modal-overlay" id="statModalOverlay" onclick="closeStatModal()">
   <div class="stat-modal-content" onclick="event.stopPropagation()">
     <div class="stat-modal-top">
@@ -685,6 +682,7 @@
     );
   }
 
+  /* perbaikan kecil: popup ACCOUNT NAME sekarang ambil dari kolom E OVERVIEW_MASTER */
   function openDetail(masterIdx) {
     const staff = dbMaster[masterIdx];
     if(!staff) return;
@@ -695,26 +693,29 @@
     document.getElementById('mName').innerText = staff[3] || "-";
     document.getElementById('mID').innerText = "#" + (staff[2] || "-");
 
-    // ACCOUNT NAME ambil dari OVERVIEW_MASTER kolom E
     document.getElementById('mAccountName').innerText = staff[4] || "-";
-  
-  if (p) {
-    document.getElementById('mMentor').innerText = p[2] || "-";
-    document.getElementById('mTotalOrder').innerText = p[3] || "0";
-    document.getElementById('mAvg').innerText = p[4] || "0";
-  } else {
-    document.getElementById('mMentor').innerText = "-";
-    document.getElementById('mTotalOrder').innerText = "0";
-    document.getElementById('mAvg').innerText = "0";
+    
+    if (p) {
+      document.getElementById('mMentor').innerText = p[2] || "-";
+      document.getElementById('mTotalOrder').innerText = p[3] || "0";
+      document.getElementById('mAvg').innerText = p[4] || "0";
+    } else {
+      document.getElementById('mMentor').innerText = "-";
+      document.getElementById('mTotalOrder').innerText = "0";
+      document.getElementById('mAvg').innerText = "0";
+    }
+
+    const joinDate = new Date(staff[6]);
+    if(!isNaN(joinDate)){
+      const diff = Math.ceil(Math.abs(new Date() - joinDate) / (1000 * 60 * 60 * 24));
+      document.getElementById('mTenure').innerText = diff + " Hari (" + staff[6] + ")";
+    } else {
+      document.getElementById('mTenure').innerText = "-";
+    }
+
+    document.getElementById('modalOverlay').style.display = 'flex';
   }
 
-  const joinDate = new Date(staff[6]);
-  if(!isNaN(joinDate)){
-    const diff = Math.ceil(Math.abs(new Date() - joinDate) / (1000 * 60 * 60 * 24));
-    document.getElementById('mTenure').innerText = diff + " Hari (" + staff[6] + ")";
-  } else {
-    document.getElementById('mTenure').innerText = "-";
-  }
   function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
   function syncCharts() {
@@ -1009,7 +1010,6 @@
     el.style.setProperty('--tip-top', `${top}px`);
   }
 
-  /* ===== fungsi tambahan popup statistik atas ===== */
   function openStatModal(chartId, encodedLabel, color) {
     const label = decodeURIComponent(encodedLabel || '');
     const members = getStatMembers(chartId, label);
