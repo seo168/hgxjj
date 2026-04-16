@@ -23,33 +23,78 @@
     
     .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
 
-    .top-mode-switcher {
-      display: flex;
-      gap: 12px;
+    .work-mode-wrap {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 10px;
       margin-bottom: 1rem;
-      justify-content: flex-start;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       flex-wrap: wrap;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);
     }
 
-    .top-mode-btn {
-      min-width: 120px;
-      padding: 14px 28px;
-      background: white;
-      border: 2px solid #ef4444;
-      border-radius: 0;
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: #ef4444;
+    .work-mode-title {
+      font-size: 0.72rem;
+      font-weight: 900;
+      color: var(--text-muted);
+      padding: 0 8px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .work-mode-btn {
+      min-width: 140px;
+      padding: 12px 22px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 900;
       cursor: pointer;
-      transition: 0.2s;
+      transition: 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
-    .top-mode-btn.active {
-      background: white;
-      color: #ef4444;
-      box-shadow: none;
+    .work-mode-btn:hover {
+      transform: translateY(-1px);
+      border-color: #cbd5e1;
     }
 
+    .work-mode-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+    }
+
+    .work-mode-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 900;
+      background: rgba(255,255,255,0.12);
+      color: inherit;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .work-mode-btn:not(.active) .work-mode-count {
+      background: #eef2ff;
+      color: var(--primary);
+      border: 1px solid #e2e8f0;
+    }
+    
     .dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
     .dept-card { background: white; padding: 1.2rem; border-radius: 24px; border: 1px solid var(--border); min-height: 280px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
     .chart-box { width: 85px; height: 85px; margin: 0 auto 15px; position: relative; }
@@ -514,10 +559,20 @@
 
 <div class="container">
 
-  <div class="top-mode-switcher">
-    <button class="top-mode-btn active" onclick="setTopMode(this)">现场</button>
-    <button class="top-mode-btn" onclick="setTopMode(this)">现场居家</button>
-    <button class="top-mode-btn" onclick="setTopMode(this)">居家</button>
+  <div class="work-mode-wrap">
+    <div class="work-mode-title">Work Category</div>
+    <button class="work-mode-btn active" id="modeBtn-xianchang" onclick="setWorkMode('现场')">
+      <span>现场</span>
+      <span class="work-mode-count" id="countModeXianChang">0</span>
+    </button>
+    <button class="work-mode-btn" id="modeBtn-xianchangjvjia" onclick="setWorkMode('现场居家')">
+      <span>现场居家</span>
+      <span class="work-mode-count" id="countModeXianChangJuJia">0</span>
+    </button>
+    <button class="work-mode-btn" id="modeBtn-jvjia" onclick="setWorkMode('居家')">
+      <span>居家</span>
+      <span class="work-mode-count" id="countModeJuJia">0</span>
+    </button>
   </div>
 
   <div class="dept-grid">
@@ -666,15 +721,55 @@
 
   let dbMaster = [], dbPerf = [], filtered = [], charts = {};
   let mainPage = 1; const mainRows = 10;
+  let activeWorkMode = '现场';
   const palette = ["#3b82f6", "#6B7280", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];
   
   const cleanID = (s) => String(s || "").replace(/\D/g, ''); 
   const clean = (s) => String(s || "").trim().toUpperCase();
   const esc = (s) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-  function setTopMode(el) {
-    document.querySelectorAll('.top-mode-btn').forEach(btn => btn.classList.remove('active'));
-    el.classList.add('active');
+  function detectWorkMode(row) {
+    const text = row.join(' ').replace(/\s+/g, '');
+    if (text.includes('现场居家')) return '现场居家';
+    if (text.includes('居家')) return '居家';
+    return '现场';
+  }
+
+  function updateWorkModeButtons() {
+    document.querySelectorAll('.work-mode-btn').forEach(btn => btn.classList.remove('active'));
+
+    const map = {
+      '现场': 'modeBtn-xianchang',
+      '现场居家': 'modeBtn-xianchangjvjia',
+      '居家': 'modeBtn-jvjia'
+    };
+
+    const activeBtn = document.getElementById(map[activeWorkMode]);
+    if (activeBtn) activeBtn.classList.add('active');
+  }
+
+  function updateWorkModeCounts() {
+    const counts = {
+      '现场': 0,
+      '现场居家': 0,
+      '居家': 0
+    };
+
+    dbMaster.forEach(r => {
+      const mode = detectWorkMode(r);
+      counts[mode] = (counts[mode] || 0) + 1;
+    });
+
+    document.getElementById('countModeXianChang').innerText = counts['现场'] || 0;
+    document.getElementById('countModeXianChangJuJia').innerText = counts['现场居家'] || 0;
+    document.getElementById('countModeJuJia').innerText = counts['居家'] || 0;
+  }
+
+  function setWorkMode(mode) {
+    activeWorkMode = mode;
+    mainPage = 1;
+    updateWorkModeButtons();
+    runFilters();
   }
 
   function showPage(pageId) {
@@ -698,6 +793,8 @@
       dbPerf = smartParse(await resP.text()).slice(1);
       setPerfDateHeaders();
       initFilters();
+      updateWorkModeCounts();
+      updateWorkModeButtons();
       runFilters();
       setInterval(() => {
         document.getElementById('clock').innerText = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Yerevan"})).toLocaleTimeString('en-GB') + " AMT";
@@ -816,7 +913,20 @@
     const sg = document.getElementById('fGroup').value;
     const sc = document.getElementById('fCountry').value;
     const sp = document.getElementById('fPlatform').value;
-    filtered = dbMaster.filter(r => (r.join(' ').toLowerCase().includes(sn)) && (!sf || r[5] === sf) && (!sg || r[1] === sg) && (!st || r[9] === st) && (!sc || r[8] === sc) && (!sp || r[0] === sp));
+
+    filtered = dbMaster.filter(r => {
+      const modeOk = detectWorkMode(r) === activeWorkMode;
+      const formOk =
+        (r.join(' ').toLowerCase().includes(sn)) &&
+        (!sf || r[5] === sf) &&
+        (!sg || r[1] === sg) &&
+        (!st || r[9] === st) &&
+        (!sc || r[8] === sc) &&
+        (!sp || r[0] === sp);
+
+      return modeOk && formOk;
+    });
+
     updateUI();
   }
 
