@@ -561,7 +561,11 @@
 
   <div class="work-mode-wrap">
     <div class="work-mode-title">Work Category</div>
-    <button class="work-mode-btn active" id="modeBtn-xianchang" onclick="setWorkMode('现场')">
+    <button class="work-mode-btn active" id="modeBtn-all" onclick="setWorkMode('全部')">
+      <span>全部</span>
+      <span class="work-mode-count" id="countModeAll">0</span>
+    </button>
+    <button class="work-mode-btn" id="modeBtn-xianchang" onclick="setWorkMode('现场')">
       <span>现场</span>
       <span class="work-mode-count" id="countModeXianChang">0</span>
     </button>
@@ -721,7 +725,7 @@
 
   let dbMaster = [], dbPerf = [], filtered = [], charts = {};
   let mainPage = 1; const mainRows = 10;
-  let activeWorkMode = '现场';
+  let activeWorkMode = '全部';
   const palette = ["#3b82f6", "#6B7280", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];
   
   const cleanID = (s) => String(s || "").replace(/\D/g, ''); 
@@ -739,6 +743,7 @@
     document.querySelectorAll('.work-mode-btn').forEach(btn => btn.classList.remove('active'));
 
     const map = {
+      '全部': 'modeBtn-all',
       '现场': 'modeBtn-xianchang',
       '现场居家': 'modeBtn-xianchangjvjia',
       '居家': 'modeBtn-jvjia'
@@ -750,6 +755,7 @@
 
   function updateWorkModeCounts() {
     const counts = {
+      '全部': dbMaster.length,
       '现场': 0,
       '现场居家': 0,
       '居家': 0
@@ -760,6 +766,7 @@
       counts[mode] = (counts[mode] || 0) + 1;
     });
 
+    document.getElementById('countModeAll').innerText = counts['全部'] || 0;
     document.getElementById('countModeXianChang').innerText = counts['现场'] || 0;
     document.getElementById('countModeXianChangJuJia').innerText = counts['现场居家'] || 0;
     document.getElementById('countModeJuJia').innerText = counts['居家'] || 0;
@@ -915,7 +922,7 @@
     const sp = document.getElementById('fPlatform').value;
 
     filtered = dbMaster.filter(r => {
-      const modeOk = detectWorkMode(r) === activeWorkMode;
+      const modeOk = activeWorkMode === '全部' ? true : detectWorkMode(r) === activeWorkMode;
       const formOk =
         (r.join(' ').toLowerCase().includes(sn)) &&
         (!sf || r[5] === sf) &&
