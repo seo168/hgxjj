@@ -851,7 +851,7 @@
     const joinDate = new Date(staff[6]);
     if(!isNaN(joinDate)){
       const diff = Math.ceil(Math.abs(new Date() - joinDate) / (1000 * 60 * 60 * 24));
-      document.getElementById('mTenure').innerText = diff + " Hari (" + staff[6] + ")";
+      document.getElementById('mTenure').innerText = diff + " 日 (" + staff[6] + ")";
     } else {
       document.getElementById('mTenure').innerText = "-";
     }
