@@ -755,7 +755,7 @@
 
   function updateWorkModeCounts() {
     const counts = {
-      '全部': dbMaster.length,
+      '全部': 0,
       '现场': 0,
       '现场居家': 0,
       '居家': 0
@@ -764,6 +764,9 @@
     dbMaster.forEach(r => {
       const mode = detectWorkMode(r);
       counts[mode] = (counts[mode] || 0) + 1;
+      if (mode === '居家' || mode === '现场居家') {
+        counts['全部'] += 1;
+      }
     });
 
     document.getElementById('countModeAll').innerText = counts['全部'] || 0;
@@ -922,7 +925,11 @@
     const sp = document.getElementById('fPlatform').value;
 
     filtered = dbMaster.filter(r => {
-      const modeOk = activeWorkMode === '全部' ? true : detectWorkMode(r) === activeWorkMode;
+      const mode = detectWorkMode(r);
+      const modeOk = activeWorkMode === '全部'
+        ? (mode === '居家' || mode === '现场居家')
+        : mode === activeWorkMode;
+
       const formOk =
         (r.join(' ').toLowerCase().includes(sn)) &&
         (!sf || r[5] === sf) &&
