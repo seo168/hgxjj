@@ -1943,6 +1943,7 @@
     const PAYOUT_ORDER_SHEET_ID = "1DL3lp6zM7Q8pClDkzZFQOmEmOq_nSxnmzr2ArOViIcA";
     const URL_SERVICE_DAILY = "https://docs.google.com/spreadsheets/d/1nVAlnCEtdkhwC52l7Vo9Q1ywfpPUBR4bscYzMpH4sLg/export?format=csv&gid=910100001";
     const URL_SERVICE_STAFF = "https://docs.google.com/spreadsheets/d/1nVAlnCEtdkhwC52l7Vo9Q1ywfpPUBR4bscYzMpH4sLg/export?format=csv&gid=910100002";
+    const SERVICE_SOURCE_SHEET_ID = "1ItXxCx7-J0lEW5U74AhS5n_aOTvLK5DxRWbc1ik8fwA";
     const URL_MISTAKE_NO_DEDUCTION = "https://docs.google.com/spreadsheets/d/1nVAlnCEtdkhwC52l7Vo9Q1ywfpPUBR4bscYzMpH4sLg/export?format=csv&gid=910100005";
 
     let dbMaster = [];
@@ -1957,6 +1958,7 @@
     let dbPayoutStaffError = '';
     let dbServiceDaily = [];
     let dbServiceStaff = [];
+    let dbServiceStatusByDate = new Map();
     let dbNoDeductionMistakes = [];
     let noDeductionMistakesLoaded = false;
     let noDeductionMistakesLoading = false;
@@ -2371,8 +2373,9 @@
           staff.days.set(canonicalPayoutDate(row[0]),{quantity,reply}); staff.total+=quantity; staff.replyWeighted+=quantity*reply;
         });
         const staffRows=[...staffMap.values()].sort((a,b)=>b.total-a.total);
-        const onlineStaffCount = new Set(reportRows.map(row => String(row[3] || '').trim()).filter(Boolean)).size;
-        const restingStaffCount = Math.max(staffRows.length - onlineStaffCount, 0);
+        const sourceStatuses = (dbServiceStatusByDate.get(reportDate) || []).filter(item=>activeServiceRegion==='全部'||item.region===activeServiceRegion);
+        const onlineStaffCount = sourceStatuses.length ? sourceStatuses.filter(item=>item.status==='在线').length : new Set(reportRows.map(row => String(row[3] || '').trim()).filter(Boolean)).size;
+        const restingStaffCount = sourceStatuses.length ? sourceStatuses.filter(item=>item.status==='休息').length : Math.max(staffRows.length - onlineStaffCount, 0);
         const averageRepliesPerOnlineStaff = onlineStaffCount ? total / onlineStaffCount : 0;
         if (summary) summary.innerHTML = [['当日回复总量',fmtNumber(total)],['人均回复量',fmtNumber(Math.round(averageRepliesPerOnlineStaff))],['当日平均回复时长',weightedReply ? `${weightedReply.toFixed(2)} 秒` : '-'],['在线员工',`${onlineStaffCount} 人`],['休息员工',`${restingStaffCount} 人`]].map(item => `<div class="order-summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
         if (head) head.innerHTML = `<tr><th>员工编号</th><th>员工姓名</th><th>平台</th>${dates.map(date=>`<th>${Number(date.slice(5,7))}月${Number(date.slice(8,10))}日<br><small>回复量 / 秒</small></th>`).join('')}<th>本月累计</th><th>月均回复时长</th></tr>`;
@@ -2580,21 +2583,59 @@
       return output.sort((a,b)=>String(a[0]).localeCompare(String(b[0])) || String(a[1]).localeCompare(String(b[1])));
     }
 
+    function parseServiceSourceStatuses(rows, fallbackYear) {
+      const result = new Map();
+      let dateColumns = [];
+      const sourceDate = value => {
+        const text = String(value || '').trim();
+        const iso = canonicalPayoutDate(text);
+        if (iso) return iso;
+        const match = text.match(/^(\d{1,2})[\/.-](\d{1,2})(?:[\/.-](\d{2,4}))?$/);
+        if (!match) return '';
+        const year = match[3] ? (match[3].length===2 ? `20${match[3]}` : match[3]) : String(fallbackYear);
+        return `${year}-${String(match[1]).padStart(2,'0')}-${String(match[2]).padStart(2,'0')}`;
+      };
+      rows.forEach(row => {
+        if (String(row?.[1] || '').trim().toUpperCase() === 'ID') {
+          dateColumns = row.map((value,index)=>({date:sourceDate(value),index})).filter(item=>item.date);
+          return;
+        }
+        const id = String(row?.[1] || '').trim().toUpperCase();
+        if (!/^(CS|WD)\d+$/.test(id) || !dateColumns.length) return;
+        const account = String(row?.[4] || '').toUpperCase();
+        const region = /(?:^|[^A-Z])(UANG|IND|HOT)(?:[^A-Z]|$)/.test(account) ? '印尼' : '印度';
+        dateColumns.forEach(({date,index}) => {
+          const raw = String(row?.[index] ?? '').trim();
+          const number = Number(raw.replace(/,/g,''));
+          const status = raw !== '' && (Number.isFinite(number) || /^LEARN$/i.test(raw)) ? '在线' : /^(RD|休息|休)$/i.test(raw) ? '休息' : '其他';
+          if (!result.has(date)) result.set(date,[]);
+          result.get(date).push({id,region,status});
+        });
+      });
+      return result;
+    }
+
     async function loadServiceData(force = false) {
       if (serviceLoading) return;
       serviceLoading = true;
       try {
-        const [dailyResponse, staffResponse] = await Promise.all([
+        const reportDate=getRelativeISODate(activeGlobalDate,-1), report=parseLocalISODate(reportDate);
+        const monthName=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'][report.getMonth()];
+        const sourceUrl=`https://docs.google.com/spreadsheets/d/${SERVICE_SOURCE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(`TOTAL REPLY ${monthName}`)}&t=${Date.now()}`;
+        const [dailyResponse, staffResponse, sourceResponse] = await Promise.all([
           fetch(`${URL_SERVICE_DAILY}&t=${Date.now()}`),
-          fetch(`${URL_SERVICE_STAFF}&t=${Date.now()}`)
+          fetch(`${URL_SERVICE_STAFF}&t=${Date.now()}`),
+          fetch(sourceUrl).catch(()=>null)
         ]);
         if (!dailyResponse.ok || !staffResponse.ok) throw new Error(`HTTP ${dailyResponse.status}/${staffResponse.status}`);
         dbServiceDaily = smartParse(await dailyResponse.text()).slice(1).filter(row => canonicalPayoutDate(row[0]));
         dbServiceStaff = smartParse(await staffResponse.text()).slice(1).filter(row => canonicalPayoutDate(row[0]));
+        dbServiceStatusByDate = sourceResponse?.ok ? parseServiceSourceStatuses(smartParse(await sourceResponse.text()),report.getFullYear()) : new Map();
       } catch (error) {
         console.error('客服数据读取失败', error);
         dbServiceDaily = [];
         dbServiceStaff = [];
+        dbServiceStatusByDate = new Map();
       }
       serviceLoaded = true;
       serviceLoading = false;
