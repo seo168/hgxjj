@@ -729,6 +729,13 @@
     #finance.finance-chart-only .finance-trend-full .finance-chart-box{height:470px}
     #finance.finance-chart-only #financePlatformPanel,
     #finance.finance-chart-only #financeDetailBoard{display:none!important}
+    #finance.record-service > .filter-wrapper,
+    #finance.record-service #financePlatformPanel,
+    #finance.record-service #financeDetailBoard,
+    #finance.record-service #financeSheetNotice,
+    #finance.record-service #payoutPlatformPanel{display:none!important}
+    #finance.record-payout > .filter-wrapper,
+    #finance.record-payout #financeSheetNotice{display:none!important}
     #finance.finance-chart-only #financeChartSwitcher{
       grid-template-columns:repeat(8,minmax(145px,1fr));
       overflow-x:auto;
@@ -1793,7 +1800,7 @@
         </div>
 
         <div class="finance-panel" id="financePlatformPanel">
-          <div class="finance-panel-title"><span><i class="fas fa-layer-group"></i> 平台成功率卡片</span><small id="financePlatformStatus">等待数据</small></div>
+          <div class="finance-panel-title"><span><i class="fas fa-layer-group"></i> <b id="recordPlatformPanelTitle">平台成功率卡片</b></span><small id="financePlatformStatus">等待数据</small></div>
           <div class="finance-platform-grid" id="financePlatformCards">
             <div class="finance-platform-card">
               <div class="finance-platform-name">暂无数据</div>
@@ -1806,8 +1813,8 @@
         <div class="finance-readable-board" id="financeDetailBoard">
           <div class="table-head-bar finance-readable-head">
             <div>
-              <span><i class="fas fa-table-cells-large"></i> 财务详细数据表</span>
-              <div class="finance-readable-desc">每个平台一个卡片，上方看总览，下方看 唤醒 / 扫码 / 原生 三种支付数据。</div>
+              <span><i class="fas fa-table-cells-large"></i> <b id="recordDetailTitle">财务详细数据表</b></span>
+              <div class="finance-readable-desc" id="recordDetailDesc">每个平台一个卡片，上方看总览，下方看 唤醒 / 扫码 / 原生 三种支付数据。</div>
             </div>
             <span id="financeTableInfo" style="font-size:.76rem;font-weight:900;color:#9fb0cf;">0 条数据</span>
           </div>
@@ -2204,6 +2211,9 @@
     function setRecordModule(module) {
       activeRecordModule = module;
       activeRecordView = 'daily';
+      const financePage = document.getElementById('finance');
+      financePage?.classList.remove('record-finance','record-payout','record-service');
+      financePage?.classList.add(`record-${module}`);
       Object.keys(recordModuleMeta).forEach(key => document.getElementById('recordTab-' + key)?.classList.toggle('active', key === module));
       const meta = recordModuleMeta[module];
       const context = document.getElementById('recordModuleContext');
@@ -2217,6 +2227,12 @@
       document.getElementById('financeChartSwitcher')?.classList.toggle('visible', module === 'finance');
       document.getElementById('finance')?.classList.toggle('finance-chart-only', module === 'finance');
       document.getElementById('payoutPlatformPanel')?.classList.toggle('visible', module === 'payout');
+      const platformPanelTitle = document.getElementById('recordPlatformPanelTitle');
+      const detailTitle = document.getElementById('recordDetailTitle');
+      const detailDesc = document.getElementById('recordDetailDesc');
+      if (platformPanelTitle) platformPanelTitle.innerText = module === 'payout' ? '平台处理概览' : '平台成功率卡片';
+      if (detailTitle) detailTitle.innerText = module === 'payout' ? '出款数据明细' : '财务详细数据表';
+      if (detailDesc) detailDesc.innerText = module === 'payout' ? '按日期查看处理总数、通过、拒绝及各平台提款时效。' : '每个平台一个卡片，上方看总览，下方看唤醒、扫码、原生三种支付数据。';
       if (module === 'payout') setPayoutStatView('overview', false);
       document.getElementById('finance')?.classList.remove('order-record-view');
       document.getElementById('recordView-daily')?.classList.add('active');
