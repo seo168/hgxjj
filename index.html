@@ -1432,7 +1432,7 @@
     .global-date-actions .date-today-btn{background:linear-gradient(135deg,#2563eb,#475569)}
     .record-view-switcher{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:1rem;padding:7px;border:1px solid rgba(148,163,184,.18);border-radius:18px;background:rgba(8,17,31,.38)}
     .record-view-switcher.visible{display:grid}
-    .service-region-switcher{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:1rem;padding:7px;border:1px solid rgba(148,163,184,.18);border-radius:18px;background:rgba(8,17,31,.38)}
+    .service-region-switcher{display:none;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1rem;padding:7px;border:1px solid rgba(148,163,184,.18);border-radius:18px;background:rgba(8,17,31,.38)}
     .service-region-switcher.visible{display:grid}
     .record-view-btn{min-height:48px;padding:11px 16px;border:1px solid transparent;border-radius:13px;background:transparent;color:#9fb0cf;font-size:.76rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:.2s ease}
     .record-view-btn:hover{color:#fff;background:rgba(30,41,59,.5)}
@@ -1721,7 +1721,8 @@
         </div>
 
         <div class="service-region-switcher" id="serviceRegionSwitcher">
-          <button class="record-view-btn active" id="serviceRegion-india" onclick="setServiceRegion('印度')"><i class="fas fa-globe-asia"></i><span>印度平台</span></button>
+          <button class="record-view-btn active" id="serviceRegion-all" onclick="setServiceRegion('全部')"><i class="fas fa-users"></i><span>全部客服</span></button>
+          <button class="record-view-btn" id="serviceRegion-india" onclick="setServiceRegion('印度')"><i class="fas fa-globe-asia"></i><span>印度平台</span></button>
           <button class="record-view-btn" id="serviceRegion-indonesia" onclick="setServiceRegion('印尼')"><i class="fas fa-island-tropical"></i><span>印尼平台</span></button>
         </div>
 
@@ -1970,7 +1971,7 @@
     let activePayoutTimeMetric = 0;
     let activePayoutPlatformMetric = 0;
     let activeFinanceChartView = 'hourly';
-    let activeServiceRegion = '印度';
+    let activeServiceRegion = '全部';
     const INDONESIA_SERVICE_STAFF_IDS = new Set(['CS000177','CS00075','CS000437']);
     let financeTrendChart = null;
     let financeLoaded = false;
@@ -2311,7 +2312,8 @@
     }
 
     function setServiceRegion(region) {
-      activeServiceRegion = region === '印尼' ? '印尼' : '印度';
+      activeServiceRegion = region === '印尼' ? '印尼' : region === '印度' ? '印度' : '全部';
+      document.getElementById('serviceRegion-all')?.classList.toggle('active', activeServiceRegion === '全部');
       document.getElementById('serviceRegion-india')?.classList.toggle('active', activeServiceRegion === '印度');
       document.getElementById('serviceRegion-indonesia')?.classList.toggle('active', activeServiceRegion === '印尼');
       if (activeRecordModule !== 'service') return;
@@ -2322,7 +2324,10 @@
     }
 
     function getServiceRegionForRow(row) {
-      return INDONESIA_SERVICE_STAFF_IDS.has(String(row[3] || '').trim().toUpperCase()) ? '印尼' : '印度';
+      const id = String(row[3] || '').trim().toUpperCase();
+      const accountInfo = String(row[13] || '').toUpperCase();
+      const indonesiaAccount = /(?:^|[^A-Z])(UANG|IND|HOT)(?:[^A-Z]|$)/.test(accountInfo);
+      return indonesiaAccount || INDONESIA_SERVICE_STAFF_IDS.has(id) ? '印尼' : '印度';
     }
 
     function renderOrderRecordPanel() {
@@ -2353,7 +2358,7 @@
       const columns = 4;
       if (isService) {
         const monthPrefix = reportDate.slice(0,7);
-        const monthRows = dbServiceStaff.filter(row => { const date=canonicalPayoutDate(row[0]); return getServiceRegionForRow(row)===activeServiceRegion && date.startsWith(monthPrefix) && date<=reportDate; });
+        const monthRows = dbServiceStaff.filter(row => { const date=canonicalPayoutDate(row[0]); const regionMatch=activeServiceRegion==='全部'||getServiceRegionForRow(row)===activeServiceRegion; return regionMatch && date.startsWith(monthPrefix) && date<=reportDate; });
         const dates = [...new Set(monthRows.map(row=>canonicalPayoutDate(row[0])).filter(Boolean))].sort();
         const reportRows = monthRows.filter(row => canonicalPayoutDate(row[0]) === reportDate);
         const total = reportRows.reduce((sum,row) => sum + Number(row[5] || 0), 0);
@@ -2361,7 +2366,7 @@
         const staffMap = new Map();
         monthRows.forEach(row => {
           const id=String(row[3]||'').trim(), key=id || `${row[1]}-${row[4]}`;
-          if (!staffMap.has(key)) staffMap.set(key,{id:id||'-',name:row[4]||'-',platform:activeServiceRegion,days:new Map(),total:0,replyWeighted:0});
+          if (!staffMap.has(key)) staffMap.set(key,{id:id||'-',name:row[4]||'-',platform:activeServiceRegion==='全部'?getServiceRegionForRow(row):activeServiceRegion,days:new Map(),total:0,replyWeighted:0});
           const staff=staffMap.get(key), quantity=Number(row[5]||0), reply=Number(row[6]||0);
           staff.days.set(canonicalPayoutDate(row[0]),{quantity,reply}); staff.total+=quantity; staff.replyWeighted+=quantity*reply;
         });
@@ -2503,6 +2508,10 @@
     }
 
     function getServiceRow(date) {
+      if (activeServiceRegion === '全部') {
+        const dailyRow = dbServiceDaily.find(row => canonicalPayoutDate(row[0]) === date);
+        return dailyRow ? [date,'全部','客服',Number(dailyRow[3] || 0),Number(dailyRow[4] || 0)] : null;
+      }
       const rows = dbServiceStaff.filter(row => canonicalPayoutDate(row[0]) === date && getServiceRegionForRow(row) === activeServiceRegion);
       if (!rows.length) return null;
       const quantity = rows.reduce((sum,row)=>sum+Number(row[5]||0),0);
