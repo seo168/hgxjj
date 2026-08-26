@@ -2347,8 +2347,8 @@
       if (context) context.innerHTML = `<span><i class="fas ${isService ? 'fa-headset' : 'fa-money-bill-transfer'}"></i> ${displayLabel}员工订单记录</span><small>报告日期：${reportDate}（前一日）</small>`;
       if (title) title.innerHTML = `<i class="fas fa-table-list"></i> ${displayLabel}员工订单记录 · ${reportDate}`;
       const summaryItems = isService
-        ? [['当日回复总量','0'],['平均回复时长','-'],['员工人数','0'],['报告日期',reportDate]]
-        : [['当日订单总量','0'],['在线员工','0'],['员工平均订单','0'],['报告日期',reportDate]];
+        ? [['当日回复总量','0'],['平均回复时长','-'],['员工状态','在线 0 人 · 休息 0 人'],['报告日期',reportDate]]
+        : [['当日订单总量','0'],['员工状态','在线 0 人 · 休息 0 人'],['员工平均订单','0'],['报告日期',reportDate]];
       if (summary) summary.innerHTML = summaryItems.map(item => `<div class="order-summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
       if (isService) {
         if (head) head.innerHTML = '<tr><th>员工编号</th><th>员工姓名</th><th>平台</th><th>等待日期数据</th></tr>';
@@ -2372,7 +2372,8 @@
         });
         const staffRows=[...staffMap.values()].sort((a,b)=>b.total-a.total);
         const onlineStaffCount = new Set(reportRows.map(row => String(row[3] || '').trim()).filter(Boolean)).size;
-        if (summary) summary.innerHTML = [['当日回复总量',fmtNumber(total)],['当日平均回复时长',weightedReply ? `${weightedReply.toFixed(2)} 秒` : '-'],['在线员工',`${onlineStaffCount} 人`],['数据截至',reportDate]].map(item => `<div class="order-summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
+        const restingStaffCount = Math.max(staffRows.length - onlineStaffCount, 0);
+        if (summary) summary.innerHTML = [['当日回复总量',fmtNumber(total)],['当日平均回复时长',weightedReply ? `${weightedReply.toFixed(2)} 秒` : '-'],['员工状态',`在线 ${onlineStaffCount} 人 · 休息 ${restingStaffCount} 人`],['数据截至',reportDate]].map(item => `<div class="order-summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
         if (head) head.innerHTML = `<tr><th>员工编号</th><th>员工姓名</th><th>平台</th>${dates.map(date=>`<th>${Number(date.slice(5,7))}月${Number(date.slice(8,10))}日<br><small>回复量 / 秒</small></th>`).join('')}<th>本月累计</th><th>月均回复时长</th></tr>`;
         if (body) body.innerHTML = staffRows.length ? staffRows.map(staff => `<tr><td><b>${esc(staff.id)}</b></td><td title="${esc(staff.name)}">${esc(staff.name)}</td><td>${esc(staff.platform)}</td>${dates.map(date=>{const day=staff.days.get(date);return day?`<td class="csr-day-cell"><b>${fmtNumber(day.quantity)}</b><small>${day.reply.toFixed(2)} 秒</small></td>`:`<td class="csr-day-cell empty">-</td>`}).join('')}<td><b>${fmtNumber(staff.total)}</b></td><td>${staff.total?(staff.replyWeighted/staff.total).toFixed(2):'0.00'} 秒</td></tr>`).join('') : `<tr class="attendance-empty"><td colspan="${Math.max(4,dates.length+5)}"><i class="fas fa-circle-info"></i>&nbsp; ${reportDate} ${moduleLabel}员工订单暂无数据</td></tr>`;
         const info = document.getElementById('financeTableInfo');
@@ -2397,7 +2398,8 @@
         const currentRows = dateIndex < 0 ? [] : dbPayoutStaff.filter(row=>{const raw=String(row[dateIndex]??'').trim();return raw!==''&&!/^(RD|OFF|休)$/i.test(raw)&&Number.isFinite(Number(raw.replace(/,/g,'')));});
         const totalOrders = currentRows.reduce((sum,row)=>sum+Number(String(row[dateIndex]||0).replace(/,/g,'')),0);
         const average = currentRows.length ? totalOrders/currentRows.length : 0;
-        if (summary) summary.innerHTML = [['当日订单总量',fmtNumber(totalOrders)],['在线员工',`${currentRows.length} 人`],['员工平均订单',fmtNumber(Math.round(average))],['数据截至',reportDate]].map(item => `<div class="order-summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
+        const restingPayoutStaffCount = Math.max(staffRows.length - currentRows.length, 0);
+        if (summary) summary.innerHTML = [['当日订单总量',fmtNumber(totalOrders)],['员工状态',`在线 ${currentRows.length} 人 · 休息 ${restingPayoutStaffCount} 人`],['员工平均订单',fmtNumber(Math.round(average))],['数据截至',reportDate]].map(item => `<div class="order-summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
         if (head) head.innerHTML = `<tr><th>员工编号</th><th>员工姓名</th><th>平台</th>${dateColumns.map(item=>{const [month,day]=item.header.split('/');return `<th>${Number(month)}月${Number(day)}日<br><small>订单量</small></th>`}).join('')}<th>本月累计</th><th>日均订单</th></tr>`;
         if (body) body.innerHTML = staffRows.length ? staffRows.map(staff=>`<tr><td><b>${esc(staff.id)}</b></td><td title="班次：${esc(staff.shift)} · 系统账号：${esc(staff.account)}">${esc(staff.name)}</td><td>${esc(staff.platform)}</td>${staff.days.map(day=>day.value===null?'<td class="csr-day-cell empty">-</td>':`<td class="csr-day-cell"><b>${fmtNumber(day.value)}</b></td>`).join('')}<td><b>${fmtNumber(staff.total)}</b></td><td>${dateColumns.length?fmtNumber(Math.round(staff.total/dateColumns.length)):'0'}</td></tr>`).join('') : dbPayoutStaffError ? `<tr class="attendance-empty"><td colspan="${Math.max(4,dateColumns.length+5)}"><i class="fas fa-lock"></i>&nbsp; Google 表格员工订单需要开放读取权限或连接安全接口（${esc(dbPayoutStaffError)}）</td></tr>` : `<tr class="attendance-empty"><td colspan="${Math.max(4,dateColumns.length+5)}"><i class="fas fa-circle-info"></i>&nbsp; ${reportDate} 出款员工订单暂无数据</td></tr>`;
         const count = document.querySelector('#orderRecordTable')?.closest('.table-container')?.querySelector('.attendance-count');
