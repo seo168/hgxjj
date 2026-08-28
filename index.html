@@ -1934,9 +1934,11 @@
     */
     const URL_FINANCE = "https://docs.google.com/spreadsheets/d/1Tpv-EX6p0HcTnfgdjBwdQ8uLPKR85WxwO1vdBLSPltA/export?format=csv&gid=824642528";
     const URL_FINANCE_W5W = "https://docs.google.com/spreadsheets/d/1Tpv-EX6p0HcTnfgdjBwdQ8uLPKR85WxwO1vdBLSPltA/export?format=csv&gid=1633078648";
+    const URL_FINANCE_ZONO = "https://docs.google.com/spreadsheets/d/1Tpv-EX6p0HcTnfgdjBwdQ8uLPKR85WxwO1vdBLSPltA/export?format=csv&gid=1473061321";
     const URL_TREND = "https://docs.google.com/spreadsheets/d/1nVAlnCEtdkhwC52l7Vo9Q1ywfpPUBR4bscYzMpH4sLg/export?format=csv&gid=1344701812";
     const URL_TREND_PE7 = "https://docs.google.com/spreadsheets/d/1Tpv-EX6p0HcTnfgdjBwdQ8uLPKR85WxwO1vdBLSPltA/export?format=csv&gid=552368104";
     const URL_TREND_W5W = "https://docs.google.com/spreadsheets/d/1Tpv-EX6p0HcTnfgdjBwdQ8uLPKR85WxwO1vdBLSPltA/export?format=csv&gid=1942499289";
+    const URL_TREND_ZONO = "https://docs.google.com/spreadsheets/d/1Tpv-EX6p0HcTnfgdjBwdQ8uLPKR85WxwO1vdBLSPltA/export?format=csv&gid=284711428";
     const URL_PAYOUT_DAILY = "https://docs.google.com/spreadsheets/d/1nVAlnCEtdkhwC52l7Vo9Q1ywfpPUBR4bscYzMpH4sLg/export?format=csv&gid=910100003";
     const URL_PAYOUT_PLATFORM_TIMING = "https://docs.google.com/spreadsheets/d/1nVAlnCEtdkhwC52l7Vo9Q1ywfpPUBR4bscYzMpH4sLg/export?format=csv&gid=910100010";
     const PAYOUT_SOURCE_SHEET_ID = "1x1EUWgcPH-vbPWwF6JyfZH-lH9RXGxTfML1p8TSjT18";
@@ -2141,7 +2143,7 @@
     let activeMistakeModule = 'deduction';
     let mistakeHistoryPage = 1;
     const mistakeHistoryPageSize = 60;
-    let activeGlobalDate = getLocalISODate(new Date());
+    let activeGlobalDate = getLocalISODate(getIndiaTodayObj());
 
     function getLocalISODate(date) {
       const year = date.getFullYear();
@@ -2174,7 +2176,7 @@
     }
 
     function resetGlobalDate() {
-      activeGlobalDate = getLocalISODate(new Date());
+      activeGlobalDate = getLocalISODate(getIndiaTodayObj());
       applyGlobalDate();
     }
 
@@ -2185,7 +2187,7 @@
       if (label) label.innerText = formatGlobalDate(activeGlobalDate);
 
       const financeDate = document.getElementById('financeDateFilter');
-      if (financeDate) financeDate.value = activeGlobalDate.replaceAll('-', '/');
+      if (financeDate) financeDate.value = getRelativeISODate(activeGlobalDate, -1).replaceAll('-', '/');
       if (document.getElementById('finance')?.classList.contains('active')) renderFinanceReport();
       updateExtraPages();
       if (activeMistakeModule === 'noDeduction') renderMistakeData();
@@ -3572,6 +3574,14 @@
       })).filter(row => row['日期（公式）'] && (toNumber(row['总订单'])>0 || toNumber(row['金额'])>0 || toNumber(row['总充值成功金额'])>0));
     }
 
+    function zonoRowsToFinance(rows) {
+      return rowsToObjects(rows).map(row => ({
+        ...row,
+        '盘口（公式）':'ZONO',
+        '日期（公式）':row['辅助日期勿动'] || row['日期'] || ''
+      })).filter(row => row['日期（公式）'] && (toNumber(row['总订单'])>0 || toNumber(row['金额'])>0 || toNumber(row['总充值成功金额'])>0));
+    }
+
     function hourlyRowsToTrend(rows, platform) {
       if (!rows || rows.length < 2) return [];
       const headers = rows[0].map(normalizeHeaderName);
@@ -3751,6 +3761,12 @@
           } catch (w5wError) {
             console.warn('W5W 财务数据暂未读取', w5wError);
           }
+          try {
+            const zonoInfo = await fetchCsvFromCandidates([URL_FINANCE_ZONO]);
+            dbFinance.push(...zonoRowsToFinance(zonoInfo.rows));
+          } catch (zonoError) {
+            console.warn('ZONO 财务数据暂未读取', zonoError);
+          }
         } catch (e) {
           console.error('财务报表 CSV 读取失败', e);
           dbFinance = [];
@@ -3761,7 +3777,8 @@
           dbTrend = rowsToObjects(trendInfo.rows);
           const extraTrendSources = [
             { platform:'PE7', url:URL_TREND_PE7 },
-            { platform:'W5W', url:URL_TREND_W5W }
+            { platform:'W5W', url:URL_TREND_W5W },
+            { platform:'ZONO', url:URL_TREND_ZONO }
           ];
           for (const source of extraTrendSources) {
             try {
@@ -3807,7 +3824,7 @@
         el.innerHTML = `<option value="">全部</option>` + values.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
         if (values.includes(old)) el.value = old;
       };
-      const platforms = [...new Set([...dbFinance.map(r => getFinancePlatform(r)).filter(value=>value&&value!=='-'),'W5W'])].sort();
+      const platforms = [...new Set([...dbFinance.map(r => getFinancePlatform(r)).filter(value=>value&&value!=='-'),'W5W','ZONO'])].sort();
       const channels = [...new Set(dbFinance.map(r => String(getAny(r, ['通道','渠道','Channel'], '')).trim()).filter(Boolean))].sort();
       fill('financePlatformFilter', platforms);
       fill('financeChannelFilter', channels);
@@ -3816,10 +3833,14 @@
     function syncFinanceDateToLatestComplete() {
       const input = document.getElementById('financeDateFilter');
       if (!input) return;
+      const reportDate = financeDateToObj(getRelativeISODate(activeGlobalDate, -1));
       const validDates = [...new Set(dbFinance
         .filter(row => isFinanceRowReliable(row) && (getFinanceOrders(row) > 0 || getFinanceAmount(row) > 0))
         .map(getFinanceDate)
-        .filter(Boolean))]
+        .filter(date => {
+          const value = financeDateToObj(date);
+          return value && reportDate && value.getTime() <= reportDate.getTime();
+        }))]
         .sort((a,b)=>(financeDateToObj(a)?.getTime()||0)-(financeDateToObj(b)?.getTime()||0));
       const requested = normalizeDateText(input.value || '');
       if (!requested || !validDates.includes(requested)) input.value = validDates[validDates.length - 1] || '';
@@ -3829,7 +3850,7 @@
       const d = document.getElementById('financeDateFilter');
       const p = document.getElementById('financePlatformFilter');
       const c = document.getElementById('financeChannelFilter');
-      if (d) d.value = '';
+      if (d) d.value = getRelativeISODate(activeGlobalDate, -1).replaceAll('-', '/');
       if (p) p.value = '';
       if (c) c.value = '';
       renderFinanceReport();
@@ -3888,13 +3909,13 @@
     }
 
     function getFinanceAutoDateSet(days = 3) {
-      const indiaToday = getIndiaTodayObj();
+      const reportDate = financeDateToObj(getRelativeISODate(activeGlobalDate, -1)) || getIndiaTodayObj();
       const validDates = [...new Set(dbFinance.filter(r => isFinanceRowReliable(r) && (getFinanceOrders(r)>0 || getFinanceAmount(r)>0 || getFinanceRechargeSuccessAmount(r)>0)).map(r => getFinanceDate(r)).filter(Boolean))]
         .map(dateText => ({ dateText, obj: financeDateToObj(dateText) }))
-        .filter(x => x.obj && x.obj.getTime() <= indiaToday.getTime())
+        .filter(x => x.obj && x.obj.getTime() <= reportDate.getTime())
         .sort((a, b) => b.obj.getTime() - a.obj.getTime());
 
-      const base = validDates[0]?.obj || indiaToday;
+      const base = validDates[0]?.obj || reportDate;
       const result = new Set();
       for (let i = 0; i < days; i++) {
         const d = new Date(base);
@@ -3958,6 +3979,7 @@
       });
       const platformFilter = document.getElementById('financePlatformFilter')?.value || '';
       if (!platformFilter && !map.W5W) map.W5W = { orders:0, success:0, amount:0 };
+      if (!platformFilter && !map.ZONO) map.ZONO = { orders:0, success:0, amount:0 };
       const totalAmount = Object.values(map).reduce((s, v) => s + v.amount, 0);
       const entries = Object.entries(map).sort((a,b) => b[1].orders - a[1].orders);
       if (status) status.innerText = entries.length ? `${entries.length} 个平台` : '等待数据';
@@ -4012,7 +4034,11 @@
       const title=document.getElementById('recordTrendTitle');
       if (title) title.innerHTML=`<i class="fas fa-chart-area"></i> ${titleMap[activeFinanceChartView]||'财务统计'}`;
       const activeRows=dbFinance.filter(row=>isFinanceRowReliable(row)&&(getFinanceOrders(row)>0||getFinanceAmount(row)>0||getFinanceRechargeSuccessAmount(row)>0));
-      const allDates=[...new Set(activeRows.map(getFinanceDate).filter(Boolean))].sort((a,b)=>(financeDateToObj(a)?.getTime()||0)-(financeDateToObj(b)?.getTime()||0));
+      const reportDate=financeDateToObj(getRelativeISODate(activeGlobalDate,-1));
+      const allDates=[...new Set(activeRows.map(getFinanceDate).filter(date=>{
+        const value=financeDateToObj(date);
+        return value&&reportDate&&value.getTime()<=reportDate.getTime();
+      }))].sort((a,b)=>(financeDateToObj(a)?.getTime()||0)-(financeDateToObj(b)?.getTime()||0));
       const requested=normalizeDateText(document.getElementById('financeDateFilter')?.value||'');
       const targetDate=requested&&allDates.includes(requested)?requested:allDates[allDates.length-1]||'';
       const targetIndex=allDates.indexOf(targetDate), dates=allDates.slice(Math.max(0,targetIndex-6),targetIndex+1);
@@ -4038,7 +4064,7 @@
         const targetRows=activeRows.filter(row=>getFinanceDate(row)===targetDate), keyType=activeFinanceChartView;
         const isPlatform=keyType==='platform'||keyType==='platformAmount';
         const isAmount=keyType==='platformAmount'||keyType==='channelAmount';
-        const keys=isPlatform?['66GAME','YYGAME','XX7','XX6','XX5','YY9','PE7','W5W']:['唤醒','扫码','原生'];
+        const keys=isPlatform?['66GAME','YYGAME','XX7','XX6','XX5','YY9','PE7','W5W','ZONO']:['唤醒','扫码','原生'];
         const data=keys.map(key=>{
           const rows=targetRows.filter(row=>isPlatform?getFinancePlatform(row)===key:normalizeChannelName(getFinanceChannel(row))===key);
           return {key,hasData:rows.some(row=>getFinanceOrders(row)>0||getFinanceAmount(row)>0),...aggregate(rows)};
@@ -4213,10 +4239,14 @@
       )];
 
       const inputDate = normalizeDateText(document.getElementById('financeDateFilter')?.value || '');
-      const indiaToday = getIndiaDate(0);
+      const reportDate = normalizeDateText(getRelativeISODate(activeGlobalDate, -1));
+      const reportDateObj = dateToObj(reportDate);
 
       const latestDate = allDates
-        .slice()
+        .filter(date => {
+          const value = dateToObj(date);
+          return value && (!reportDateObj || value.getTime() <= reportDateObj.getTime());
+        })
         .sort((a, b) => {
           const da = dateToObj(a);
           const db = dateToObj(b);
@@ -4225,10 +4255,9 @@
         .pop() || '';
 
       // 图表只显示目标日期 24 小时；下方显示目标日期对比前 1 天、前 2 天
-      const indiaTodayObj = dateToObj(indiaToday);
       const datesWithTrend = allDates.filter(date => {
         const dateObj = dateToObj(date);
-        return dateObj && (!indiaTodayObj || dateObj.getTime() <= indiaTodayObj.getTime()) && trendRowsByDate(date).some(row => hourValues(row).some(value => value > 0));
+        return dateObj && (!reportDateObj || dateObj.getTime() <= reportDateObj.getTime()) && trendRowsByDate(date).some(row => hourValues(row).some(value => value > 0));
       });
       const latestTrendDate = datesWithTrend.slice().sort((a,b)=>(dateToObj(a)?.getTime()||0)-(dateToObj(b)?.getTime()||0)).pop() || latestDate;
       const targetDate = inputDate && datesWithTrend.includes(inputDate) ? inputDate : latestTrendDate;
@@ -4248,17 +4277,20 @@
         'YY9':'#f87171',
         'PE7':'#fb7185',
         'W5W':'#22c55e',
+        'ZONO':'#06b6d4',
         'BDSPIN':'#22c55e'
       };
 
-      const datasets = rows.map(r => {
-        const platform = getTrendPlatform(r);
+      const expectedTrendPlatforms = ['66GAME','YYGAME','XX7','XX6','XX5','YY9','PE7','W5W','ZONO'];
+      const rowsByPlatform = new Map(rows.map(row => [getTrendPlatform(row).toUpperCase(), row]));
+      const chartRows = expectedTrendPlatforms.map(platform => ({
+        platform,
+        row: rowsByPlatform.get(platform) || null
+      }));
+
+      const datasets = chartRows.map(({ platform, row }) => {
         const color = colorMap[platform.toUpperCase()] || colorMap[platform] || '#ffffff';
-        const rawValues = hourValues(r);
-        const lastReportedHour = rawValues.reduce((last, value, index) => value > 0 ? index : last, -1);
-        const displayValues = targetDate === indiaToday
-          ? rawValues.map((value, index) => index <= lastReportedHour ? value : null)
-          : rawValues;
+        const displayValues = row ? hourValues(row) : Array.from({ length:24 }, () => null);
 
         return {
           label: platform,
@@ -4269,7 +4301,8 @@
           tension: 0.35,
           pointRadius: 2,
           pointHoverRadius: 4,
-          fill: true
+          fill: Boolean(row),
+          hidden: false
         };
       });
 
@@ -4316,9 +4349,9 @@
       renderTrendCompare(targetDate, rows, yRows, d2Rows);
 
       if (rows.length) {
-      setStatus(`${targetDate}${targetDate === indiaToday ? ' 实时更新' : ' 24小时'}｜昨日 ${yesterdayDate}｜前日 ${twoDaysDate}`);
+      setStatus(`${targetDate} 24小时｜前一日 ${yesterdayDate}｜前两日 ${twoDaysDate}`);
       } else {
-        setStatus(`没有找到 ${targetDate}｜印度今天 ${indiaToday}`);
+        setStatus(`没有找到 ${targetDate}｜报告日期固定为所选日期的前一天`);
       }
     }
 
@@ -4401,7 +4434,7 @@
         return obj ? obj.getTime() : 0;
       };
 
-      const platformOrder = ['66GAME','YYGAME','XX7','XX6','XX5','YY9','PE7','W5W'];
+      const platformOrder = ['66GAME','YYGAME','XX7','XX6','XX5','YY9','PE7','W5W','ZONO'];
       const platformWeight = p => {
         const idx = platformOrder.indexOf(String(p).toUpperCase());
         return idx >= 0 ? idx : 999;
