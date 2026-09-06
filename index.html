@@ -2617,6 +2617,46 @@
       return result;
     }
 
+    function parseServiceSourceData(rows, fallbackYear) {
+      const staffRows = [];
+      let dateColumns = [];
+      const sourceDate = value => {
+        const text = String(value || '').trim();
+        const iso = canonicalPayoutDate(text);
+        if (iso) return iso;
+        const match = text.match(/^(\d{1,2})[\/.-](\d{1,2})(?:[\/.-](\d{2,4}))?$/);
+        if (!match) return '';
+        const year = match[3] ? (match[3].length===2 ? `20${match[3]}` : match[3]) : String(fallbackYear);
+        return `${year}-${String(match[1]).padStart(2,'0')}-${String(match[2]).padStart(2,'0')}`;
+      };
+      rows.forEach(row => {
+        if (String(row?.[1] || '').trim().toUpperCase() === 'ID') {
+          dateColumns = row.map((value,index)=>({date:sourceDate(value),replyIndex:index,avgIndex:index+1})).filter(item=>item.date);
+          return;
+        }
+        const id = String(row?.[1] || '').trim().toUpperCase();
+        if (!/^(CS|WD)\d+$/.test(id) || !dateColumns.length) return;
+        const name = String(row?.[2] || '').trim() || '-';
+        const account = String(row?.[4] || '').trim();
+        dateColumns.forEach(({date,replyIndex,avgIndex}) => {
+          const replyRaw = String(row?.[replyIndex] ?? '').trim();
+          const avgRaw = String(row?.[avgIndex] ?? '').trim();
+          const quantity = Number(replyRaw.replace(/,/g,''));
+          const average = Number(avgRaw.replace(/,/g,''));
+          if (!Number.isFinite(quantity) || quantity < 0) return;
+          staffRows.push([date,'全部','客服',id,name,quantity,Number.isFinite(average)?average:0,'','','','','','',account]);
+        });
+      });
+      const dailyMap = new Map();
+      staffRows.forEach(row => {
+        const date=row[0], quantity=Number(row[5]||0), average=Number(row[6]||0);
+        if (!dailyMap.has(date)) dailyMap.set(date,{quantity:0,weighted:0});
+        const day=dailyMap.get(date); day.quantity+=quantity; day.weighted+=quantity*average;
+      });
+      const dailyRows = [...dailyMap.entries()].map(([date,value]) => [date,'全部','客服',value.quantity,value.quantity?value.weighted/value.quantity:0]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])));
+      return { staffRows, dailyRows };
+    }
+
     async function loadServiceData(force = false) {
       if (serviceLoading) return;
       serviceLoading = true;
@@ -2631,10 +2671,17 @@
           fetch(`${URL_SERVICE_STAFF}&t=${Date.now()}`),
           fetch(sourceUrl).catch(()=>null)
         ]);
-        if (!dailyResponse.ok || !staffResponse.ok) throw new Error(`HTTP ${dailyResponse.status}/${staffResponse.status}`);
-        dbServiceDaily = smartParse(await dailyResponse.text()).slice(1).filter(row => canonicalPayoutDate(row[0]));
-        dbServiceStaff = smartParse(await staffResponse.text()).slice(1).filter(row => canonicalPayoutDate(row[0]));
-        dbServiceStatusByDate = sourceResponse?.ok ? parseServiceSourceStatuses(smartParse(await sourceResponse.text()),report.getFullYear()) : new Map();
+        const sourceRows = sourceResponse?.ok ? smartParse(await sourceResponse.text()) : [];
+        const directSource = parseServiceSourceData(sourceRows,report.getFullYear());
+        if (directSource.staffRows.length) {
+          dbServiceDaily = directSource.dailyRows;
+          dbServiceStaff = directSource.staffRows;
+        } else {
+          if (!dailyResponse.ok || !staffResponse.ok) throw new Error(`HTTP ${dailyResponse.status}/${staffResponse.status}`);
+          dbServiceDaily = smartParse(await dailyResponse.text()).slice(1).filter(row => canonicalPayoutDate(row[0]));
+          dbServiceStaff = smartParse(await staffResponse.text()).slice(1).filter(row => canonicalPayoutDate(row[0]));
+        }
+        dbServiceStatusByDate = sourceRows.length ? parseServiceSourceStatuses(sourceRows,report.getFullYear()) : new Map();
       } catch (error) {
         console.error('客服数据读取失败', error);
         dbServiceDaily = [];
