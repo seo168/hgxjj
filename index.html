@@ -1949,7 +1949,7 @@
     const PAYOUT_ORDER_SHEET_ID = "1DL3lp6zM7Q8pClDkzZFQOmEmOq_nSxnmzr2ArOViIcA";
     const URL_SERVICE_DAILY = "https://docs.google.com/spreadsheets/d/1nVAlnCEtdkhwC52l7Vo9Q1ywfpPUBR4bscYzMpH4sLg/export?format=csv&gid=910100001";
     const URL_SERVICE_STAFF = "https://docs.google.com/spreadsheets/d/1nVAlnCEtdkhwC52l7Vo9Q1ywfpPUBR4bscYzMpH4sLg/export?format=csv&gid=910100002";
-    const SERVICE_SOURCE_SHEET_ID = "1ItXxCx7-J0lEW5U74AhS5n_aOTvLK5DxRWbc1ik8fwA";
+    const URL_SERVICE_MONTHLY = "https://docs.google.com/spreadsheets/d/1nVAlnCEtdkhwC52l7Vo9Q1ywfpPUBR4bscYzMpH4sLg/export?format=csv&gid=910100009";
     const URL_MISTAKE_NO_DEDUCTION = "https://docs.google.com/spreadsheets/d/1nVAlnCEtdkhwC52l7Vo9Q1ywfpPUBR4bscYzMpH4sLg/export?format=csv&gid=910100005";
 
     let dbMaster = [];
@@ -2666,10 +2666,7 @@
       serviceLoading = true;
       try {
         const reportDate=getRelativeISODate(activeGlobalDate,-1), report=parseLocalISODate(reportDate);
-        const monthName=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'][report.getMonth()];
-        const sourceUrl=report.getMonth()===7
-          ? `https://docs.google.com/spreadsheets/d/${SERVICE_SOURCE_SHEET_ID}/export?format=csv&gid=1918079719&t=${Date.now()}`
-          : `https://docs.google.com/spreadsheets/d/${SERVICE_SOURCE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(`TOTAL REPLY ${monthName}`)}&t=${Date.now()}`;
+        const sourceUrl=`${URL_SERVICE_MONTHLY}&t=${Date.now()}`;
         const [dailyResponse, staffResponse, sourceResponse] = await Promise.all([
           fetch(`${URL_SERVICE_DAILY}&t=${Date.now()}`),
           fetch(`${URL_SERVICE_STAFF}&t=${Date.now()}`),
