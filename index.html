@@ -1949,6 +1949,7 @@
     const PAYOUT_ORDER_SHEET_ID = "1DL3lp6zM7Q8pClDkzZFQOmEmOq_nSxnmzr2ArOViIcA";
     const URL_SERVICE_DAILY = "https://docs.google.com/spreadsheets/d/1nVAlnCEtdkhwC52l7Vo9Q1ywfpPUBR4bscYzMpH4sLg/export?format=csv&gid=910100001";
     const URL_SERVICE_STAFF = "https://docs.google.com/spreadsheets/d/1nVAlnCEtdkhwC52l7Vo9Q1ywfpPUBR4bscYzMpH4sLg/export?format=csv&gid=910100002";
+    const SERVICE_SOURCE_SHEET_ID = "1ItXxCx7-J0lEW5U74AhS5n_aOTvLK5DxRWbc1ik8fwA";
     const URL_SERVICE_MONTHLY = "https://docs.google.com/spreadsheets/d/1nVAlnCEtdkhwC52l7Vo9Q1ywfpPUBR4bscYzMpH4sLg/export?format=csv&gid=910100009";
     const URL_MISTAKE_NO_DEDUCTION = "https://docs.google.com/spreadsheets/d/1nVAlnCEtdkhwC52l7Vo9Q1ywfpPUBR4bscYzMpH4sLg/export?format=csv&gid=910100005";
 
@@ -2670,14 +2671,20 @@
       serviceLoading = true;
       try {
         const reportDate=getRelativeISODate(activeGlobalDate,-1), report=parseLocalISODate(reportDate);
-        const sourceUrl=`${URL_SERVICE_MONTHLY}&t=${Date.now()}`;
-        const [dailyResponse, staffResponse, sourceResponse] = await Promise.all([
+        const monthName=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'][report.getMonth()];
+        const directSourceUrl=`https://docs.google.com/spreadsheets/d/${SERVICE_SOURCE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(`TOTAL REPLY ${monthName}`)}&t=${Date.now()}`;
+        const [dailyResponse, staffResponse, directSourceResponse, terminalSourceResponse] = await Promise.all([
           fetch(`${URL_SERVICE_DAILY}&t=${Date.now()}`),
           fetch(`${URL_SERVICE_STAFF}&t=${Date.now()}`),
-          fetch(sourceUrl).catch(()=>null)
+          fetch(directSourceUrl).catch(()=>null),
+          fetch(`${URL_SERVICE_MONTHLY}&t=${Date.now()}`).catch(()=>null)
         ]);
-        const sourceRows = sourceResponse?.ok ? smartParse(await sourceResponse.text()) : [];
-        const directSource = parseServiceSourceData(sourceRows,report.getFullYear());
+        const directRows = directSourceResponse?.ok ? smartParse(await directSourceResponse.text()) : [];
+        const terminalRows = terminalSourceResponse?.ok ? smartParse(await terminalSourceResponse.text()) : [];
+        const directData = parseServiceSourceData(directRows,report.getFullYear());
+        const terminalData = parseServiceSourceData(terminalRows,report.getFullYear());
+        const sourceRows = directData.staffRows.length ? directRows : terminalRows;
+        const directSource = directData.staffRows.length ? directData : terminalData;
         if (directSource.staffRows.length) {
           dbServiceDaily = directSource.dailyRows;
           dbServiceStaff = directSource.staffRows;
